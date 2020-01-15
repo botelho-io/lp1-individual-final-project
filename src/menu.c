@@ -148,7 +148,7 @@ void menu_readIntMinMax(const int min, const int max, int* const op) {
 
 /**
  * @brief       Imprime um menu deixando o utilizador selecionar uma das opções.
- * @param itens Colecao se strings que constituem as opções que o utilizador pode
+ * @param itens Coleção se strings que constituem as opções que o utilizador pode
  *              selecionar.
  * @returns     Um valor entre [-1, itens.size[ correspondente à opção
  *              selecionada ou "Sair" para -1
@@ -218,158 +218,125 @@ void menu_printHeader(const char* header) {
 /**
  * @brief    Imprime informação breve sobre a encomenda.
  * @param e  Encomenda a ser impressa.
- * @param uv Colecao de utilizadores ao qual o ID de utilizador da encomenda faz
+ * @param uv Coleção de utilizadores ao qual o ID de utilizador da encomenda faz
+ *           referência.
+ * @param av Coleção de artigos ao qual o ID dos artigos na encomenda faz
  *           referência.
  */
-void menu_printEncomendaBrief(const encomenda* const e, const utilizadorcol* const uv) {
-    if (e->tipoEstado & ENCOMENDA_TIPO_URGENTE)
-        printf("URGENTE ");
-    else
-        printf("REGULAR ");
+void menu_printEncomendaBrief(const encomenda* const e, const utilizadorcol* const uv, const artigocol* const av) {
 
-    switch (e->tipoEstado & 0xF0) {
-        case ENCOMENDA_ESTADO_EXPEDIDA: printf("EXPEDIDA  "); break;
-        case ENCOMENDA_ESTADO_CANCELADA: printf("CANCELADA "); break;
-        case ENCOMENDA_ESTADO_EM_ENTREGA: printf("EM ENTREGA"); break;
-        case ENCOMENDA_ESTADO_ENTREGUE: printf("ENTREGUE  "); break;
-    }
-
-    printf(" (%.9s) ", uv->data[e->ID_cliente].NIF);
-    struct tm* lt = localtime(&e->criacao);
-    printf(" %d/%d/%d %d:%d  -  ", 1900 + lt->tm_year, 1 + lt->tm_mon, lt->tm_mday, lt->tm_hour, lt->tm_min);
-    printf("%luc", encomenda_CalcPreco(e));
+    struct tm* lt = localtime(&e->tempo);
+    printf("Cliente: %s NIF:(%.9s) Data: %d/%d/%d %d:%d  -  TOTAL: %luc",
+           protectStr(uv->data[e->ID_cliente].nome), //
+           uv->data[e->ID_cliente].NIF,              //
+           1900 + lt->tm_year,                       //
+           1 + lt->tm_mon,                           //
+           lt->tm_mday,                              //
+           lt->tm_hour,                              //
+           lt->tm_min,                               //
+           encomenda_CalcPreco(e, av)                //
+    );
 }
 
 /**
  * @brief   Imprime informação sobre o utilizador.
  * @param u Utilizador para ser impresso.
  */
-void menu_printUtilizador(const utilizador u) {
-    printf("%s ", protectStr(u.nome));
-    printf("(%.9s) ", u.NIF);
-    switch (u.tipo) {
-        case UTILIZADOR_CLIENTE: printf("CLIENTE"); break;
-        case UTILIZADOR_DESATIVADO: printf("DESATIVADO"); break;
-        case UTILIZADOR_DIRETOR: printf("DIRETOR"); break;
-    }
-}
+void menu_printUtilizador(const utilizador u) { printf("Nome: %s NIF(%.9s)", protectStr(u.nome), u.NIF); }
 
 /**
  * @brief   Imprime informação sobre o artigo.
  * @param a Artigo para ser impresso.
  */
 void menu_printArtigo(const artigo* const a) {
-    // nome gramas 3 tratamento especial
-    printf("%s  -   %lug   %lucm3   * %s", protectStr(a->nome), a->peso_gramas, a->cmCubicos,
-           protectStr(a->tratamentoEspecial));
+    const char* iva;
+    switch (a->meta & ARTIGO_IVA) {
+        case ARTIGO_IVA_NORMAL: iva = "normal"; break;
+        case ARTIGO_IVA_REDUZIDO: iva = "reduzido"; break;
+        default: iva = "intermédio"; break;
+    }
+
+    printf("%s -  Preço: %lu + (IVA %s)  -  Grupo %s %s",
+           protectStr(a->nome),                                                        //
+           a->preco_cent,                                                              //
+           iva,                                                                        //
+           (a->meta & ARTIGO_GRUPO_ANIMAL) ? "animal" : "humano",                      //
+           (a->meta & ARTIGO_NECESSITA_RECEITA) ? "venda livre" : "receita necessária" //
+    );
+}
+
+/**
+ * @brief   Imprime informação sobre o artigo e o stcok.
+ * @param a Artigo para ser impresso.
+ */
+void menu_printArtigo(const artigo* const a) {
+    const char* iva;
+    switch (a->meta & ARTIGO_IVA) {
+        case ARTIGO_IVA_NORMAL: iva = "normal"; break;
+        case ARTIGO_IVA_REDUZIDO: iva = "reduzido"; break;
+        default: iva = "intermédio"; break;
+    }
+
+    printf("%s (%lu em stock) -  Preço: %lu + (IVA %s)  -  Grupo %s %s %s",
+           protectStr(a->nome),                                                         //
+           a->stock,                                                                    //
+           a->preco_cent,                                                               //
+           iva,                                                                         //
+           (a->meta & ARTIGO_GRUPO_ANIMAL) ? "animal" : "humano",                       //
+           (a->meta & ARTIGO_NECESSITA_RECEITA) ? "venda livre" : "receita necessária", //
+           (a->meta & ARTIGO_DESATIVADO) ? "DESATIVADO" : ""                            //
+    );
 }
 
 /**
  * @brief    Imprime informação detalhada sobre a encomenda.
  * @param e  Encomenda a ser impressa.
- * @param uv Colecao de utilizadores ao qual o ID de utilizador da encomenda faz
+ * @param uv Coleção de utilizadores ao qual o ID de utilizador da encomenda faz
+ *           referência.
+ * @param av Coleção de artigos ao qual o ID dos artigos na encomenda faz
  *           referência.
  */
-void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* const uv) {
+void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* const uv, const artigocol* const av) {
     menu_printDiv();
     menu_printDiv();
     menu_printHeader("Recibo de Encomenda");
     printf("*** NIF do Cliente: %.9s\n", uv->data[e->ID_cliente].NIF);
+    printf("*** Número de CC: %.12s\n", uv->data[e->ID_cliente].CC);
 
-    struct tm* lt = localtime(&e->criacao);
-    printf("Data de criação: %d/%d/%d %d:%d", 1900 + lt->tm_year, 1 + lt->tm_mon, lt->tm_mday, lt->tm_hour, lt->tm_min);
-
-    menu_printHeader("Origem");
-    printf("*** Morada: %s\n", protectStr(e->origem.morada));
-    printf("*** Código Postal: %.4s-%.3s\n", e->origem.codigoPostal, &e->origem.codigoPostal[4]);
-
-    menu_printHeader("Destino");
-    printf("*** Morada: %s\n", protectStr(e->destino.morada));
-    printf("*** Código Postal: %.4s-%.3s\n", e->destino.codigoPostal, &e->destino.codigoPostal[4]);
-
+    struct tm* lt = localtime(&e->tempo);
+    printf("Data: %d/%d/%d %d:%d\n\n", 1900 + lt->tm_year, 1 + lt->tm_mon, lt->tm_mday, lt->tm_hour, lt->tm_min);
 
     menu_printHeader("Artigos");
-    uint64_t pt = 0;
-    uint64_t vt = 0;
-    printf("*       ID | NOME                          | PESO     | VOLUME   | "
-           "PESO T.  | VOL. T.  | * TRATAMENTO ESPECIAL\n");
+    printf("*       ID | NOME                                | Preço    | + IVA    | Receita\n");
+    uint64_t precoSemIva = 0;
+    uint64_t precoComIva = 0;
     for (size_t i = 0; i < e->artigos.size; ++i) {
-        pt += e->artigos.data[i].peso_gramas;
-        vt += e->artigos.data[i].cmCubicos;
-        printf("* %*lu |", 8, i + 1);
-        printf(" %29.29s |", protectStr(e->artigos.data[i].nome));
-        printf(" %*lu |", 8, e->artigos.data[i].peso_gramas);
-        printf(" %*lu |", 8, e->artigos.data[i].cmCubicos);
-        printf(" %*lu |", 8, pt);
-        printf(" %*lu |", 8, vt);
-        printf(" %s\n", protectStr(e->artigos.data[i].tratamentoEspecial));
+        const artigo* const a = &av->data[e->artigos.data[i].IDartigo];
+        double              iva;
+        switch (a->meta & ARTIGO_IVA) {
+            case ARTIGO_IVA_NORMAL: iva = ARTIGO_IVA_NORMAL_VAL; break;
+            case ARTIGO_IVA_REDUZIDO: iva = ARTIGO_IVA_REDUZIDO_VAL; break;
+            default: iva = ARTIGO_IVA_INTERMEDIO_VAL; break;
+        }
+        precoSemIva += a->preco_cent;
+        precoComIva += (a->preco_cent * iva);
+
+        printf("* %8lu | %35.35s | %8lu | %8lu | ",
+               i,                              //
+               protectStr(a->nome),            //
+               a->preco_cent,                  //
+               (uint64_t)(a->preco_cent * iva) //
+        );
+
+        if (a->meta & ARTIGO_NECESSITA_RECEITA) {
+            printf("Número: %s\n", protectStr(e->artigos.data[i].receita));
+        } else {
+            printf("N/A\n");
+        }
     }
 
-    menu_printHeader("Outras Informações");
-    printf("*** ESTADO: ");
-    switch (e->tipoEstado & 0xF0) {
-        case ENCOMENDA_ESTADO_EXPEDIDA: printf("EXPEDIDA\n"); break;
-        case ENCOMENDA_ESTADO_CANCELADA: printf("CANCELADA\n"); break;
-        case ENCOMENDA_ESTADO_EM_ENTREGA: printf("EM ENTREGA\n"); break;
-        case ENCOMENDA_ESTADO_ENTREGUE: printf("ENTREGUE\n"); break;
-        default: printf("DESCONHECIDO\n");
-    }
-
-    printf("*** TIPO:        | ");
-    if (e->tipoEstado & ENCOMENDA_TIPO_URGENTE)
-        printf("URGENTE    | ");
-    else
-        printf("REGULAR    | ");
-    if (e->tipoEstado & ENCOMENDA_TIPO_FRAGIL)
-        printf("FRAGIL     | ");
-    else
-        printf("RESISTENTE | ");
-    if (e->tipoEstado & ENCOMENDA_TIPO_PESADO)
-        printf("PESADO     | ");
-    else
-        printf("LEVE       | ");
-    if (e->tipoEstado & ENCOMENDA_TIPO_VOLUMOSO)
-        printf("VOLUMOSO   |\n");
-    else
-        printf("PEQUENO    |\n");
-
-    uint64_t tpt = 0;
-    printf("*** TIPO PREÇOS: | ");
-    if (e->tipoEstado & ENCOMENDA_TIPO_URGENTE) {
-        printf(" %*luc | ", 8, e->precos.URGENTE);
-        tpt += e->precos.URGENTE;
-    } else {
-        printf(" %*luc | ", 8, e->precos.REGULAR);
-        tpt += e->precos.REGULAR;
-    }
-    if (e->tipoEstado & ENCOMENDA_TIPO_FRAGIL) {
-        printf(" %*luc | ", 8, e->precos.FRAGIL);
-        tpt += e->precos.FRAGIL;
-    } else
-        printf(" %*luc | ", 8, (uint64_t) 0);
-    if (e->tipoEstado & ENCOMENDA_TIPO_PESADO) {
-        printf(" %*luc | ", 8, e->precos.PESADO);
-        tpt += e->precos.PESADO;
-    } else
-        printf(" %*luc | ", 8, (uint64_t) 0);
-    if (e->tipoEstado & ENCOMENDA_TIPO_VOLUMOSO) {
-        printf(" %*luc |\n", 8, e->precos.VOLUMOSO);
-        tpt += e->precos.VOLUMOSO;
-    } else
-        printf(" %*luc |\n", 8, (uint64_t) 0);
-
-    printf("*** Preço base: %luc\n", tpt);
-    printf("*** Distancia: %luKm\n", e->distancia_km);
-    printf("*** Preço Por Km: %luc\n", e->precos.POR_KM);
-    if (e->origem.codigoPostal[0] > '9' || e->origem.codigoPostal[0] < '1' || e->destino.codigoPostal[0] > '9' ||
-        e->destino.codigoPostal[0] < '1') {
-        printf("*** Multiplicador de Código Postal: ERRO\n");
-        printf("*** Preço Final em Cêntimos: ERRO\n");
-    } else {
-        const _Float32 multcp = e->precos.MULT_CP[e->origem.codigoPostal[0] - '1'][e->destino.codigoPostal[0] - '1'];
-        printf("*** Multiplicador de Código Postal: %f\n", (double) multcp);
-        printf("*** Preço Final em Cêntimos: %luc\n", encomenda_CalcPreco(e));
-    }
+    printf("\n*** Preço base: %luc\n", precoSemIva);
+    printf("\n*** Preço com IVA: %luc\n", precoComIva);
     menu_printDiv();
 }
 
@@ -380,11 +347,11 @@ void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* co
  * @param ID_U  ID do utilizador para quem imprimir o recibo.
  * @param mes   Mês do recibo. [1, 12]
  * @param ano   Ano do recibo.
- * @param e     Colecao das encomendas.
- * @param uv    Colecao dos utilizadores.
+ * @param e     Coleção das encomendas.
+ * @param uv    Coleção dos utilizadores.
  */
 void menu_printReciboMensal(const uint64_t ID_U, int mes, int ano, const encomendacol* const e,
-                            const utilizadorcol* const uv) {
+                            const utilizadorcol* const uv, const artigocol* const av) {
     ano -= 1900;
     mes -= 1;
     int         isImprimirNosDois = 0;
@@ -432,11 +399,10 @@ INICIO:
     printf("*** NIF: %.9s\n\n", uv->data[ID_U].NIF);
 
     for (size_t i = 0; i < e->size; ++i) {
-        struct tm* enctm = localtime(&e->data[i].criacao);
+        struct tm* enctm = localtime(&e->data[i].tempo);
         if (enctm->tm_year != ano || enctm->tm_mon != mes || ID_U != e->data[i].ID_cliente) continue;
         encomenda* atual = &e->data[i];
-        if (atual->tipoEstado == ENCOMENDA_ESTADO_CANCELADA) continue;
-        menu_printEncomendaBrief(atual, uv);
+        menu_printEncomendaBrief(atual, uv, av);
         printf("\n");
         size_t art;
         for (art = 0; art < atual->artigos.size; ++art) {
@@ -446,7 +412,7 @@ INICIO:
         }
         tot_art += art;
         ++tot_enc;
-        tot_preco += encomenda_CalcPreco(atual);
+        tot_preco += encomenda_CalcPreco(atual, av);
     }
     printf("\n");
     printf("*** Encomendas feitas (%d/%d):    %lu\n", ano + 1900, mes + 1, tot_enc);

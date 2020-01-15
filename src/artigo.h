@@ -23,6 +23,9 @@
 #define ARTIGO_IVA_NORMAL ((uint8_t) 0)
 #define ARTIGO_IVA_INTERMEDIO ((uint8_t) 1)
 #define ARTIGO_IVA_REDUZIDO ((uint8_t) 2)
+#define ARTIGO_IVA_NORMAL_VAL 1.23
+#define ARTIGO_IVA_INTERMEDIO_VAL 1.13
+#define ARTIGO_IVA_REDUZIDO_VAL 1.06
 #define ARTIGO_IVA ((uint8_t) 3)
 #define ARTIGO_GRUPO_ANIMAL ((uint8_t) 4)
 #define ARTIGO_NECESSITA_RECEITA ((uint8_t) 8)

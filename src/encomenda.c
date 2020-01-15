@@ -46,17 +46,17 @@ void freeEncomenda(encomenda* const e) { parircol_free(&e->artigos); }
  * @warning         O tipoEstado da encomenda tem que estar correto antes de
  *                  chamar esta função.
  */
-uint64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const a) {
+uint64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av) {
     uint64_t precoFinal;
     uint64_t precoPreTax;
     artigo*  artAtual;
     for (uint64_t i = 0; i < e->artigos.size; i++) {
-        artAtual    = &(a->data[e->artigos.data[i].IDartigo]);
+        artAtual    = &(av->data[e->artigos.data[i].IDartigo]);
         precoPreTax = artAtual->preco_cent;
         switch (artAtual->meta & ARTIGO_IVA) {
-            case ARTIGO_IVA_NORMAL: precoPreTax *= 1.23; break;
-            case ARTIGO_IVA_INTERMEDIO: precoPreTax *= 1.13; break;
-            case ARTIGO_IVA_REDUZIDO: precoPreTax *= 1.06; break;
+            case ARTIGO_IVA_NORMAL: precoPreTax *= ARTIGO_IVA_NORMAL_VAL; break;
+            case ARTIGO_IVA_INTERMEDIO: precoPreTax *= ARTIGO_IVA_INTERMEDIO_VAL; break;
+            case ARTIGO_IVA_REDUZIDO: precoPreTax *= ARTIGO_IVA_REDUZIDO_VAL; break;
         }
         precoFinal += precoPreTax;
     }

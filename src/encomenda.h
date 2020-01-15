@@ -91,6 +91,6 @@ encomenda newEncomenda();
 void      freeEncomenda(encomenda* const e);
 int       save_encomenda(FILE* const f, const encomenda* const data);
 int       load_encomenda(FILE* const f, encomenda* const data);
-uint64_t  encomenda_CalcPreco(const encomenda* const e, const artigocol* const a);
+uint64_t  encomenda_CalcPreco(const encomenda* const e, const artigocol* const av);
 
 #endif

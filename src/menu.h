@@ -62,11 +62,12 @@ void  menu_printInfo(const char* const info, ...);
 void  menu_printHeader(const char* header);
 void  menu_printUtilizador(const utilizador u);
 void  menu_printArtigo(const artigo* const a);
+void  menu_printArtigoStock(const artigo* const a);
 void  menu_readInt(int* const value);
 void  menu_read_Float32(_Float32* const value);
 void  menu_printReciboMensal(const uint64_t ID_U, int mes, int ano, const encomendacol* const e,
-                             const utilizadorcol* const uv);
-void  menu_printEncomendaBrief(const encomenda* const e, const utilizadorcol* const uv);
-void  menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* const uv);
+                             const utilizadorcol* const uv, const artigocol* const av);
+void  menu_printEncomendaBrief(const encomenda* const e, const utilizadorcol* const uv, const artigocol* const av);
+void  menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* const uv, const artigocol* const av);
 
 #endif
