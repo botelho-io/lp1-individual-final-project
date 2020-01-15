@@ -13,11 +13,9 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DRELEASE_BUILD")
 add_executable(main.x86
                ../src/main.c
                ../src/menu.c
-               ../src/morada.c
                ../src/artigo.c
                ../src/encomenda.c
                ../src/utilities.c
                ../src/utilizador.c
-               ../src/precos_cent.c
                ../src/outrasListagens.c
                ../src/parIdReceita.c)
