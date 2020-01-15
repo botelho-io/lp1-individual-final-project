@@ -46,14 +46,14 @@
 #include "morada.h"
 #include "precos_cent.h"
 
-#ifndef artigovec_H
-#    define artigovec_H
-#    define VEC_TYPE artigo
-#    define VEC_NAME artigovec
-#    define VEC_DEALOC(X) freeArtigo(&X)
-#    define VEC_WRITE(X, F) save_artigo(F, X)
-#    define VEC_READ(X, F) load_artigo(F, X)
-#    include "./vector.h"
+#ifndef artigocol_H
+#    define artigocol_H
+#    define COL_TIPO artigo
+#    define COL_NOME artigocol
+#    define COL_DEALOC(X) freeArtigo(X)
+#    define COL_WRITE(X, F) save_artigo(F, X)
+#    define COL_READ(X, F) load_artigo(F, X)
+#    include "./colecao.h"
 #endif
 
 #define ENCOMENDA_TIPO_URGENTE ((uint8_t) 1)
@@ -72,7 +72,7 @@
  * criada, a data de criação e o ID do cliente que criou a encomenda.
  */
 typedef struct {
-    artigovec artigos;  ///< Artigos que fazem parte da encomenda.
+    artigocol artigos;  ///< Artigos que fazem parte da encomenda.
     morada    origem;   ///< Origem da encomenda.
     morada    destino;  ///< Destino da encomenda.
     uint8_t tipoEstado; ///< Os quatro bits de baixo são flags e indicam o tipo da encomenda, os quatro de cima são o
@@ -85,7 +85,7 @@ typedef struct {
 
 encomenda newEncomenda();
 void      freeEncomenda(encomenda* const e);
-encomenda encomenda_formalizar(const artigovec artigos, const precos_cent precos, const uint64_t ID_cliente,
+encomenda encomenda_formalizar(const artigocol artigos, const precos_cent precos, const uint64_t ID_cliente,
                                const morada org, const morada dest, const uint64_t dist);
 
 int save_encomenda(FILE* const f, const encomenda* const data);

@@ -123,14 +123,14 @@ typedef struct {
     uint64_t total;
 } PAR_ID_TOT;
 
-#define VEC_IMPLEMENTATION
-#ifndef pitvec_H
-#    define pitvec_H
-#    define VEC_TYPE PAR_ID_TOT
-#    define VEC_NAME pitvec
-#    include "./vector.h"
+#define COL_IMPLEMENTACAO
+#ifndef pitcol_H
+#    define pitcol_H
+#    define COL_TIPO PAR_ID_TOT
+#    define COL_NOME pitcol
+#    include "./colecao.h"
 #endif
-#undef VEC_IMPLEMENTATION
+#undef COL_IMPLEMENTACAO
 
 /**
  * @brief Lista os utilizadores por preço total gasto em encomendas. Encomendas
@@ -141,14 +141,14 @@ void listagem_Utilizadores_Mais_Gasto() {
     menu_printHeader("Utilizadores Ordenados Por Dinheiro Gasto");
     // Criar uma lista com todos os utilizadores
     // Par ID do utilizador, total gasto
-    pitvec lista = pitvec_new();
+    pitcol lista = pitcol_new();
     for (size_t u = 0; u < utilizadores.size; ++u) {
-        protectFcnCall(pitvec_push(&lista,
+        protectFcnCall(pitcol_push(&lista,
                                    (PAR_ID_TOT) {
                                        .total = 0, // Total gasto em encomendas
                                        .id    = u  // ID do utilizador
                                    }),
-                       "listagem_Utilizadores_Mais_Gasto - pitvec_push falhou.");
+                       "listagem_Utilizadores_Mais_Gasto - pitcol_push falhou.");
     }
 
     // Calcular o valor das encomendas feitas por utilizador
@@ -184,7 +184,7 @@ void listagem_Utilizadores_Mais_Gasto() {
     }
 
     // Libertar lista
-    pitvec_free(&lista);
+    pitcol_free(&lista);
 }
 
 /**
@@ -192,7 +192,7 @@ void listagem_Utilizadores_Mais_Gasto() {
  */
 void listagem_Encomenda_EmEstado_PorPreco() {
     uint8_t estadoPesquisa = ENCOMENDA_ESTADO_EM_ENTREGA; // Tipo e estado que será pesquisado
-    pitvec  lista          = pitvec_new();
+    pitcol  lista          = pitcol_new();
 
     menu_printDiv();
     menu_printHeader("Encomendas Filtradas e Ordenadas");
@@ -215,7 +215,7 @@ void listagem_Encomenda_EmEstado_PorPreco() {
                (estadoPesquisa & ENCOMENDA_TIPO_VOLUMOSO) ? "volumosas" : "pequenas" //
         );
 
-        switch (menu_selection(&(strvec) {.size = 9,
+        switch (menu_selection(&(strcol) {.size = 9,
                                           .data = (char*[]) {
                                               "Pesquisar por encomendas de tipo urgente",      // 0
                                               "Pesquisar por encomendas de tipo fragil",       // 1
@@ -270,17 +270,17 @@ EXIT_LABEL:
     );
 
     // Criar uma lista com todas as encomendas com 'tipoEstado' compativel.
-    protectFcnCall(pitvec_reserve(&lista, encomendas.size),
-                   "listagem_Encomenda_EmEstado_PorPreco - pitvec_reserve falhou.");
+    protectFcnCall(pitcol_reserve(&lista, encomendas.size),
+                   "listagem_Encomenda_EmEstado_PorPreco - pitcol_reserve falhou.");
 
     for (uint64_t e = 0; e < encomendas.size; ++e) {
         if (encomendas.data[e].tipoEstado == estadoPesquisa) {
-            protectFcnCall(pitvec_push(&lista,
+            protectFcnCall(pitcol_push(&lista,
                                        (PAR_ID_TOT) {
                                            .id    = e,                                       // ID da encomenda
                                            .total = encomenda_CalcPreco(&encomendas.data[e]) // Preço da encomenda
                                        }),
-                           "listagem_Encomenda_EmEstado_PorPreco - pitvec_push falhou.");
+                           "listagem_Encomenda_EmEstado_PorPreco - pitcol_push falhou.");
         }
     }
 
@@ -309,7 +309,7 @@ EXIT_LABEL:
     }
 
     // Libertar lista
-    pitvec_free(&lista);
+    pitcol_free(&lista);
 }
 
 /**
@@ -374,7 +374,7 @@ void listagem_imprimir_recibo() {
 void interface_outrasListagens() {
     while (1) {
         menu_printDiv();
-        switch (menu_selection(&(strvec) {.size = 5,
+        switch (menu_selection(&(strcol) {.size = 5,
                                           .data = (char*[]) {
                                               "Listagem - Recibo de Encomenda",                        // 0
                                               "Listagem - Encomendas num certo periodo de tempo",      // 1

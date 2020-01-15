@@ -22,38 +22,38 @@
 #include "utilizador.h"
 #include "utilities.h"
 
-#ifndef encomendavec_H
-#    define encomendavec_H
-#    define VEC_TYPE encomenda
-#    define VEC_NAME encomendavec
-#    define VEC_DEALOC(X) freeEncomenda(&X)
-#    define VEC_WRITE(X, F) save_encomenda(F, X)
-#    define VEC_READ(X, F) load_encomenda(F, X)
-#    include "./vector.h"
+#ifndef encomendacol_H
+#    define encomendacol_H
+#    define COL_TIPO encomenda
+#    define COL_NOME encomendacol
+#    define COL_DEALOC(X) freeEncomenda(X)
+#    define COL_WRITE(X, F) save_encomenda(F, X)
+#    define COL_READ(X, F) load_encomenda(F, X)
+#    include "./colecao.h"
 #endif
 
-#ifndef strvec_H
-#    define strvec_H
-#    define VEC_TYPE char*
-#    define VEC_NAME strvec
-#    define VEC_DEALOC(X) free(X)
-#    define VEC_WRITE(X, F) save_str(F, *X)
-#    define VEC_READ(X, F) load_str(F, X)
-#    include "./vector.h"
+#ifndef strcol_H
+#    define strcol_H
+#    define COL_TIPO char*
+#    define COL_NOME strcol
+#    define COL_DEALOC(X) free(X)
+#    define COL_WRITE(X, F) save_str(F, *X)
+#    define COL_READ(X, F) load_str(F, X)
+#    include "./colecao.h"
 #endif
 
-#ifndef utilizadorvec_H
-#    define utilizadorvec_H
-#    define VEC_TYPE utilizador
-#    define VEC_NAME utilizadorvec
-#    define VEC_DEALOC(X) freeUtilizador(&X)
-#    define VEC_WRITE(X, F) save_utilizador(F, X)
-#    define VEC_READ(X, F) load_utilizador(F, X)
-#    include "./vector.h"
+#ifndef utilizadorcol_H
+#    define utilizadorcol_H
+#    define COL_TIPO utilizador
+#    define COL_NOME utilizadorcol
+#    define COL_DEALOC(X) freeUtilizador(X)
+#    define COL_WRITE(X, F) save_utilizador(F, X)
+#    define COL_READ(X, F) load_utilizador(F, X)
+#    include "./colecao.h"
 #endif
 
 void  menu_readIntMinMax(const int min, const int max, int* const op);
-int   menu_selection(const strvec* const itens);
+int   menu_selection(const strcol* const itens);
 char* menu_readString();
 void  menu_readNotNulStr(char** X);
 void  menu_printDiv();
@@ -64,9 +64,9 @@ void  menu_printUtilizador(const utilizador u);
 void  menu_printArtigo(const artigo* const a);
 void  menu_readInt(int* const value);
 void  menu_read_Float32(_Float32* const value);
-void  menu_printReciboMensal(const uint64_t ID_U, int mes, int ano, const encomendavec* const e,
-                             const utilizadorvec* const uv);
-void  menu_printEncomendaBrief(const encomenda* const e, const utilizadorvec* const uv);
-void  menu_printEncomendaDetail(const encomenda* const e, const utilizadorvec* const uv);
+void  menu_printReciboMensal(const uint64_t ID_U, int mes, int ano, const encomendacol* const e,
+                             const utilizadorcol* const uv);
+void  menu_printEncomendaBrief(const encomenda* const e, const utilizadorcol* const uv);
+void  menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* const uv);
 
 #endif

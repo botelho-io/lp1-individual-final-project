@@ -148,12 +148,12 @@ void menu_readIntMinMax(const int min, const int max, int* const op) {
 
 /**
  * @brief       Imprime um menu deixando o utilizador selecionar uma das opções.
- * @param itens Vetor se strings que constituem as opções que o utilizador pode
+ * @param itens Colecao se strings que constituem as opções que o utilizador pode
  *              selecionar.
  * @returns     Um valor entre [-1, itens.size[ correspondente à opção
  *              selecionada ou "Sair" para -1
  */
-int menu_selection(const strvec* const itens) {
+int menu_selection(const strcol* const itens) {
     int op  = -2;
     int max = itens->size;
     while (op == -2) {
@@ -161,7 +161,7 @@ int menu_selection(const strvec* const itens) {
         printf("         -2   |   Reimprimir\n");
         printf("         -1   |   Sair\n");
         size_t i = 0;
-        strvec_iterateFW((strvec*) itens, (strvec_pred_t) &printItemVP, &i);
+        strcol_iterateFW((strcol*) itens, (strcol_pred_t) &printItemVP, &i);
         menu_readIntMinMax(-2, max - 1, &op);
         menu_printDiv();
     }
@@ -218,10 +218,10 @@ void menu_printHeader(const char* header) {
 /**
  * @brief    Imprime informação breve sobre a encomenda.
  * @param e  Encomenda a ser impressa.
- * @param uv Vetor de utilizadores ao qual o ID de utilizador da encomenda faz
+ * @param uv Colecao de utilizadores ao qual o ID de utilizador da encomenda faz
  *           referência.
  */
-void menu_printEncomendaBrief(const encomenda* const e, const utilizadorvec* const uv) {
+void menu_printEncomendaBrief(const encomenda* const e, const utilizadorcol* const uv) {
     if (e->tipoEstado & ENCOMENDA_TIPO_URGENTE)
         printf("URGENTE ");
     else
@@ -267,10 +267,10 @@ void menu_printArtigo(const artigo* const a) {
 /**
  * @brief    Imprime informação detalhada sobre a encomenda.
  * @param e  Encomenda a ser impressa.
- * @param uv Vetor de utilizadores ao qual o ID de utilizador da encomenda faz
+ * @param uv Colecao de utilizadores ao qual o ID de utilizador da encomenda faz
  *           referência.
  */
-void menu_printEncomendaDetail(const encomenda* const e, const utilizadorvec* const uv) {
+void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* const uv) {
     menu_printDiv();
     menu_printDiv();
     menu_printHeader("Recibo de Encomenda");
@@ -380,18 +380,18 @@ void menu_printEncomendaDetail(const encomenda* const e, const utilizadorvec* co
  * @param ID_U  ID do utilizador para quem imprimir o recibo.
  * @param mes   Mês do recibo. [1, 12]
  * @param ano   Ano do recibo.
- * @param e     Vetor das encomendas.
- * @param uv    Vetor dos utilizadores.
+ * @param e     Colecao das encomendas.
+ * @param uv    Colecao dos utilizadores.
  */
-void menu_printReciboMensal(const uint64_t ID_U, int mes, int ano, const encomendavec* const e,
-                            const utilizadorvec* const uv) {
+void menu_printReciboMensal(const uint64_t ID_U, int mes, int ano, const encomendacol* const e,
+                            const utilizadorcol* const uv) {
     ano -= 1900;
     mes -= 1;
     int         isImprimirNosDois = 0;
     FILE* const stdoutTMP         = stdout;
     char*       nomeFicheiro      = NULL;
 
-    switch (menu_selection(&(strvec) {.size = 3,
+    switch (menu_selection(&(strcol) {.size = 3,
                                       .data = (char*[]) {
                                           "Imprimir fatura no ecrâ",              //
                                           "Imprimir fatura em ficheiro",          //

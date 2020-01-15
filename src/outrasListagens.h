@@ -20,39 +20,39 @@
 #include "precos_cent.h"
 #include "utilizador.h"
 
-#ifndef artigovec_H
-#    define artigovec_H
-#    define VEC_TYPE artigo
-#    define VEC_NAME artigovec
-#    define VEC_DEALOC(X) freeArtigo(&X)
-#    define VEC_WRITE(X, F) save_artigo(F, X)
-#    define VEC_READ(X, F) load_artigo(F, X)
-#    include "./vector.h"
+#ifndef artigocol_H
+#    define artigocol_H
+#    define COL_TIPO artigo
+#    define COL_NOME artigocol
+#    define COL_DEALOC(X) freeArtigo(X)
+#    define COL_WRITE(X, F) save_artigo(F, X)
+#    define COL_READ(X, F) load_artigo(F, X)
+#    include "./colecao.h"
 #endif
 
-#ifndef encomendavec_H
-#    define encomendavec_H
-#    define VEC_TYPE encomenda
-#    define VEC_NAME encomendavec
-#    define VEC_DEALOC(X) freeEncomenda(&X)
-#    define VEC_WRITE(X, F) save_encomenda(F, X)
-#    define VEC_READ(X, F) load_encomenda(F, X)
-#    include "./vector.h"
+#ifndef encomendacol_H
+#    define encomendacol_H
+#    define COL_TIPO encomenda
+#    define COL_NOME encomendacol
+#    define COL_DEALOC(X) freeEncomenda(X)
+#    define COL_WRITE(X, F) save_encomenda(F, X)
+#    define COL_READ(X, F) load_encomenda(F, X)
+#    include "./colecao.h"
 #endif
 
-#ifndef utilizadorvec_H
-#    define utilizadorvec_H
-#    define VEC_TYPE utilizador
-#    define VEC_NAME utilizadorvec
-#    define VEC_DEALOC(X) freeUtilizador(&X)
-#    define VEC_WRITE(X, F) save_utilizador(F, X)
-#    define VEC_READ(X, F) load_utilizador(F, X)
-#    include "./vector.h"
+#ifndef utilizadorcol_H
+#    define utilizadorcol_H
+#    define COL_TIPO utilizador
+#    define COL_NOME utilizadorcol
+#    define COL_DEALOC(X) freeUtilizador(X)
+#    define COL_WRITE(X, F) save_utilizador(F, X)
+#    define COL_READ(X, F) load_utilizador(F, X)
+#    include "./colecao.h"
 #endif
 
-artigovec     artigos;         ///< Artigos da seção atual, que ainda não foram formalizados numa encomenda.
-encomendavec  encomendas;      ///< Encomendas formalizadas.
-utilizadorvec utilizadores;    ///< Utilizadores existentes no registo, index 0 é sempre o diretor.
+artigocol     artigos;         ///< Artigos da seção atual, que ainda não foram formalizados numa encomenda.
+encomendacol  encomendas;      ///< Encomendas formalizadas.
+utilizadorcol utilizadores;    ///< Utilizadores existentes no registo, index 0 é sempre o diretor.
 precos_cent   tabelaPrecos;    ///< Preço em centimos do transporte.
 size_t        utilizadorAtual; ///< Index do utilizador atual.
 void          funcional_consultar_estados_encomendas();

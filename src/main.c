@@ -18,7 +18,7 @@
  * @def U_INVAL
  *          Define um utilizador que é inválido.
  */
-#define VEC_IMPLEMENTATION
+#define COL_IMPLEMENTACAO
 #define U_INVAL ~((size_t) 0)
 #include "menu.h"
 #include "artigo.h"
@@ -27,39 +27,39 @@
 #include "encomenda.h"
 #include "utilizador.h"
 
-#ifndef artigovec_H
-#    define artigovec_H
-#    define VEC_TYPE artigo
-#    define VEC_NAME artigovec
-#    define VEC_DEALOC(X) freeArtigo(&X)
-#    define VEC_WRITE(X, F) save_artigo(F, X)
-#    define VEC_READ(X, F) load_artigo(F, X)
-#    include "./vector.h"
+#ifndef artigocol_H
+#    define artigocol_H
+#    define COL_TIPO artigo
+#    define COL_NOME artigocol
+#    define COL_DEALOC(X) freeArtigo(X)
+#    define COL_WRITE(X, F) save_artigo(F, X)
+#    define COL_READ(X, F) load_artigo(F, X)
+#    include "./colecao.h"
 #endif
 
-#ifndef encomendavec_H
-#    define encomendavec_H
-#    define VEC_TYPE encomenda
-#    define VEC_NAME encomendavec
-#    define VEC_DEALOC(X) freeEncomenda(&X)
-#    define VEC_WRITE(X, F) save_encomenda(F, X)
-#    define VEC_READ(X, F) load_encomenda(F, X)
-#    include "./vector.h"
+#ifndef encomendacol_H
+#    define encomendacol_H
+#    define COL_TIPO encomenda
+#    define COL_NOME encomendacol
+#    define COL_DEALOC(X) freeEncomenda(X)
+#    define COL_WRITE(X, F) save_encomenda(F, X)
+#    define COL_READ(X, F) load_encomenda(F, X)
+#    include "./colecao.h"
 #endif
 
-#ifndef utilizadorvec_H
-#    define utilizadorvec_H
-#    define VEC_TYPE utilizador
-#    define VEC_NAME utilizadorvec
-#    define VEC_DEALOC(X) freeUtilizador(&X)
-#    define VEC_WRITE(X, F) save_utilizador(F, X)
-#    define VEC_READ(X, F) load_utilizador(F, X)
-#    include "./vector.h"
+#ifndef utilizadorcol_H
+#    define utilizadorcol_H
+#    define COL_TIPO utilizador
+#    define COL_NOME utilizadorcol
+#    define COL_DEALOC(X) freeUtilizador(X)
+#    define COL_WRITE(X, F) save_utilizador(F, X)
+#    define COL_READ(X, F) load_utilizador(F, X)
+#    include "./colecao.h"
 #endif
 
-artigovec     artigos;      ///< Artigos da seção atual, que ainda não foram formalizados numa encomenda.
-encomendavec  encomendas;   ///< Encomendas formalizadas.
-utilizadorvec utilizadores; ///< Utilizadores existentes no registo, index 0 é sempre o diretor.
+artigocol     artigos;      ///< Artigos da seção atual, que ainda não foram formalizados numa encomenda.
+encomendacol  encomendas;   ///< Encomendas formalizadas.
+utilizadorcol utilizadores; ///< Utilizadores existentes no registo, index 0 é sempre o diretor.
 precos_cent   tabelaPrecos; ///< Preço em centimos do transporte.
 size_t        utilizadorAtual = U_INVAL; ///< Index do utilizador atual.
 
@@ -107,7 +107,7 @@ void funcional_recibo_mensal() {
             printf("         -2   |   Reimprimir\n");
             printf("         -1   |   Sair\n");
             int i = -1;
-            utilizadorvec_iterateFW(&utilizadores, (utilizadorvec_pred_t) &printUserVP, (void*) &i);
+            utilizadorcol_iterateFW(&utilizadores, (utilizadorcol_pred_t) &printUserVP, (void*) &i);
             menu_readIntMinMax(-2, max, &op);
             menu_printDiv();
         }
@@ -181,7 +181,7 @@ void interface_editar_morada(morada* const m, int isNew) {
 
 /**
  * @brief Pode ser utilizado como um iterador, premite encontrar um certo NIF no
- *        vetor de utilizadores, pesquisando só utilizadores ativos.
+ *        colecao de utilizadores, pesquisando só utilizadores ativos.
  * @param element Utilizador a ser comparado.
  * @param compare NIF a comparar.
  * @returns       1 se o NIF do 'element' for igual ao 'compare'.
@@ -194,7 +194,7 @@ int uAtivadoNIFcmpVP(utilizador* element, uint8_t compare[9]) {
 
 /**
  * @brief Pode ser utilizado como um iterador, premite encontrar um certo NIF no
- *        vetor de utilizadores.
+ *        colecao de utilizadores.
  * @param element Utilizador a ser comparado.
  * @param compare NIF a comparar.
  * @returns       1 se o NIF do 'element' for igual ao 'compare'.
@@ -232,7 +232,7 @@ void funcional_editar_utilizador(size_t ID, int isDirector) {
             menu_printError("NIF introduzido é inválido.");
         } else {
             // Verificar que o nif não é repetido
-            size_t index = utilizadorvec_iterateFW(&utilizadores, (utilizadorvec_pred_t) &uNIFcmpVP, stmp);
+            size_t index = utilizadorcol_iterateFW(&utilizadores, (utilizadorcol_pred_t) &uNIFcmpVP, stmp);
             if (index != INVAL_INDEX && index != ID) {
                 // Nif existe e é diferente do utilizador atual
                 menu_printError("NIF já existente no sistema.");
@@ -310,7 +310,7 @@ void interface_alterar_tabela_precos() {
         menu_printDiv();
         menu_printHeader("Editar Preços Base");
         menu_printInfo("selecione o que editar:");
-        int edit = menu_selection(&(strvec) {.data =
+        int edit = menu_selection(&(strcol) {.data =
                                                  (char*[]) {
                                                      "Editar preço regular",  // 0
                                                      "Editar preço urgente",  // 1
@@ -350,7 +350,7 @@ void interface_alterar_tabela_precos() {
 void interface_alterar_tabela_distancias() {
     funcional_consultar_tabela_de_precos(1, 0);
     menu_printInfo("selecione modo de edição:");
-    int modo = menu_selection(&(strvec) {.data =
+    int modo = menu_selection(&(strcol) {.data =
                                              (char*[]) {
                                                  "Editar preço de elemento",                               // 0
                                                  "Editar preço de linha (todos os destinos de uma origem)" // 1
@@ -410,7 +410,7 @@ void interface_alterar_utilizadores() {
             printf("         -2   |   Reimprimir\n");
             printf("         -1   |   Sair\n");
             int i = -1;
-            utilizadorvec_iterateFW(&utilizadores, (utilizadorvec_pred_t) &printUserVP, (void*) &i);
+            utilizadorcol_iterateFW(&utilizadores, (utilizadorcol_pred_t) &printUserVP, (void*) &i);
             menu_readIntMinMax(-2, max, &op);
             menu_printDiv();
         }
@@ -421,7 +421,7 @@ void interface_alterar_utilizadores() {
         printf("Utilizador selecionado:");
         menu_printUtilizador(utilizadores.data[op]);
         printf("\n");
-        switch (menu_selection(&(strvec) {.data =
+        switch (menu_selection(&(strcol) {.data =
                                               (char*[]) {
                                                   "Marcar como cliente",    // 0
                                                   "Marcar como desativado", // 1
@@ -487,7 +487,7 @@ void interface_editar_estados_encomendas() {
             printf("         -2   |   Reimprimir\n");
             printf("         -1   |   Sair\n");
             size_t i = 0;
-            encomendavec_iterateFW(&encomendas, (encomendavec_pred_t) &printEncomendaVP, (void*) &i);
+            encomendacol_iterateFW(&encomendas, (encomendacol_pred_t) &printEncomendaVP, (void*) &i);
             menu_readIntMinMax(-2, max, &op);
             menu_printDiv();
         }
@@ -497,7 +497,7 @@ void interface_editar_estados_encomendas() {
         menu_printDiv();
         while (1) {
             menu_printHeader("Selecionar operação:");
-            switch (menu_selection(&(strvec) {.data =
+            switch (menu_selection(&(strcol) {.data =
                                                   (char*[]) {
                                                       "Marcar encomenda como cancelada",  // 0
                                                       "Marcar encomenda como em entrega", // 1
@@ -523,7 +523,7 @@ void interface_diretor() {
         menu_printDiv();
         menu_printHeader("Menu de Diretor");
         menu_printInfo("Bem vindo(a) %s!\n", protectStr(utilizadores.data[utilizadorAtual].nome));
-        switch (menu_selection(&(strvec) {.data =
+        switch (menu_selection(&(strcol) {.data =
                                               (char*[]) {
                                                   "Editar dados de acesso",                  // 0
                                                   "Alterar tabela de preços base",           // 1
@@ -569,13 +569,13 @@ void funcional_desativar_perfil_atual() {
  * @returns       0 se não formalizado.
  * @returns       1 se formalizado.
  */
-int funcional_formalizar_encomenda(artigovec* artigos, encomenda* e) {
+int funcional_formalizar_encomenda(artigocol* artigos, encomenda* e) {
     menu_printDiv();
     menu_printHeader("Formalizar Encomenda");
 
     menu_printInfo("utilizar a sua morada como morada de entrega?");
     morada dest;
-    switch (menu_selection(&(strvec) {.data =
+    switch (menu_selection(&(strcol) {.data =
                                           (char*[]) {
                                               "Utilizar a minha morada como morada de entrega", // 0
                                               "Definir outra morada como morada de entrega"     // 1
@@ -600,10 +600,10 @@ int funcional_formalizar_encomenda(artigovec* artigos, encomenda* e) {
             break;
     }
     *e       = encomenda_formalizar(*artigos, tabelaPrecos, utilizadorAtual, org, dest, dist);
-    *artigos = artigovec_new();
+    *artigos = artigocol_new();
     while (1) {
         menu_printInfo("definir encomenda como urgente e/ou fragil?");
-        switch (menu_selection(&(strvec) {.data =
+        switch (menu_selection(&(strcol) {.data =
                                               (char*[]) {
                                                   "Definir encomenda como urgente", // 0
                                                   "Definir encomenda como fragil",  // 1
@@ -645,7 +645,7 @@ int printArtigoVP(artigo* item, size_t* userdata) {
  */
 int funcional_editar_artigo(artigo* a, int isNew) {
     if (!isNew) {
-        switch (menu_selection(&(strvec) {.data =
+        switch (menu_selection(&(strcol) {.data =
                                               (char*[]) {
                                                   "Apagar artigo", // 0
                                                   "Editar Artigo"  // 1
@@ -693,11 +693,11 @@ int funcional_editar_artigo(artigo* a, int isNew) {
 }
 
 /**
- * @brief    Função que premite editar, adicionar ou remover artigos de um vetor
+ * @brief    Função que premite editar, adicionar ou remover artigos de um colecao
  *           de artigos.
- * @param ar Vetor no qual operar.
+ * @param ar Colecao no qual operar.
  */
-void funcional_editar_artigos(artigovec* ar) {
+void funcional_editar_artigos(artigocol* ar) {
     while (1) {
         menu_printInfo("numero de artigos atuais: %lu.", ar->size);
         menu_printHeader("Selecionar Artigo Para Editar:");
@@ -707,7 +707,7 @@ void funcional_editar_artigos(artigovec* ar) {
             printf("   Opção      |   Item\n");
             printf("         -2   |   Reimprimir\n");
             printf("         -1   |   Sair\n");
-            artigovec_iterateFW(ar, (artigovec_pred_t) &printArtigoVP, (void*) &max);
+            artigocol_iterateFW(ar, (artigocol_pred_t) &printArtigoVP, (void*) &max);
             printf("   %*lu   |   Criar Novo Artigo\n", 8, max);
             menu_readIntMinMax(-2, max, &op);
             menu_printDiv();
@@ -715,10 +715,10 @@ void funcional_editar_artigos(artigovec* ar) {
         // Option was gotten -------------------------
         if (op == -1) return;
         if (op == (int) max) {
-            protectFcnCall(artigovec_push(ar, newArtigo()), "funcional_editar_artigos - artigovec_push falhou.");
+            protectFcnCall(artigocol_push(ar, newArtigo()), "funcional_editar_artigos - artigocol_push falhou.");
         }
         if (!funcional_editar_artigo(&ar->data[op], (op == (int) max))) {
-            artigovec_moveBelow(ar, op);
+            artigocol_moveBelow(ar, op);
             menu_printInfo("Artigo removido.");
         }
     }
@@ -732,7 +732,7 @@ void interface_criar_encomenda() {
     menu_printHeader("Criar Nova Encomenda");
     if (artigos.size != 0) {
         menu_printInfo("encomenda por formalizar encontrada, o que deseja fazer?");
-        switch (menu_selection(&(strvec) {.data =
+        switch (menu_selection(&(strcol) {.data =
                                               (char*[]) {
                                                   "Descartar encomenda anterior", // 0
                                                   "Continuar encomenda anterior"  // 1
@@ -740,8 +740,8 @@ void interface_criar_encomenda() {
                                           .size = 2})) {
             case -1: return;
             case 0:
-                artigovec_free(&artigos);
-                artigos = artigovec_new();
+                artigocol_free(&artigos);
+                artigos = artigocol_new();
                 break;
             case 1: break;
         }
@@ -757,7 +757,7 @@ void interface_criar_encomenda() {
     if (!funcional_formalizar_encomenda(&artigos, &e)) {
         menu_printInfo("encomenda não formalizada.");
     } else {
-        protectFcnCall(encomendavec_push(&encomendas, e), "interface_criar_encomenda - encomendavec_push falhou.");
+        protectFcnCall(encomendacol_push(&encomendas, e), "interface_criar_encomenda - encomendacol_push falhou.");
         menu_printInfo("encomenda adicionada com sucesso!");
     }
 }
@@ -786,7 +786,7 @@ void interface_editar_encomendas() {
         // Encomenda está por entregar
         while (1) {
             menu_printHeader("Encomenda Por Entregar");
-            switch (menu_selection(&(strvec) {.data =
+            switch (menu_selection(&(strcol) {.data =
                                                   (char*[]) {
                                                       "Editar artigos da encomenda",    // 0
                                                       "Cancelar encomenda",             // 1
@@ -834,7 +834,7 @@ void interface_editar_encomendas() {
         }
     } else if (e->tipoEstado & ENCOMENDA_ESTADO_CANCELADA) {
         menu_printHeader("Encomenda Cancelada");
-        switch (menu_selection(&(strvec) {.data =
+        switch (menu_selection(&(strcol) {.data =
                                               (char*[]) {
                                                   "Reativar encomenda" // 0
                                               },
@@ -865,19 +865,19 @@ void interface_cliente() {
         menu_printDiv();
         menu_printHeader("Menu de Cliente");
         menu_printInfo("Bem vindo(a) %s!\n", protectStr(utilizadores.data[utilizadorAtual].nome));
-        strvec vetorOp = (strvec) {.data =
-                                       (char*[]) {
-                                           "Editar perfil",                  // 0
-                                           "Remover perfil",                 // 1
-                                           "Criar nova encomenda",           // 2
-                                           "Consultar estado de encomendas", // 3
-                                           "Consultar tabela de preços",     // 4
-                                           "Editar encomendas",              // 5
-                                           "Imprimir recibo de encomenda",   // 6
-                                           "Imprimir recibo mensal"          // 7
-                                       },
-                                   .size = 8};
-        switch (menu_selection(&vetorOp)) {
+        strcol colecaoOp = (strcol) {.data =
+                                         (char*[]) {
+                                             "Editar perfil",                  // 0
+                                             "Remover perfil",                 // 1
+                                             "Criar nova encomenda",           // 2
+                                             "Consultar estado de encomendas", // 3
+                                             "Consultar tabela de preços",     // 4
+                                             "Editar encomendas",              // 5
+                                             "Imprimir recibo de encomenda",   // 6
+                                             "Imprimir recibo mensal"          // 7
+                                         },
+                                     .size = 8};
+        switch (menu_selection(&colecaoOp)) {
             case -1: return;
             case 0: funcional_editar_utilizador(utilizadorAtual, 0); break;
             case 1: funcional_desativar_perfil_atual(); break;
@@ -904,7 +904,7 @@ void interface_novoRegisto() {
     if (utilizadores.size != 0) {
         menu_printInfo("ainda tem um registo aberto!");
         menu_printInfo("tem a certeza que quer descartar os dados do registo?");
-        switch (menu_selection(&(strvec) {.data =
+        switch (menu_selection(&(strcol) {.data =
                                               (char*[]) {
                                                   "Descartar registo" // 0
                                               },
@@ -914,17 +914,17 @@ void interface_novoRegisto() {
         }
     }
 
-    artigovec_free(&artigos);
-    encomendavec_free(&encomendas);
-    utilizadorvec_free(&utilizadores);
-    artigos      = artigovec_new();
-    encomendas   = encomendavec_new();
-    utilizadores = utilizadorvec_new();
+    artigocol_free(&artigos);
+    encomendacol_free(&encomendas);
+    utilizadorcol_free(&utilizadores);
+    artigos      = artigocol_new();
+    encomendas   = encomendacol_new();
+    utilizadores = utilizadorcol_new();
 
     menu_printHeader("Registar Novo Diretor");
 
-    protectFcnCall(utilizadorvec_push(&utilizadores, newUtilizador()),
-                   "interface_novoRegisto - utilizadorvec_push falhou.");
+    protectFcnCall(utilizadorcol_push(&utilizadores, newUtilizador()),
+                   "interface_novoRegisto - utilizadorcol_push falhou.");
     funcional_editar_utilizador(0, 1);
     menu_printInfo("diretor criado com sucesso!");
 }
@@ -936,12 +936,12 @@ void interface_novoRegisto() {
  */
 void funcional_carregarDados_err(FILE* f) {
     fclose(f);
-    artigovec_free(&artigos);
-    encomendavec_free(&encomendas);
-    utilizadorvec_free(&utilizadores);
-    artigos      = artigovec_new();
-    encomendas   = encomendavec_new();
-    utilizadores = utilizadorvec_new();
+    artigocol_free(&artigos);
+    encomendacol_free(&encomendas);
+    utilizadorcol_free(&utilizadores);
+    artigos      = artigocol_new();
+    encomendas   = encomendacol_new();
+    utilizadores = utilizadorcol_new();
 }
 
 /**
@@ -949,7 +949,7 @@ void funcional_carregarDados_err(FILE* f) {
  */
 void funcional_carregarDados() {
     menu_printInfo("tem a certeza que quer CARREGAR os dados de ficheiro?");
-    switch (menu_selection(&(strvec) {.data =
+    switch (menu_selection(&(strcol) {.data =
                                           (char*[]) {
                                               "Descartar registo e carregar dados de ficheiro" // 0
                                           },
@@ -957,12 +957,12 @@ void funcional_carregarDados() {
         case -1: return;
         case 0: break;
     }
-    artigovec_free(&artigos);
-    encomendavec_free(&encomendas);
-    utilizadorvec_free(&utilizadores);
-    artigos      = artigovec_new();
-    encomendas   = encomendavec_new();
-    utilizadores = utilizadorvec_new();
+    artigocol_free(&artigos);
+    encomendacol_free(&encomendas);
+    utilizadorcol_free(&utilizadores);
+    artigos      = artigocol_new();
+    encomendas   = encomendacol_new();
+    utilizadores = utilizadorcol_new();
 
     FILE* f = fopen("data.bin", "rb");
     if (!f) {
@@ -975,13 +975,13 @@ void funcional_carregarDados() {
         return;
     }
     // Carregar utilizadores
-    if (!utilizadorvec_read(&utilizadores, f)) {
+    if (!utilizadorcol_read(&utilizadores, f)) {
         menu_printError("impossivel carregar utilizadores %d!", errno);
         funcional_carregarDados_err(f);
         return;
     }
     // Carregar encomendas
-    if (!encomendavec_read(&encomendas, f)) {
+    if (!encomendacol_read(&encomendas, f)) {
         menu_printError("impossivel carregar encomendas %d!", errno);
         funcional_carregarDados_err(f);
         return;
@@ -999,7 +999,7 @@ void interface_registoUtilizador() {
 
     while (utilizadores.size == 0) {
         menu_printInfo("ainda não tem um registo aberto, quer criar um novo registo?");
-        switch (menu_selection(&(strvec) {.data =
+        switch (menu_selection(&(strcol) {.data =
                                               (char*[]) {
                                                   "Criar um novo registo",       // 0
                                                   "Carregar registo de ficheiro" // 1
@@ -1012,8 +1012,8 @@ void interface_registoUtilizador() {
     }
 
     menu_printHeader("Registar Novo Utilizador");
-    protectFcnCall(utilizadorvec_push(&utilizadores, newUtilizador()),
-                   "interface_registoUtilizador - utilizadorvec_push falhou.");
+    protectFcnCall(utilizadorcol_push(&utilizadores, newUtilizador()),
+                   "interface_registoUtilizador - utilizadorcol_push falhou.");
     funcional_editar_utilizador(utilizadores.size - 1, 0);
     utilizadores.data[utilizadores.size - 1].tipo = UTILIZADOR_CLIENTE;
     menu_printInfo("utilizador %s (%.9s) adicionado com sucesso!",
@@ -1031,8 +1031,8 @@ void interface_login() {
         utilizadorAtual = U_INVAL;
         if (artigos.size != 0) {
             menu_printInfo("encomenda por formalizar foi eleminada.");
-            artigovec_free(&artigos);
-            artigos = artigovec_new();
+            artigocol_free(&artigos);
+            artigos = artigocol_new();
         }
         menu_printDiv();
         menu_printHeader("Efetuar Login");
@@ -1043,7 +1043,7 @@ void interface_login() {
         } else if (!utilizador_eNIFValido((uint8_t*) stmp)) {
             menu_printError("NIF introduzido é inválido.");
         } else {
-            size_t index = utilizadorvec_iterateFW(&utilizadores, (utilizadorvec_pred_t) &uAtivadoNIFcmpVP, stmp);
+            size_t index = utilizadorcol_iterateFW(&utilizadores, (utilizadorcol_pred_t) &uAtivadoNIFcmpVP, stmp);
             if (index == U_INVAL) {
                 menu_printError("NIF não reconhecido como um utilizador.");
             } else {
@@ -1068,7 +1068,7 @@ void interface_login() {
         }
         menu_printDiv();
         menu_printHeader("Efetuar Login ?");
-        switch (menu_selection(&(strvec) {.data =
+        switch (menu_selection(&(strcol) {.data =
                                               (char*[]) {
                                                   "Efetuar login" // 0
                                               },
@@ -1083,7 +1083,7 @@ void interface_login() {
  */
 void funcional_guardarDados() {
     menu_printInfo("tem a certeza que quer GRAVAR os dados em ficheiro?");
-    switch (menu_selection(&(strvec) {.data =
+    switch (menu_selection(&(strcol) {.data =
                                           (char*[]) {
                                               "Gravar dados e substituir o ficheiro anterior" // 0
                                           },
@@ -1102,13 +1102,13 @@ void funcional_guardarDados() {
         return;
     }
     // Gravar utilizadores
-    if (!utilizadorvec_write(&utilizadores, f)) {
+    if (!utilizadorcol_write(&utilizadores, f)) {
         menu_printError("impossivel guardar utilizadores :%d!", errno);
         fclose(f);
         return;
     }
     // Gravar encomendas
-    if (!encomendavec_write(&encomendas, f)) {
+    if (!encomendacol_write(&encomendas, f)) {
         menu_printError("impossivel guardar encomendas :%d!", errno);
         fclose(f);
         return;
@@ -1124,7 +1124,7 @@ void interface_inicio() {
     while (1) {
         menu_printDiv();
         menu_printHeader("Início");
-        switch (menu_selection(&(strvec) {.size = 5,
+        switch (menu_selection(&(strcol) {.size = 5,
                                           .data = (char*[]) {
                                               "Log In",              // 0
                                               "Registar utilizador", // 1
@@ -1178,16 +1178,16 @@ int main() {
 
     menu_printDiv();
     menu_printHeader("A Iniciar");
-    artigos      = artigovec_new();
-    encomendas   = encomendavec_new();
-    utilizadores = utilizadorvec_new();
+    artigos      = artigocol_new();
+    encomendas   = encomendacol_new();
+    utilizadores = utilizadorcol_new();
 
     interface_inicio();
     menu_printHeader("A Terminar");
 
-    artigovec_free(&artigos);
-    encomendavec_free(&encomendas);
-    utilizadorvec_free(&utilizadores);
+    artigocol_free(&artigos);
+    encomendacol_free(&encomendas);
+    utilizadorcol_free(&utilizadores);
     menu_printDiv();
 
     return 0;

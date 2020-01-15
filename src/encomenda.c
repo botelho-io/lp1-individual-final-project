@@ -26,7 +26,7 @@
  */
 encomenda newEncomenda() {
     return (encomenda) {
-        .artigos = artigovec_new(), .origem = newMorada(), .destino = newMorada(), .criacao = time(NULL)};
+        .artigos = artigocol_new(), .origem = newMorada(), .destino = newMorada(), .criacao = time(NULL)};
 }
 
 /**
@@ -34,7 +34,7 @@ encomenda newEncomenda() {
  * @param e         Encomenda para ser libertado.
  */
 void freeEncomenda(encomenda* const e) {
-    artigovec_free(&e->artigos);
+    artigocol_free(&e->artigos);
     freeMorada(&e->origem);
     freeMorada(&e->destino);
 }
@@ -269,7 +269,7 @@ void encomenda_ESTADO_CANCELADA(encomenda* const e) {
  * @returns          A encomenda formalizada, com todos os parametros
  *                   corretamente definidos, incluindo 'tipoEstado' e 'criacao'.
  */
-encomenda encomenda_formalizar(const artigovec artigos, const precos_cent precos, const uint64_t ID_cliente,
+encomenda encomenda_formalizar(const artigocol artigos, const precos_cent precos, const uint64_t ID_cliente,
                                const morada org, const morada dest, const uint64_t dist) {
     encomenda e;
     e.artigos      = artigos;
@@ -296,8 +296,8 @@ encomenda encomenda_formalizar(const artigovec artigos, const precos_cent precos
  */
 int save_encomenda(FILE* const f, const encomenda* const data) {
     // Gravar morada
-    if (!artigovec_write(&(data->artigos), f)) {
-        menu_printError("ao gravar encomenda - artigovec_write falhou.");
+    if (!artigocol_write(&(data->artigos), f)) {
+        menu_printError("ao gravar encomenda - artigocol_write falhou.");
         return 0;
     }
     // Gravar moradas
@@ -332,9 +332,9 @@ int save_encomenda(FILE* const f, const encomenda* const data) {
  */
 int load_encomenda(FILE* const f, encomenda* const data) {
     // Carregar artigos
-    data->artigos = artigovec_new();
-    if (!artigovec_read(&(data->artigos), f)) {
-        menu_printError("ao carregar encomenda - artigovec_read falhou.");
+    data->artigos = artigocol_new();
+    if (!artigocol_read(&(data->artigos), f)) {
+        menu_printError("ao carregar encomenda - artigocol_read falhou.");
         return 0;
     }
     // Carregar morada

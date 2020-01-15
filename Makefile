@@ -10,6 +10,9 @@ build_release:
 clean:
 	rm -rf bin/*
 	rm -rf build/CMakeFiles
+	rm -rf build/cmake_install.cmake
+	rm -rf build/CMakeCache.txt
+	rm -rf build/Makefile
 
 print:
 	cat ./test.txt | grep -vE "(^#.*)"
