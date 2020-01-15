@@ -1,3 +1,14 @@
+/**
+ * @file    parIdReceita.c
+ * @author  André Botelho (keyoted@gmail.com)
+ * @brief
+ * @version 1
+ * @date 2020-01-15
+ *
+ * @copyright Copyright (c) 2020
+ */
+//TODO: Update brief
+
 #include "parIdReceita.h"
 
 parIdReceita new_parIdReceita() {
