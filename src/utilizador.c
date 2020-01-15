@@ -25,9 +25,9 @@ int utilizador_eCCValido(const uint8_t* const cc) {
     // Assegurar 9 digitos
     for (; i < 9; ++i)
         if (!isdigit(cc[i])) return 0;
-    // Assegurar 2 digitos alfanuméricos
+    // Assegurar 2 letras
     for (; i < 11; ++i) {
-        if (!isalnum(cc[i])) return 0;
+        if (!isalpha(cc[i])) return 0;
     }
     // Asegurar ultimo digito
     if (!isdigit(cc[11])) return 0;
@@ -55,21 +55,18 @@ int utilizador_eNIFValido(const uint8_t* const NIF) {
  * @returns Um novo utilizador válido.
  */
 utilizador newUtilizador() {
-    return (utilizador) {.tipo     = UTILIZADOR_DESATIVADO,
-                         .endereco = newMorada(),
-                         .nome     = strdup("Utilizador"),
-                         .NIF      = {'0', '0', '0', '0', '0', '0', '0', '0', '0'},
-                         .CC       = {'0', '0', '0', '0', '0', '0', '0', '0', '0', 'X', 'Y', '0'}};
+    return (utilizador) {
+        .nome = strdup("Nome do cliente"),                                   //
+        .NIF  = {'0', '0', '0', '0', '0', '0', '0', '0', '0'},               //
+        .CC   = {'0', '0', '0', '0', '0', '0', '0', '0', '0', 'X', 'Y', '0'} //
+    };
 }
 
 /**
  * @brief   Responsavél por libertar a memória utilizada por um utilizador.
  * @param u O utilizador por libertar.
  */
-void freeUtilizador(utilizador* const u) {
-    freeN(u->nome);
-    freeMorada(&u->endereco);
-}
+void freeUtilizador(utilizador* const u) { freeN(u->nome); }
 
 /**
  * @brief       Responsável por salvar um utilizador num ficheiro.
@@ -81,15 +78,10 @@ void freeUtilizador(utilizador* const u) {
 int save_utilizador(FILE* const f, const utilizador* const data) {
     int written = 0;
     written += save_str(f, data->nome);
-    if (!data->nome) {
-        menu_printError("ao gravar utilizador - nome inválido.");
-        written = 0;
-    }
+    if (!data->nome) { menu_printInfo("ao gravar utilizador - nome inválido."); }
     written += fwrite(&data->NIF, sizeof(uint8_t), 9, f);
     written += fwrite(&data->CC, sizeof(uint8_t), 12, f);
-    written += save_morada(f, &data->endereco);
-    written += fwrite(&data->tipo, sizeof(uint8_t), 1, f);
-    return written == (1 + 9 + 12 + 1 + 1);
+    return written == (1 + 9 + 12);
 }
 
 /**
@@ -102,14 +94,8 @@ int save_utilizador(FILE* const f, const utilizador* const data) {
 int load_utilizador(FILE* const f, utilizador* const data) {
     int written = 0;
     written += load_str(f, &data->nome);
-    if (!data->nome) {
-        menu_printError("ao carregar utilizador - nome inválido.");
-        data->nome = strdup("Inválido");
-        written    = 0;
-    }
+    if (!data->nome) { menu_printInfo("ao carregar utilizador - nome inválido."); }
     written += fread(&data->NIF, sizeof(uint8_t), 9, f);
     written += fread(&data->CC, sizeof(uint8_t), 12, f);
-    written += load_morada(f, &data->endereco);
-    written += fread(&data->tipo, sizeof(uint8_t), 1, f);
-    return written == (1 + 9 + 12 + 1 + 1);
+    return written == (1 + 9 + 12);
 }
