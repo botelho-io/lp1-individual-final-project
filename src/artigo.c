@@ -19,8 +19,10 @@
  */
 artigo newArtigo() {
     return (artigo) {
-        .nome               = strdup("Artigo"),
-        .tratamentoEspecial = NULL,
+        .nome       = strdup("Nome do artigo"), //
+        .meta       = ARTIGO_IVA_NORMAL,        //
+        .preco_cent = 0,                        //
+        .stock      = 0                         //
     };
 }
 
@@ -28,10 +30,7 @@ artigo newArtigo() {
  * @brief       Responsavél por libertar a memória do artigo.
  * @param a     Artigo para ser libertado.
  */
-void freeArtigo(artigo* const a) {
-    freeN(a->nome);
-    freeN(a->tratamentoEspecial);
-}
+void freeArtigo(artigo* const a) { freeN(a->nome); }
 
 /**
  * @brief       Responsável por salvar um artigo num ficheiro.
@@ -43,13 +42,10 @@ void freeArtigo(artigo* const a) {
 int save_artigo(FILE* const f, const artigo* const data) {
     int written = 0;
     written += save_str(f, data->nome);
-    if (!data->nome) {
-        menu_printError("ao gravar artigo - nome inválido.");
-        written = 0;
-    }
-    written += save_str(f, data->tratamentoEspecial);
-    written += fwrite(&data->peso_gramas, sizeof(uint64_t), 1, f);
-    written += fwrite(&data->cmCubicos, sizeof(uint64_t), 1, f);
+    if (!data->nome) { menu_printInfo("ao gravar artigo - nome inválido."); }
+    written += fwrite(&data->meta, sizeof(uint8_t), 1, f);
+    written += fwrite(&data->preco_cent, sizeof(uint64_t), 1, f);
+    written += fwrite(&data->stock, sizeof(uint64_t), 1, f);
     return written == 4;
 }
 
@@ -64,12 +60,11 @@ int load_artigo(FILE* const f, artigo* const data) {
     int written = 0;
     written += load_str(f, &data->nome);
     if (!data->nome) {
-        menu_printError("ao carregar artigo - nome inválido.");
-        data->nome = strdup("Inválido");
-        written    = 0;
+        menu_printInfo("ao carregar artigo - nome inválido.");
+        data->nome = strdup("Nome");
     }
-    written += load_str(f, &data->tratamentoEspecial);
-    written += fread(&data->peso_gramas, sizeof(uint64_t), 1, f);
-    written += fread(&data->cmCubicos, sizeof(uint64_t), 1, f);
+    written += fread(&data->meta, sizeof(uint8_t), 1, f);
+    written += fread(&data->preco_cent, sizeof(uint64_t), 1, f);
+    written += fread(&data->stock, sizeof(uint64_t), 1, f);
     return written == 4;
 }

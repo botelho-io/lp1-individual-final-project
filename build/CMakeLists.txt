@@ -19,4 +19,5 @@ add_executable(main.x86
                ../src/utilities.c
                ../src/utilizador.c
                ../src/precos_cent.c
-               ../src/outrasListagens.c)
+               ../src/outrasListagens.c
+               ../src/parIdReceita.c)

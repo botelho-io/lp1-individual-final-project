@@ -45,6 +45,7 @@
 #include "artigo.h"
 #include "morada.h"
 #include "precos_cent.h"
+#include "parIdReceita.h"
 
 #ifndef artigocol_H
 #    define artigocol_H
@@ -53,6 +54,16 @@
 #    define COL_DEALOC(X) freeArtigo(X)
 #    define COL_WRITE(X, F) save_artigo(F, X)
 #    define COL_READ(X, F) load_artigo(F, X)
+#    include "./colecao.h"
+#endif
+
+#ifndef parcol_H
+#    define parcol_H
+#    define COL_TIPO parIdReceita
+#    define COL_NOME parircol
+#    define COL_DEALOC(X) free_parIdReceita(X)
+#    define COL_WRITE(X, F) save_parIdReceita(F, X)
+#    define COL_READ(X, F) load_parIdReceita(F, X)
 #    include "./colecao.h"
 #endif
 
@@ -71,38 +82,16 @@
  * Adicionalmente a encomenda armazena a tabela de preços ativa quando esta foi
  * criada, a data de criação e o ID do cliente que criou a encomenda.
  */
+// https://www.infarmed.pt/documents/15786/17838/Normas_Prescri%C3%A7%C3%A3o/bcd0b378-3b00-4ee0-9104-28d0db0b7872
 typedef struct {
-    artigocol artigos;  ///< Artigos que fazem parte da encomenda.
-    morada    origem;   ///< Origem da encomenda.
-    morada    destino;  ///< Destino da encomenda.
-    uint8_t tipoEstado; ///< Os quatro bits de baixo são flags e indicam o tipo da encomenda, os quatro de cima são o
-                        ///< estado e apenas um dos bits deverá de estar ativo.
-    uint64_t    distancia_km; ///< Distancia(em km) da origem até ao destino.
-    precos_cent precos;       ///< Tabela de preços na altura em que a encomenda foi formalizada.
-    time_t      criacao;      ///< Data da criação da encomenda.
-    uint64_t    ID_cliente;   ///< ID do cliente que formalizou a encomenda.
+    parircol artigos;    ///< Artigos que fazem parte da encomenda.
+    uint64_t ID_cliente; ///< ID do cliente que formalizou a encomenda.
 } encomenda;
 
 encomenda newEncomenda();
 void      freeEncomenda(encomenda* const e);
-encomenda encomenda_formalizar(const artigocol artigos, const precos_cent precos, const uint64_t ID_cliente,
-                               const morada org, const morada dest, const uint64_t dist);
-
-int save_encomenda(FILE* const f, const encomenda* const data);
-int load_encomenda(FILE* const f, encomenda* const data);
-
-int      encomenda_ePesado(const uint64_t a);
-int      encomenda_eVolumoso(const uint64_t a);
-uint64_t encomenda_CalcPreco(const encomenda* const e);
-
-void encomenda_TIPO_URGENTE(encomenda* const e);
-void encomenda_TIPO_FRAGIL(encomenda* const e);
-void encomenda_TIPO_FRAGIL_togle(encomenda* const e);
-void encomenda_TIPO_PESADO(encomenda* const e);
-void encomenda_TIPO_VOLUMOSO(encomenda* const e);
-void encomenda_ESTADO_EM_ENTREGA(encomenda* const e);
-void encomenda_ESTADO_EXPEDIDA(encomenda* const e);
-void encomenda_ESTADO_ENTREGUE(encomenda* const e);
-void encomenda_ESTADO_CANCELADA(encomenda* const e);
+int       save_encomenda(FILE* const f, const encomenda* const data);
+int       load_encomenda(FILE* const f, encomenda* const data);
+uint64_t  encomenda_CalcPreco(const encomenda* const e, const artigocol* const a);
 
 #endif
