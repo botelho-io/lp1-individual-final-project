@@ -27,7 +27,8 @@
 encomenda newEncomenda() {
     return (encomenda) {
         .artigos    = parircol_new(), //
-        .ID_cliente = 0               //
+        .ID_cliente = 0,              //
+        .tempo      = time(NULL)      //
     };
 }
 

@@ -43,8 +43,6 @@
 #include <time.h>
 
 #include "artigo.h"
-#include "morada.h"
-#include "precos_cent.h"
 #include "parIdReceita.h"
 
 #ifndef artigocol_H
@@ -86,6 +84,7 @@
 typedef struct {
     parircol artigos;    ///< Artigos que fazem parte da encomenda.
     uint64_t ID_cliente; ///< ID do cliente que formalizou a encomenda.
+    time_t   tempo;
 } encomenda;
 
 encomenda newEncomenda();
