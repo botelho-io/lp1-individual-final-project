@@ -17,7 +17,6 @@
 
 #include "artigo.h"
 #include "encomenda.h"
-#include "precos_cent.h"
 #include "utilizador.h"
 
 #ifndef artigocol_H
@@ -50,19 +49,10 @@
 #    include "./colecao.h"
 #endif
 
-artigocol     artigos;         ///< Artigos da seção atual, que ainda não foram formalizados numa encomenda.
-encomendacol  encomendas;      ///< Encomendas formalizadas.
-utilizadorcol utilizadores;    ///< Utilizadores existentes no registo, index 0 é sempre o diretor.
-precos_cent   tabelaPrecos;    ///< Preço em centimos do transporte.
-size_t        utilizadorAtual; ///< Index do utilizador atual.
+artigocol     artigos;
+encomendacol  encomendas;
+utilizadorcol utilizadores;
+uint8_t       utilizadorAtual;
 void          funcional_consultar_estados_encomendas();
-
-
-void listagem_Encomendas_Periodo_de_Tempo();
-void listagem_Utilizadores_Mais_Gasto();
-void listagem_Encomenda_EmEstado_PorPreco();
-void listagem_Artigos_Semana();
-void listagem_imprimir_recibo();
-void interface_outrasListagens();
 
 #endif

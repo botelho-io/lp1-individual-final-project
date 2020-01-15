@@ -47,7 +47,7 @@ void freeEncomenda(encomenda* const e) { parircol_free(&e->artigos); }
  *                  chamar esta função.
  */
 uint64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av) {
-    uint64_t precoFinal;
+    uint64_t precoFinal = 0;
     uint64_t precoPreTax;
     artigo*  artAtual;
     for (uint64_t i = 0; i < e->artigos.size; i++) {

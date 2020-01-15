@@ -269,7 +269,7 @@ void menu_printArtigo(const artigo* const a) {
  * @brief   Imprime informação sobre o artigo e o stcok.
  * @param a Artigo para ser impresso.
  */
-void menu_printArtigo(const artigo* const a) {
+void menu_printArtigoStock(const artigo* const a) {
     const char* iva;
     switch (a->meta & ARTIGO_IVA) {
         case ARTIGO_IVA_NORMAL: iva = "normal"; break;
@@ -407,7 +407,7 @@ INICIO:
         size_t art;
         for (art = 0; art < atual->artigos.size; ++art) {
             printf("    ");
-            menu_printArtigo(&atual->artigos.data[art]);
+            menu_printArtigo(&av->data[atual->artigos.data[art].IDartigo]);
             printf("\n");
         }
         tot_art += art;

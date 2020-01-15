@@ -15,9 +15,11 @@
 #include <errno.h>
 #include <stdint.h>
 
+#define COL_IMPLEMENTACAO
 #include "artigo.h"
 #include "encomenda.h"
 #include "utilizador.h"
+#include "menu.h"
 
 /**
  * @def U_INVAL
@@ -27,7 +29,6 @@
  * @def U_FUN
  *          Define um utilizador que é funcionário.
  */
-#define COL_IMPLEMENTACAO
 #define U_INVAL ((uint8_t) 0)
 #define U_DIR ((uint8_t) 1)
 #define U_FUN ((uint8_t) 2)
@@ -65,9 +66,11 @@
 artigocol     artigos;                   ///< Artigos da seção atual
 encomendacol  encomendas;                ///< Encomendas
 utilizadorcol utilizadores;              ///< Utilizadores existentes no registo
-size_t        utilizadorAtual = U_INVAL; ///< Permições do utilizador atual
+uint8_t       utilizadorAtual = U_INVAL; ///< Permições do utilizador atual
 
 #include "outrasListagens.h"
+
+void interface_inicio() {}
 
 /**
  * @brief   Ponto de entrada do programa, inicia as variáveis globais, chama

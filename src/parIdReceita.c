@@ -12,7 +12,7 @@ void free_parIdReceita(parIdReceita* const data) { freeN(data->receita); }
 int save_parIdReceita(FILE* const f, const parIdReceita* const data) {
     int written = 0;
     written += fwrite(&data->IDartigo, sizeof(uint64_t), 1, f);
-    written += save_str(f, &data->receita);
+    written += save_str(f, data->receita);
     return written == 2;
 }
 

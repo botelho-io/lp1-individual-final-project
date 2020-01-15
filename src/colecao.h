@@ -94,8 +94,7 @@
 #define EVAL(X, Y) PASTER(X, Y)
 #define COL_FUN(X) EVAL(COL_NOME, X)
 
-#if defined(COL_IMPLEMENTACAO) || defined(COL_DECLARACAO)
-#else
+#if !(defined(COL_IMPLEMENTACAO) || defined(COL_DECLARACAO))
 #    define COL_DECLARACAO
 #endif
 
