@@ -116,8 +116,7 @@ void listagem_Encomendas_Periodo_de_Tempo() {
 }
 
 /**
- * Define um par que liga o ID de um utilizador com o preço total que este
- * gastou em encomendas.
+ * Define um par que liga um id com um total.
  */
 typedef struct {
     uint64_t id;
