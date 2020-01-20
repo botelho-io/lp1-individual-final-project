@@ -1,4 +1,4 @@
-.PHONY: build build_release clean print clip run edit dbg valgrind format
+.PHONY: build build_release clean print clip run edit dbg valgrind format winmake winbuild winclean winrun
 
 build:
 	cd build; cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=${CC} -DCMAKE_CXX_COMPILER=${CXX} ./; make; echo "DEBUG BUILD"
@@ -37,3 +37,16 @@ valgrind:
 
 format:
 	clang-format-7 -i src/*
+
+winmake:
+	cd .\build\ & cmake -G "MinGW Makefiles" .\
+winbuild:
+	cd .\build\ & mingw32-make.exe
+winclean:
+	del .\bin\main.x86.exe
+	if exist .\build\CMakeFiles rd /s /q .\build\CMakeFiles
+	del .\build\cmake_install.cmake
+	del .\build\CMakeCache.txt
+	del .\build\Makefile
+winrun:
+	.\bin\main.x86.exe

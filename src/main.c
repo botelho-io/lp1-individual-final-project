@@ -70,7 +70,12 @@ uint8_t       utilizadorAtual = U_INVAL; ///< Permições do utilizador atual
 
 #include "outrasListagens.h"
 
-void interface_inicio() {}
+/**
+ * @brief Menu Inicial
+ */
+void interface_inicio() {
+
+}
 
 /**
  * @brief   Ponto de entrada do programa, inicia as variáveis globais, chama
@@ -88,11 +93,12 @@ int main() {
            " \nVERÇÂO DO COMPILADOR: " MACRO_QUOTE(_MSC_VER)
 #    elif defined(__clang__)
            "CLANG"
-           " \nVERÇÂO DO COMPILADOR: " MACRO_QUOTE(__clang_major__) "." MACRO_QUOTE(__clang_minor__) "." MACRO_QUOTE(
-               __clang_patchlevel__)
+           " \nVERÇÂO DO COMPILADOR: " MACRO_QUOTE(__clang_major__) "."
+           MACRO_QUOTE(__clang_minor__) "." MACRO_QUOTE(__clang_patchlevel__)
 #    elif defined(__MINGW32__)
            "MINGW"
-           " \nVERÇÂO DO COMPILADOR: " MACRO_QUOTE(__MINGW32_MAJOR_VERSION) "." MACRO_QUOTE(__MINGW32_MINOR_VERSION)
+           " \nVERÇÂO DO COMPILADOR: " MACRO_QUOTE(__MINGW32_MAJOR_VERSION) "."
+           MACRO_QUOTE(__MINGW32_MINOR_VERSION)
 #    elif defined(__TINYC__)
            "TINY C"
 #    elif defined(__llvm__)
@@ -104,6 +110,13 @@ int main() {
            "DESCONHECIDO"
 #    endif
                "\n");
+#endif
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+    // TODO: REMOVE, WINDOWS ONLY
+   stdin  = (&_iob[STDIN_FILENO]);
+   stdout = (&_iob[STDOUT_FILENO]);
+   stderr = (&_iob[STDERR_FILENO]);
 #endif
 
     menu_printDiv();
