@@ -63,13 +63,13 @@ int   load_str(FILE* const f, char** const data);
 #    define protectVarFcnCall(VAR, FCN, ERRMSG)                                                                        \
         VAR = FCN;                                                                                                     \
         if (!VAR) {                                                                                                    \
-            printf(ERRMSG);                                                                                            \
+            printf(ERRMSG "\n");                                                                                       \
             exit(EXIT_FAILURE);                                                                                        \
         }
 
 #    define protectFcnCall(FCN, ERRMSG)                                                                                \
         if (!FCN) {                                                                                                    \
-            printf(ERRMSG);                                                                                            \
+            printf(ERRMSG "\n");                                                                                       \
             exit(EXIT_FAILURE);                                                                                        \
         }
 #endif

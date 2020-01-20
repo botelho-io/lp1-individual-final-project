@@ -21,18 +21,6 @@
 #include "utilizador.h"
 #include "menu.h"
 
-/**
- * @def U_INVAL
- *          Define um utilizador que é inválido.
- * @def U_DIR
- *          Define um utilizador que é Diretor.
- * @def U_FUN
- *          Define um utilizador que é funcionário.
- */
-#define U_INVAL ((uint8_t) 0)
-#define U_DIR ((uint8_t) 1)
-#define U_FUN ((uint8_t) 2)
-
 #ifndef artigocol_H
 #    define artigocol_H
 #    define COL_TIPO artigo
@@ -66,15 +54,98 @@
 artigocol     artigos;                   ///< Artigos da seção atual
 encomendacol  encomendas;                ///< Encomendas
 utilizadorcol utilizadores;              ///< Utilizadores existentes no registo
-uint8_t       utilizadorAtual = U_INVAL; ///< Permições do utilizador atual
 
 #include "outrasListagens.h"
 
+// De interface_inicio
+void interface_diretor() {
+
+}
+
+void interface_funcionario() {
+
+}
+
+void funcional_save() {
+    menu_printDiv();
+    menu_printInfo("a escrever em ficheiro.");
+
+    // Abrir ficheiro
+    FILE* dataFile;
+    protectVarFcnCall(dataFile, fopen("saved_data.bin", "wb"), "Ficheiro não pode ser aberto.");
+
+    // Escrever artigos
+    protectFcnCall(artigocol_write(&artigos, dataFile), "impossível escrever artigos no ficheiro.");
+
+    // Escrever encomendas
+    protectFcnCall(encomendacol_write(&encomendas, dataFile), "impossível escrever encomendas no ficheiro.");
+
+    // Escrever utilizadores
+    protectFcnCall(utilizadorcol_write(&utilizadores, dataFile), "impossível escrever utilizadores no ficheiro.");
+
+    fclose(dataFile);
+    menu_printInfo("ficheiro gravado.");
+}
+
+void funcional_load() {
+    menu_printDiv();
+    menu_printInfo("a carregar de ficheiro.");
+
+    // Eliminar dados
+    artigocol_free(&artigos);
+    encomendacol_free(&encomendas);
+    utilizadorcol_free(&utilizadores);
+
+    // Abrir ficheiro
+    FILE* dataFile;
+    protectVarFcnCall(dataFile, fopen("saved_data.bin", "rb"), "Ficheiro não pode ser aberto.");
+
+    // Carregar artigos
+    protectFcnCall(artigocol_read(&artigos, dataFile), "impossível carregar artigos de ficheiro.");
+
+    // Carregar encomendas
+    protectFcnCall(encomendacol_read(&encomendas, dataFile), "impossível carregar encomendas de ficheiro.");
+
+    // Carregar utilizadores
+    protectFcnCall(utilizadorcol_read(&utilizadores, dataFile), "impossível carregar utilizadores de ficheiro.");
+
+    fclose(dataFile);
+    menu_printInfo("dados carregados.");
+}
+
+// Entry point
 /**
  * @brief Menu Inicial
  */
 void interface_inicio() {
-
+    char* login = NULL;
+    while (1) {
+        switch( menu_selection( & (strcol) {
+            .size = 3,
+            .data = (char*[]) {
+                "Log in",         // 0
+                "Salvar Dados",   // 1
+                "Carregar Dados", // 2
+            }
+        }) ) {
+            case -1: return;
+            case  0:
+                menu_readString(&login);
+                if( strcmp(login, "F") == 0 ) {
+                    interface_funcionario();
+                } else if( strcmp(login, "DC") == 0 ) {
+                    interface_diretor();
+                } else {
+                    menu_printError("Log in %s é inválido", login);
+                    printf("Inserir \"F\"  para permissões de funcionário\n"
+                           "Inserir \"DC\" para permissões de diretor clínico\n");
+                }
+                freeN(login);
+            break;
+            case 1: funcional_save(); break;
+            case 2: funcional_load(); break;
+        }
+    }
 }
 
 /**

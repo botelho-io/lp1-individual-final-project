@@ -52,7 +52,6 @@
 artigocol     artigos;
 encomendacol  encomendas;
 utilizadorcol utilizadores;
-uint8_t       utilizadorAtual;
 void          funcional_consultar_estados_encomendas();
 
 #endif
