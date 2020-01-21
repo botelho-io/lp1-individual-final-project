@@ -57,6 +57,46 @@ utilizadorcol utilizadores;              ///< Utilizadores existentes no registo
 
 #include "outrasListagens.h"
 
+/*
+Login -
+    Apenas requer “F” ou “DC” (Funcionário ou Diretor Clínico)
+
+Funcionário –
+    Criar novos clientes
+    Alterar dados associados a clientes
+    Introduzir a compra do cliente no sistema
+        No final de cada compra o stock deverá ser atualizado automaticamente
+        Não sendo permitida a venda de artigos que se encontrem semstock
+
+Diretor  clínico –
+    Editar/ criar clientes, artigos, compras, entre outras
+    Gerar/reimprimir a fatura para um cliente
+        Gerada no ecrã e/ou escrita para ficheiro
+        Conter a listagem de todosos artigos vendidos
+
+Artigo -
+    É  armazenado  ou  vendido  pela  Farmácia
+    Pode pertencer  ao  grupo  “Humano”  ou  “Animal”
+    De  venda  livre  ou  necessitar  de receita
+    Deve  ser  solicitado  o  número  da receita para que este fique no sistema
+    O preço final de um artigo contem  o valor base e o respetivo valor do IVA
+
+Persistência  de  dados –
+    A  aplicação  deverá  permitir  guardar/carregar  dados  em / de  ficheiro
+
+IVA –
+    Representa o imposto sobre o valor acrescentado associada a um tipo de produto
+    Este pode  variar  de  acordo  com  3  categorias:  taxa  normal  (23%),  taxa  intermédia  (13%)  e  reduzida (6%)
+
+Compra –
+    Constitui  um  conjunto  de  artigos  que  serão  vendidos  a  um  cliente
+    Deve identificar a que grupo pertence o artigo e em caso de o mesmo necessitar de receita incluir o número da receita utilizado
+
+Cliente –
+    Representa um cliente que faz uma compra
+    Regista  o  nome,  NIF,  número  de  CC
+*/
+
 // De interface_inicio
 void interface_diretor() {
 
