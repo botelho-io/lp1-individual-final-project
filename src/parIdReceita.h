@@ -16,9 +16,11 @@
 #include <stdio.h>
 #include "utilities.h"
 
+// https://www.infarmed.pt/documents/15786/17838/Normas_Prescri%C3%A7%C3%A3o/bcd0b378-3b00-4ee0-9104-28d0db0b7872
 typedef struct {
-    uint64_t IDartigo; //< ID do artigo
-    char*    receita;  //< Receita do artigo
+    uint64_t IDartigo;    //< ID do artigo
+    uint64_t qtd;         //< Quantidade de artigos encomendados
+    char     receita[19]; //< Receita do artigo
 } parIdReceita;
 
 int          save_parIdReceita(FILE* const f, const parIdReceita* const data);
