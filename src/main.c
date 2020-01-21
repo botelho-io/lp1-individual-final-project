@@ -85,21 +85,67 @@ Persistência  de  dados –
     A  aplicação  deverá  permitir  guardar/carregar  dados  em / de  ficheiro
 
 IVA –
-    Representa o imposto sobre o valor acrescentado associada a um tipo de produto
-    Este pode  variar  de  acordo  com  3  categorias:  taxa  normal  (23%),  taxa  intermédia  (13%)  e  reduzida (6%)
+    Imposto sobre o valor acrescentado associada a um tipo de produto
+    Este pode  variar  de  acordo  com  3  categorias:
+        Taxa normal  (23%),
+        Taxa intermédia  (13%)
+        Taxa reduzida (6%)
 
 Compra –
-    Constitui  um  conjunto  de  artigos  que  serão  vendidos  a  um  cliente
-    Deve identificar a que grupo pertence o artigo e em caso de o mesmo necessitar de receita incluir o número da receita utilizado
+    Conjunto  de  artigos  vendidos  a  um  cliente
 
 Cliente –
     Representa um cliente que faz uma compra
     Regista  o  nome,  NIF,  número  de  CC
 */
 
+// De interface_diretor
+void interface_editar_cliente() {
+
+}
+
+void interface_editar_artigo() {
+
+}
+
+void interface_editar_compra() {
+
+}
+
+void interface_imprimir_recibo() {
+
+}
+
+void interface_outras_listagens() {
+
+}
+
+
+
+
 // De interface_inicio
 void interface_diretor() {
-
+    while (1) {
+        menu_printDiv();
+        menu_printHeader("Menu de Diretor Clínico");
+        switch( menu_selection( &(strcol) {
+            .size = 5,
+            .data = (char*[]) {
+                "Editar/ criar cliente", //
+                "Editar/ criar artigo",  //
+                "Editar/ criar compra",  //
+                "Imprimir recibo",       //
+                "Outras Listagens",      //
+            }
+        } ) ){
+            case -1: return;
+            case  0: interface_editar_cliente()  ; break;
+            case  1: interface_editar_artigo()   ; break;
+            case  2: interface_editar_compra()   ; break;
+            case  3: interface_imprimir_recibo() ; break;
+            case  4: interface_outras_listagens(); break;
+        }
+    }
 }
 
 void interface_funcionario() {
