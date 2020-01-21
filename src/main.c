@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <stdint.h>
 
+// Estado do programa **************************************************************************************************
 #define COL_IMPLEMENTACAO
 #include "artigo.h"
 #include "encomenda.h"
@@ -57,7 +58,7 @@ utilizadorcol utilizadores;              ///< Utilizadores existentes no registo
 
 #include "outrasListagens.h"
 
-/*
+/* Descrição do problema ***********************************************************************************************
 Login -
     Apenas requer “F” ou “DC” (Funcionário ou Diretor Clínico)
 
@@ -101,32 +102,33 @@ Cliente –
 
 
 
-// De interface_diretor
+// De interface_diretor ************************************************************************************************
 void interface_editar_cliente() {
-
+    // TODO: Implementar
 }
 
 void interface_editar_artigo() {
-
+    // TODO: Implementar
 }
 
 void interface_editar_compra() {
-
+    // TODO: Implementar
 }
 
 void interface_imprimir_recibo() {
-
+    // TODO: Implementar
 }
 
 void interface_outras_listagens() {
-
+    // TODO: Implementar
 }
 
 
 
 
-// De interface_funcionario
+// De interface_funcionario ********************************************************************************************
 void interface_criar_compra() {
+    // TODO: acabar de implementar
     parIRcol ar = parIRcol_new();
 
     while (1) {
@@ -160,7 +162,10 @@ void interface_criar_compra() {
 
 
 
-// De interface_inicio
+// De interface_inicio *************************************************************************************************
+/**
+ * @brief As opções que remetem ao diretor
+ */
 void interface_diretor() {
     while (1) {
         menu_printDiv();
@@ -185,6 +190,9 @@ void interface_diretor() {
     }
 }
 
+/**
+ * @brief As opções que remetem a um funcionario
+ */
 void interface_funcionario() {
     while (1) {
         menu_printDiv();
@@ -203,6 +211,9 @@ void interface_funcionario() {
     }
 }
 
+/**
+ * @brief Responsavél por gravar os dados em ficheiro
+ */
 void funcional_save() {
     menu_printDiv();
     menu_printInfo("a escrever em ficheiro.");
@@ -224,6 +235,9 @@ void funcional_save() {
     menu_printInfo("ficheiro gravado.");
 }
 
+/**
+ * @brief Responsavél por carregar o estado de ficheiro
+ */
 void funcional_load() {
     menu_printDiv();
     menu_printInfo("a carregar de ficheiro.");
@@ -250,7 +264,10 @@ void funcional_load() {
     menu_printInfo("dados carregados.");
 }
 
-// Entry point
+
+
+
+// Entry point *********************************************************************************************************
 /**
  * @brief Menu Inicial
  */
