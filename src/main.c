@@ -62,8 +62,7 @@ Login -
     Apenas requer “F” ou “DC” (Funcionário ou Diretor Clínico)
 
 Funcionário –
-    Criar novos clientes
-    Alterar dados associados a clientes
+    Editar/ Criar novos clientes
     Introduzir a compra do cliente no sistema
         No final de cada compra o stock deverá ser atualizado automaticamente
         Não sendo permitida a venda de artigos que se encontrem semstock
@@ -99,6 +98,9 @@ Cliente –
     Regista  o  nome,  NIF,  número  de  CC
 */
 
+
+
+
 // De interface_diretor
 void interface_editar_cliente() {
 
@@ -117,6 +119,14 @@ void interface_imprimir_recibo() {
 }
 
 void interface_outras_listagens() {
+
+}
+
+
+
+
+// De interface_funcionario
+void interface_criar_compra() {
 
 }
 
@@ -149,7 +159,21 @@ void interface_diretor() {
 }
 
 void interface_funcionario() {
-
+    while (1) {
+        menu_printDiv();
+        menu_printHeader("Menu de Funcionário");
+        switch( menu_selection( &(strcol) {
+            .size = 2,
+            .data = (char*[]) {
+                "Editar/ criar cliente", //
+                "Criar compra",          //
+            }
+        } ) ){
+            case -1: return;
+            case  0: interface_editar_cliente() ; break;
+            case  1: interface_criar_compra()   ; break;
+        }
+    }
 }
 
 void funcional_save() {
