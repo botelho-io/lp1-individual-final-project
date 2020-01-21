@@ -198,16 +198,37 @@ uint64_t menu_readUint64_tMinMax(const uint64_t min, const uint64_t max) {
  */
 uint64_t menu_selection(const strcol* const itens) {
     uint64_t op  = -2;
-    uint64_t max = itens->size;
+    uint64_t max;
     while (op == -2) {
         printf("   Opção      |   Item\n");
         printf("         -2   |   Reimprimir\n");
         printf("         -1   |   Sair\n");
-        uint64_t i = 0;
-        strcol_iterateFW((strcol*) itens, (strcol_pred_t) &printItemVP, &i);
-        menu_readUint64_t(-2, max - 1);
+        max = 0;
+        strcol_iterateFW((strcol*) itens, (strcol_pred_t) &printItemVP, &max);
+        op = menu_readUint64_tMinMax(-2, max-1);
     }
     return op;
+}
+
+/**
+ * @brief   Premite ao utilizador introduzir uma resmosta de sim ou não.
+ * @details Premite ao utilizador introduzir um character e compara-o com os
+ *          caracteres correspondentes às resmostas de sim e não, sem tomar em
+ *          conta a capitalização.
+ * @param Y Caracter correspondente ao sim
+ * @param N Caracter correspendente ao nao
+ * @returns 0 se o utilizador introduziu 'N'
+ * @returns 1 se o utilizador introduziu 'S'
+ * @returns 2 noutro caso
+ */
+int menu_YN(const char Y, const char N) {
+    int i = toupper(getchar());
+    cleanInputBuffer();
+    if(i == toupper(Y)) {
+        return 1;
+    } else if (i == toupper(N)) {
+        return 0;
+    } else return 2;
 }
 
 /**
@@ -298,7 +319,8 @@ void menu_printArtigo(const artigo* const a) {
         default: iva = "intermédio"; break;
     }
 
-    printf("%s -  Preço: %lu + (IVA %s)  -  Grupo %s %s",
+    printf("%s%s -  Preço: %lu + (IVA %s)  -  Grupo %s %s",
+           (a->meta & ARTIGO_DESATIVADO) ? "[ DESATIVADO ]" : "",                      //
            protectStr(a->nome),                                                        //
            a->preco_cent,                                                              //
            iva,                                                                        //

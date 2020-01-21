@@ -67,6 +67,7 @@ void     menu_printArtigoStock(const artigo* const a);
 int      menu_readInt();
 uint64_t menu_readUint64_t();
 float    menu_readFloat();
+int      menu_YN(const char Y, const char N);
 
 void menu_printEncomendaBrief(const encomenda* const e,
                                   const utilizadorcol* const uv,
