@@ -17,7 +17,7 @@
 #include <string.h>
 
 char* strdup(const char* const s);
-int   printItemVP(char** const item, size_t* const userdata);
+int   printItemVP(char** const item, uint64_t* const userdata);
 int   save_str(FILE* const f, const char* const data);
 int   load_str(FILE* const f, char** const data);
 

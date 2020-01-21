@@ -26,7 +26,7 @@
  */
 encomenda newEncomenda() {
     return (encomenda) {
-        .artigos    = parircol_new(), //
+        .artigos    = parIRcol_new(), //
         .ID_cliente = 0,              //
         .tempo      = time(NULL)      //
     };
@@ -36,7 +36,7 @@ encomenda newEncomenda() {
  * @brief           Responsavél por libertar a memória da encomenda.
  * @param e         Encomenda para ser libertado.
  */
-void freeEncomenda(encomenda* const e) { parircol_free(&e->artigos); }
+void freeEncomenda(encomenda* const e) { parIRcol_free(&e->artigos); }
 
 /**
  * @brief           Calcula o preço de uma encomenda, em cêntimos.
@@ -72,8 +72,8 @@ uint64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av
  */
 int save_encomenda(FILE* const f, const encomenda* const data) {
     // Gravar artigos
-    if (!parircol_write(&(data->artigos), f)) {
-        menu_printError("ao gravar encomenda - parircol_write falhou.");
+    if (!parIRcol_write(&(data->artigos), f)) {
+        menu_printError("ao gravar encomenda - parIRcol_write falhou.");
         return 0;
     }
     return fwrite(&data->ID_cliente, sizeof(uint64_t), 1, f);
@@ -88,9 +88,9 @@ int save_encomenda(FILE* const f, const encomenda* const data) {
  */
 int load_encomenda(FILE* const f, encomenda* const data) {
     // Carregar artigos
-    data->artigos = parircol_new();
-    if (!parircol_read(&(data->artigos), f)) {
-        menu_printError("ao carregar encomenda - parircol_read falhou.");
+    data->artigos = parIRcol_new();
+    if (!parIRcol_read(&(data->artigos), f)) {
+        menu_printError("ao carregar encomenda - parIRcol_read falhou.");
         return 0;
     }
     return fread(&data->ID_cliente, sizeof(uint64_t), 1, f);

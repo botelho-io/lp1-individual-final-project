@@ -52,22 +52,31 @@
 #    include "./colecao.h"
 #endif
 
-void  menu_readIntMinMax(const int min, const int max, int* const op);
-int   menu_selection(const strcol* const itens);
-char* menu_readString();
-void  menu_readNotNulStr(char** X);
-void  menu_printDiv();
-void  menu_printError(const char* const err, ...);
-void  menu_printInfo(const char* const info, ...);
-void  menu_printHeader(const char* header);
-void  menu_printUtilizador(const utilizador u);
-void  menu_printArtigo(const artigo* const a);
-void  menu_printArtigoStock(const artigo* const a);
-void  menu_readInt(int* const value);
-void  menu_read_Float32(_Float32* const value);
-void  menu_printReciboMensal(const uint64_t ID_U, int mes, int ano, const encomendacol* const e,
-                             const utilizadorcol* const uv, const artigocol* const av);
-void  menu_printEncomendaBrief(const encomenda* const e, const utilizadorcol* const uv, const artigocol* const av);
-void  menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* const uv, const artigocol* const av);
+int      menu_readIntMinMax(const int min, const int max);
+uint64_t menu_readUint64_tMinMax(const uint64_t min, const uint64_t max);
+uint64_t menu_selection(const strcol* const itens);
+char*    menu_readString();
+char*    menu_readNotNulStr();
+void     menu_printDiv();
+void     menu_printError(const char* const err, ...);
+void     menu_printInfo(const char* const info, ...);
+void     menu_printHeader(const char* header);
+void     menu_printUtilizador(const utilizador u);
+void     menu_printArtigo(const artigo* const a);
+void     menu_printArtigoStock(const artigo* const a);
+int      menu_readInt();
+uint64_t menu_readUint64_t();
+float    menu_readFloat();
+
+void menu_printEncomendaBrief(const encomenda* const e,
+                                  const utilizadorcol* const uv,
+                                  const artigocol* const av);
+void menu_printEncomendaDetail(const encomenda* const e,
+                                   const utilizadorcol* const uv,
+                                   const artigocol* const av);
+void menu_printReciboMensal(const uint64_t ID_U, int mes, int ano,
+                                const encomendacol* const e,
+                                const utilizadorcol* const uv,
+                                const artigocol* const av);
 
 #endif

@@ -81,39 +81,42 @@ char* menu_readString() {
 }
 
 /**
- * @brief   Liberta X e lê uma string vâlida (não nula e não só espaços),
- *          guardando-a em X.
- * @param X O ponteiro que será libertado e terá a string final.
+ * @brief   Lê uma string vâlida (não nula e não só espaços), guardando-a em X.
+ * @returns Ponteiro para a string lida
  */
-void menu_readNotNulStr(char** X) {
-    freeN(*X);
-    while (!(*X)) { *X = menu_readString(); }
+char* menu_readNotNulStr() {
+    static char* value;
+    value = NULL;
+    while (!value) {
+        value = menu_readString();
+    }
+    return value;
 }
 
 /**
- * @brief       Lê uma float do standard input.
- * @param value Valor para onde será guardado o valor.
+ * @brief   Lê uma float do standard input.
+ * @returns Valor lido.
  */
-void menu_read_Float32(_Float32* const value) {
-    float f;
+float menu_readFloat() {
+    static float value;
     while (1) {
         printf(" $ ");
-        if (scanf("%f", &f) != 1) {
+        if (scanf("%f", &value) != 1) {
             menu_printError("Não foi inserido um número válido.");
             cleanInputBuffer();
             continue;
         }
         cleanInputBuffer();
-        *value = (_Float32) f;
-        return;
+        return value;
     }
 }
 
 /**
- * @brief       Lê uma int do standard input.
- * @param value Valor para onde será guardado o valor.
+ * @brief   Lê uma int do standard input.
+ * @returns Valor lido.
  */
-void menu_readInt(int* const value) {
+int menu_readInt() {
+    static int value = 1;
     while (1) {
         printf(" $ ");
         if (scanf("%d", value) != 1) {
@@ -122,7 +125,25 @@ void menu_readInt(int* const value) {
             continue;
         }
         cleanInputBuffer();
-        return;
+        return value;
+    }
+}
+
+/**
+ * @brief   Lê uma uint64_t do standard input.
+ * @returns Valor lido.
+ */
+uint64_t menu_readUint64_t() {
+    static uint64_t value = 1;
+    while (1) {
+        printf(" $ ");
+        if (scanf("%lu", value) != 1) {
+            menu_printError("Não foi inserido um número válido.");
+            cleanInputBuffer();
+            continue;
+        }
+        cleanInputBuffer();
+        return value;
     }
 }
 
@@ -130,19 +151,41 @@ void menu_readInt(int* const value) {
  * @brief     Lê uma int do standard input entre [min, max]
  * @param min Valor minimo da int para ser lida.
  * @param max Valor maximo da int para ser lida.
- * @param op  Valor para onde será guardado o valor.
+ * @returns   Valor lido
  */
-void menu_readIntMinMax(const int min, const int max, int* const op) {
+int menu_readIntMinMax(const int min, const int max) {
+    static int value;
     printf("Insira um numero entre [%d e %d]", min, max);
     while (1) {
-        menu_readInt(op);
-        if (*op >= min) {
-            if (*op <= max) {
+        value = menu_readInt();
+        if (value >= min) {
+            if (value <= max) {
                 return;
             } else
-                menu_printError("[%d] é maior que [%d].", *op, max);
+                menu_printError("[%d] é maior que [%d].", value, max);
         } else
-            menu_printError("[%d] é menor que [%d].", *op, min);
+            menu_printError("[%d] é menor que [%d].", value, min);
+    }
+}
+
+/**
+ * @brief     Lê uma uint64_t do standard input entre [min, max]
+ * @param min Valor minimo da int para ser lida.
+ * @param max Valor maximo da int para ser lida.
+ * @returns   Valor lido
+ */
+uint64_t menu_readUint64_tMinMax(const uint64_t min, const uint64_t max) {
+    static uint64_t value;
+    printf("Insira um numero entre [%d e %d]", min, max);
+    while (1) {
+        value = menu_readUint64_t();
+        if (value >= min) {
+            if (value <= max) {
+                return;
+            } else
+                menu_printError("[%lu] é maior que [%lu].", value, max);
+        } else
+            menu_printError("[%lu] é menor que [%lu].", value, min);
     }
 }
 
@@ -153,17 +196,16 @@ void menu_readIntMinMax(const int min, const int max, int* const op) {
  * @returns     Um valor entre [-1, itens.size[ correspondente à opção
  *              selecionada ou "Sair" para -1
  */
-int menu_selection(const strcol* const itens) {
-    int op  = -2;
-    int max = itens->size;
+uint64_t menu_selection(const strcol* const itens) {
+    uint64_t op  = -2;
+    uint64_t max = itens->size;
     while (op == -2) {
         printf("   Opção      |   Item\n");
         printf("         -2   |   Reimprimir\n");
         printf("         -1   |   Sair\n");
-        size_t i = 0;
+        uint64_t i = 0;
         strcol_iterateFW((strcol*) itens, (strcol_pred_t) &printItemVP, &i);
-        menu_readIntMinMax(-2, max - 1, &op);
-        menu_printDiv();
+        menu_readUint64_t(-2, max - 1);
     }
     return op;
 }

@@ -38,7 +38,7 @@
 #ifndef parcol_H
 #    define parcol_H
 #    define COL_TIPO parIdReceita
-#    define COL_NOME parircol
+#    define COL_NOME parIRcol
 #    define COL_DEALOC(X) free_parIdReceita(X)
 #    define COL_WRITE(X, F) save_parIdReceita(F, X)
 #    define COL_READ(X, F) load_parIdReceita(F, X)
@@ -53,7 +53,7 @@
  */
 
 typedef struct {
-    parircol artigos;    ///< Artigos que fazem parte da encomenda.
+    parIRcol artigos;    ///< Artigos que fazem parte da encomenda.
     uint64_t ID_cliente; ///< ID do cliente que formalizou a encomenda.
     time_t   tempo;
 } encomenda;

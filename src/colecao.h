@@ -159,8 +159,7 @@ int COL_FUN(_addCell)(COL_NOME* const v) {
 
 /**
  * @brief           Constrotor da coleção.
- * @details         Tenta constuir uma coleção vazia com 8 céluals de memória
- *                  alocadas.
+ * @details         Constroi uma coleção vazia.
  * @return          Uma coleção vazia.
  */
 COL_NOME COL_FUN(_new)() { return (COL_NOME) {.size = 0, .alocated = 0, .data = NULL}; }
