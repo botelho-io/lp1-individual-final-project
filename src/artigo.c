@@ -44,8 +44,8 @@ int save_artigo(FILE* const f, const artigo* const data) {
     written += save_str(f, data->nome);
     if (!data->nome) { menu_printInfo("ao gravar artigo - nome inválido"); }
     written += fwrite(&data->meta, sizeof(uint8_t), 1, f);
-    written += fwrite(&data->preco_cent, sizeof(uint64_t), 1, f);
-    written += fwrite(&data->stock, sizeof(uint64_t), 1, f);
+    written += fwrite(&data->preco_cent, sizeof(int64_t), 1, f);
+    written += fwrite(&data->stock, sizeof(int64_t), 1, f);
     return written == 4;
 }
 
@@ -64,7 +64,7 @@ int load_artigo(FILE* const f, artigo* const data) {
         data->nome = strdup("Nome");
     }
     written += fread(&data->meta, sizeof(uint8_t), 1, f);
-    written += fread(&data->preco_cent, sizeof(uint64_t), 1, f);
-    written += fread(&data->stock, sizeof(uint64_t), 1, f);
+    written += fread(&data->preco_cent, sizeof(int64_t), 1, f);
+    written += fread(&data->stock, sizeof(int64_t), 1, f);
     return written == 4;
 }

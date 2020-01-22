@@ -46,11 +46,11 @@ void freeEncomenda(encomenda* const e) { compracol_free(&e->compras); }
  * @warning         O tipoEstado da encomenda tem que estar correto antes de
  *                  chamar esta função.
  */
-uint64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av) {
-    uint64_t precoFinal = 0;
-    uint64_t precoPreTax;
+int64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av) {
+    int64_t precoFinal = 0;
+    int64_t precoPreTax;
     artigo*  artAtual;
-    for (uint64_t i = 0; i < e->compras.size; i++) {
+    for (int64_t i = 0; i < e->compras.size; i++) {
         artAtual    = &(av->data[e->compras.data[i].IDartigo]);
         precoPreTax = artAtual->preco_cent;
         switch (artAtual->meta & ARTIGO_IVA) {
@@ -76,7 +76,7 @@ int save_encomenda(FILE* const f, const encomenda* const data) {
         menu_printError("ao gravar encomenda - compracol_write falhou");
         return 0;
     }
-    return fwrite(&data->ID_cliente, sizeof(uint64_t), 1, f);
+    return fwrite(&data->ID_cliente, sizeof(int64_t), 1, f);
 }
 
 /**
@@ -93,5 +93,5 @@ int load_encomenda(FILE* const f, encomenda* const data) {
         menu_printError("ao carregar encomenda - compracol_read falhou");
         return 0;
     }
-    return fread(&data->ID_cliente, sizeof(uint64_t), 1, f);
+    return fread(&data->ID_cliente, sizeof(int64_t), 1, f);
 }

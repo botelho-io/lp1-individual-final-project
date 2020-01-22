@@ -38,8 +38,8 @@
 typedef struct {
     char*    nome;       ///< Nome do artigo
     uint8_t  meta;       ///< Info sobre o artigo
-    uint64_t preco_cent; ///< Preçco base do artigo em cêntimos
-    uint64_t stock;      ///< Stock do artigo
+    int64_t preco_cent; ///< Preçco base do artigo em cêntimos
+    int64_t stock;      ///< Stock do artigo
 
 } artigo;
 

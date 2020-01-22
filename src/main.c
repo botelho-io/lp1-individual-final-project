@@ -110,8 +110,8 @@ Cliente –
  *          utilizadores impressos.
  * @returns 0
  */
-void printUtiVP(utilizador const * const u, uint64_t const * i) {
-    printf("   %8lu   |   ", i++);
+void printUtiVP(utilizador const * const u, int64_t const * i) {
+    printf("   %8lu   |   ", *i++);
     menu_printUtilizador(*u);
     printf("\n");
 }
@@ -131,8 +131,8 @@ void form_editar_cliente(utilizador const* u, int isNew) {
  *          artigos impressos.
  * @returns 0
  */
-void printArtVP(artigo const * const a, uint64_t const * i) {
-    printf("   %8lu   |   ", i++);
+void printArtVP(artigo const * const a, int64_t const * i) {
+    printf("   %8lu   |   ", *i++);
     menu_printArtigo(a);
     printf("\n");
 }
@@ -152,8 +152,8 @@ void form_editar_artigo(artigo const* a, int isNew) {
  *          encomendas impressas.
  * @returns 0
  */
-void printEncVP(encomenda const * const e, uint64_t const * i) {
-    printf("   %8lu   |   ", i++);
+void printEncVP(encomenda const * const e, int64_t const * i) {
+    printf("   %8lu   |   ", *i++);
     menu_printEncomendaBrief(e, &utilizadores, &artigos);
     printf("\n");
 }
@@ -169,17 +169,17 @@ void form_editar_encomenda(encomenda const* e, int isNew) {
 #define GENERIC_EDIT(nome, iterateFW, col, col_pred_t, col_pred, push, editfnc, nomenew)\
     menu_printDiv();                                                           \
     menu_printHeader("Selecione " nome);                                       \
-    uint64_t id  = -2;                                                         \
-    uint64_t max;                                                              \
+    int64_t id  = -2;                                                          \
+    int64_t max;                                                               \
     while (id == -2) {                                                         \
         printf("      ID      |   Item\n");                                    \
         printf("         -2   |   Reimprimir\n");                              \
         printf("         -1   |   Sair\n");                                    \
         max = 0;                                                               \
         iterateFW(&col, (col_pred_t) &col_pred, &max);                         \
-        printf("   %8lu   |   Criar Novo " nome, max++);                       \
-        printf("Insira o ID do " nome " para editar");                         \
-        id = menu_readUint64_tMinMax(-2, max-1);                               \
+        printf("   %8lu   |   Criar Novo " nome "\n", max++);                  \
+        menu_printInfo("Insira o ID do " nome " para editar");                 \
+        id = menu_readInt64_tMinMax(-2, max-1);                                \
     }                                                                          \
     if(id == -1) return;                                                       \
     if(id == max-1) {                                                          \
@@ -346,6 +346,7 @@ void interface_inicio() {
         }) ) {
             case -1: return;
             case  0:
+                printf("(F / DC)");
                 login = menu_readNotNulStr();
                 if( strcmp(login, "F") == 0 ) {
                     interface_funcionario();

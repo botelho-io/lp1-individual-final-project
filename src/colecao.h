@@ -63,7 +63,7 @@
  *                  Se este macro estiver definido as declarações das funções do
  *                  coleção são ativadas. COL_DECLARACAO é definida por omição
  *                  de COL_IMPLEMENTACAO e COL_DECLARACAO.
- * @def INVAL_INDEX
+ * @def COL_INVAL_INDEX
  *                  O valor máximo que o tamanho da coleção pode ter.
  * @def COL_WRITE(X, F)
  *                  Função para escrever o tipo 'COL_TIPO' num ficheiro. Onde X
@@ -98,17 +98,18 @@
 #    define COL_DECLARACAO
 #endif
 
-#define INVAL_INDEX ~((uint64_t) 0)
+#define COL_INVAL_INDEX ~((colSize_t) 0)
 
 /**
  * @struct          COL_NOME
  * @brief           Struct com o nome COL_NOME que contém o tipo de dados
  *                  COL_TIPO e informação sobre o numero de objetos guardados,
- *                  pode guardar [0, INVAL_INDEX[ elemntos.
+ *                  pode guardar [0, COL_INVAL_INDEX[ elemntos.
  */
+typedef uint32_t colSize_t;
 typedef struct {
-    uint64_t  alocated; ///< Tamanho alocado de objetos.
-    uint64_t  size;     ///< Tamanho de objetos que foi populado.
+    colSize_t  alocated; ///< Tamanho alocado de objetos.
+    colSize_t  size;     ///< Tamanho de objetos que foi populado.
     COL_TIPO* data;     ///< Começa em data[0] e acaba em data[size-1].
 } COL_NOME;
 typedef int (*COL_FUN(_pred_t))(COL_TIPO*, void*);
@@ -189,7 +190,7 @@ int COL_FUN(_push)(COL_NOME* const v, COL_TIPO const newObj) {
  * @param i         Index do objeto que será escrito por cima.
  * @warning         O objecto no index 'i' não é dealocado por esta função
  */
-void COL_FUN(_moveBelow)(COL_NOME* const v, const uint64_t i) {
+void COL_FUN(_moveBelow)(COL_NOME* const v, const colSize_t i) {
     memmove(&v->data[i], &v->data[i + 1], (v->size - i - 1) * sizeof(COL_TIPO));
     --(v->size);
 }
@@ -208,7 +209,7 @@ void COL_FUN(_moveBelow)(COL_NOME* const v, const uint64_t i) {
  * @warning         Após chamar esta função, o objeto no index i pode não ser
  *                  válido.
  */
-int COL_FUN(_moveAbove)(COL_NOME* const v, const uint64_t i) {
+int COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i) {
     if (!COL_FUN(_addCell)(v)) return 0;
     memmove(&v->data[i + 1], &v->data[i], (v->size - i) * sizeof(COL_TIPO));
     ++(v->size);
@@ -226,7 +227,7 @@ int COL_FUN(_moveAbove)(COL_NOME* const v, const uint64_t i) {
  * @returns        0 se não conseguiu inserir o objeto.
  * @returns        1 se conseguiu inserir o objeto.
  */
-int COL_FUN(_pushAt)(COL_NOME* const v, COL_TIPO const newObj, const uint64_t position) {
+int COL_FUN(_pushAt)(COL_NOME* const v, COL_TIPO const newObj, const colSize_t position) {
     if (!COL_FUN(_moveAbove)(v, position)) return 0;
     v->data[position] = newObj;
     return 1;
@@ -257,7 +258,7 @@ COL_TIPO COL_FUN(_pop)(COL_NOME* const v) {
  * @warning         O objeto com o index 'position' é removido da coleção e não
  *                  é dealocado, terá que ser dealocado posteriormente.
  */
-COL_TIPO COL_FUN(_popAt)(COL_NOME* const v, const uint64_t position) {
+COL_TIPO COL_FUN(_popAt)(COL_NOME* const v, const colSize_t position) {
     COL_TIPO toReturn = v->data[position];
     COL_FUN(_moveBelow)(v, position);
     return toReturn;
@@ -272,7 +273,7 @@ COL_TIPO COL_FUN(_popAt)(COL_NOME* const v, const uint64_t position) {
  */
 void COL_FUN(_free)(COL_NOME* const v) {
 #    ifdef COL_DEALOC
-    for (uint64_t i = 0; i < v->size; i++) { COL_DEALOC(&(v->data[i])); }
+    for (colSize_t i = 0; i < v->size; i++) { COL_DEALOC(&(v->data[i])); }
 #    endif
     if (v->alocated != 0) free(v->data);
     v->data     = NULL;
@@ -287,7 +288,7 @@ void COL_FUN(_free)(COL_NOME* const v) {
  * @param v         Pointeiro para a coleção sob o qual operar.
  * @param position  Index do elemento a remover.
  */
-void COL_FUN(_removeAt)(COL_NOME* const v, uint64_t position) {
+void COL_FUN(_removeAt)(COL_NOME* const v, colSize_t position) {
 #    ifdef COL_DEALOC
     COL_DEALOC(&(v->data[position]));
 #    endif
@@ -328,14 +329,14 @@ int COL_FUN(_adjust)(COL_NOME* const v) {
  * @param userData  Dados passados pelo utilizador à função 'predicate'.
  * @returns         O index do objeto cuja função predicate primeiro returnou
  *                  verdade.
- * @returns         INVAL_INDEX caso a todos os elementos foram iterados sem que
+ * @returns         COL_INVAL_INDEX caso a todos os elementos foram iterados sem que
  *                  'predicate' tenha retornado 0.
  */
-uint64_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData) {
-    for (uint64_t i = 0; i < v->size; i++) {
+colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData) {
+    for (colSize_t i = 0; i < v->size; i++) {
         if (predicate(&(v->data[i]), userData)) return i;
     }
-    return INVAL_INDEX;
+    return COL_INVAL_INDEX;
 }
 
 /**
@@ -353,14 +354,14 @@ uint64_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void
  * @param userData  Dados passados pelo utilizador à função 'predicate'.
  * @returns         O index do objeto cuja função predicate primeiro returnou
  *                  verdade.
- * @returns         INVAL_INDEX caso a todos os elementos foram iterados sem que
- *                  'predicate' tenha retornado 0.
+ * @returns         COL_INVAL_INDEX caso a todos os elementos foram iterados sem
+ *                  que 'predicate' tenha retornado 0.
  */
-uint64_t COL_FUN(_iterateBW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData) {
-    for (uint64_t i = v->size - 1; i != INVAL_INDEX; i--) {
+colSize_t COL_FUN(_iterateBW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData) {
+    for (colSize_t i = v->size - 1; i != COL_INVAL_INDEX; i--) {
         if (predicate(&(v->data[i]), userData)) return i;
     }
-    return INVAL_INDEX;
+    return COL_INVAL_INDEX;
 }
 
 /**
@@ -377,7 +378,7 @@ uint64_t COL_FUN(_iterateBW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void
  * @warning         No final de chamar esta função o valor de células de memória
  *                  alocadas pode ser maior do que 'space'.
  */
-int COL_FUN(_reserve)(COL_NOME* const v, uint64_t space) {
+int COL_FUN(_reserve)(COL_NOME* const v, colSize_t space) {
     if (v->alocated >= space) return 2;
     void* newData = realloc(v->data, sizeof(COL_TIPO) * (space));
     if (newData == NULL) return 0;
@@ -409,9 +410,9 @@ void COL_FUN(_DEALOC)(COL_TIPO* const X) { COL_DEALOC(X); }
  */
 int COL_FUN(_write)(const COL_NOME* const v, FILE* f) {
     // Gravar tamanho da coleção
-    if (!fwrite(&v->size, sizeof(uint64_t), 1, f)) return 0;
+    if (!fwrite(&v->size, sizeof(colSize_t), 1, f)) return 0;
     // Guardar objetos
-    for (uint64_t i = 0; i < v->size; i++) {
+    for (colSize_t i = 0; i < v->size; i++) {
         if (!COL_WRITE(&(v->data[i]), f)) return 0;
     }
     return 1;
@@ -431,12 +432,12 @@ int COL_FUN(_write)(const COL_NOME* const v, FILE* f) {
  */
 int COL_FUN(_read)(COL_NOME* const v, FILE* f) {
     // Ler tamanho de coleção em ficheiro
-    uint64_t size = 0;
-    if (!fread(&size, sizeof(uint64_t), 1, f)) return 0;
+    colSize_t size = 0;
+    if (!fread(&size, sizeof(colSize_t), 1, f)) return 0;
     // Reservar espaço para coleção
     if (!COL_FUN(_reserve)(v, size)) return 0;
     // Ler objetos do ficheiro
-    for (uint64_t i = 0; i < size; i++) {
+    for (colSize_t i = 0; i < size; i++) {
         if (!COL_READ(&(v->data[i]), f)) return 0;
         v->size++;
     }
@@ -451,14 +452,14 @@ COL_TIPO COL_FUN(_pop)(COL_NOME* const v);
 void     COL_FUN(_free)(COL_NOME* const v);
 int      COL_FUN(_adjust)(COL_NOME* const v);
 int      COL_FUN(_addCell)(COL_NOME* const v);
-int      COL_FUN(_reserve)(COL_NOME* const v, uint64_t space);
+int      COL_FUN(_reserve)(COL_NOME* const v, colSize_t space);
 int      COL_FUN(_push)(COL_NOME* const v, COL_TIPO const newObj);
-void     COL_FUN(_moveBelow)(COL_NOME* const v, const uint64_t i);
-void     COL_FUN(_removeAt)(COL_NOME* const v, uint64_t position);
-int      COL_FUN(_moveAbove)(COL_NOME* const v, const uint64_t i);
-COL_TIPO COL_FUN(_popAt)(COL_NOME* const v, const uint64_t position);
-uint64_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
-uint64_t COL_FUN(_iterateBW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
+void     COL_FUN(_moveBelow)(COL_NOME* const v, const colSize_t i);
+void     COL_FUN(_removeAt)(COL_NOME* const v, colSize_t position);
+int      COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i);
+COL_TIPO COL_FUN(_popAt)(COL_NOME* const v, const colSize_t position);
+colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
+colSize_t COL_FUN(_iterateBW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
 #    ifdef COL_DEALOC
 void COL_FUN(_DEALOC)(COL_TIPO* const X);
 #    endif

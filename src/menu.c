@@ -119,7 +119,7 @@ int menu_readInt() {
     static int value = 1;
     while (1) {
         printf(" $ ");
-        if (scanf("%d", value) != 1) {
+        if (scanf("%d", &value) != 1) {
             menu_printError("Não foi inserido um número válido");
             cleanInputBuffer();
             continue;
@@ -130,14 +130,14 @@ int menu_readInt() {
 }
 
 /**
- * @brief   Lê uma uint64_t do standard input.
+ * @brief   Lê uma int64_t do standard input.
  * @returns Valor lido.
  */
-uint64_t menu_readUint64_t() {
-    static uint64_t value = 1;
+int64_t menu_readInt64_t() {
+    static int64_t value = 1;
     while (1) {
         printf(" $ ");
-        if (scanf("%lu", value) != 1) {
+        if (scanf("%ld", &value) != 1) {
             menu_printError("Não foi inserido um número válido");
             cleanInputBuffer();
             continue;
@@ -160,7 +160,7 @@ int menu_readIntMinMax(const int min, const int max) {
         value = menu_readInt();
         if (value >= min) {
             if (value <= max) {
-                return;
+                return value;
             } else
                 menu_printError("[%d] é maior que [%d]", value, max);
         } else
@@ -169,23 +169,23 @@ int menu_readIntMinMax(const int min, const int max) {
 }
 
 /**
- * @brief     Lê uma uint64_t do standard input entre [min, max]
+ * @brief     Lê uma int64_t do standard input entre [min, max]
  * @param min Valor minimo da int para ser lida.
  * @param max Valor maximo da int para ser lida.
  * @returns   Valor lido
  */
-uint64_t menu_readUint64_tMinMax(const uint64_t min, const uint64_t max) {
-    static uint64_t value;
-    printf("Insira um numero entre [%d e %d]", min, max);
+int64_t menu_readInt64_tMinMax(const int64_t min, const int64_t max) {
+    static int64_t value;
+    printf("Insira um numero entre [%ld e %ld]", min, max);
     while (1) {
-        value = menu_readUint64_t();
+        value = menu_readInt64_t();
         if (value >= min) {
             if (value <= max) {
-                return;
+                return value;
             } else
-                menu_printError("[%lu] é maior que [%lu]", value, max);
+                menu_printError("[%ld] é maior que [%ld]", value, max);
         } else
-            menu_printError("[%lu] é menor que [%lu]", value, min);
+            menu_printError("[%ld] é menor que [%ld]", value, min);
     }
 }
 
@@ -196,16 +196,17 @@ uint64_t menu_readUint64_tMinMax(const uint64_t min, const uint64_t max) {
  * @returns     Um valor entre [-1, itens.size[ correspondente à opção
  *              selecionada ou "Sair" para -1
  */
-uint64_t menu_selection(const strcol* const itens) {
-    uint64_t op  = -2;
-    uint64_t max;
+int64_t menu_selection(const strcol* const itens) {
+    int64_t op  = -2;
+    int64_t max;
+    menu_printDiv();
     while (op == -2) {
         printf("   Opção      |   Item\n");
         printf("         -2   |   Reimprimir\n");
         printf("         -1   |   Sair\n");
         max = 0;
         strcol_iterateFW((strcol*) itens, (strcol_pred_t) &printItemVP, &max);
-        op = menu_readUint64_tMinMax(-2, max-1);
+        op = menu_readInt64_tMinMax(-2, max-1);
     }
     return op;
 }
@@ -289,7 +290,7 @@ void menu_printHeader(const char* header) {
 void menu_printEncomendaBrief(const encomenda* const e, const utilizadorcol* const uv, const artigocol* const av) {
 
     struct tm* lt = localtime(&e->tempo);
-    printf("Cliente: %s NIF:(%.9s) Data: %d/%d/%d %d:%d  -  TOTAL: %luc",
+    printf("Cliente: %s NIF:(%.9s) Data: %d/%d/%d %d:%d  -  TOTAL: %ldc",
            protectStr(uv->data[e->ID_cliente].nome), //
            uv->data[e->ID_cliente].NIF,              //
            1900 + lt->tm_year,                       //
@@ -319,7 +320,7 @@ void menu_printArtigo(const artigo* const a) {
         default: iva = "intermédio"; break;
     }
 
-    printf("%s%s -  Preço: %lu + (IVA %s)  -  Grupo %s %s",
+    printf("%s%s -  Preço: %ld + (IVA %s)  -  Grupo %s %s",
            (a->meta & ARTIGO_DESATIVADO) ? "[ DESATIVADO ]" : "",                      //
            protectStr(a->nome),                                                        //
            a->preco_cent,                                                              //
@@ -341,7 +342,7 @@ void menu_printArtigoStock(const artigo* const a) {
         default: iva = "intermédio"; break;
     }
 
-    printf("%s (%lu em stock) -  Preço: %lu + (IVA %s)  -  Grupo %s %s %s",
+    printf("%s (%ld em stock) -  Preço: %ld + (IVA %s)  -  Grupo %s %s %s",
            protectStr(a->nome),                                                         //
            a->stock,                                                                    //
            a->preco_cent,                                                               //
@@ -372,10 +373,10 @@ void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* co
 
     menu_printHeader("Artigos");
     printf("*       ID | NOME                                | Preço    | + IVA    | Receita\n");
-    uint64_t precoSemIva = 0;
-    uint64_t precoComIva = 0;
-    for (size_t i = 0; i < e->artigos.size; ++i) {
-        const artigo* const a = &av->data[e->artigos.data[i].IDartigo];
+    int64_t precoSemIva = 0;
+    int64_t precoComIva = 0;
+    for (size_t i = 0; i < e->compras.size; ++i) {
+        const artigo* const a = &av->data[e->compras.data[i].IDartigo];
         double              iva;
         switch (a->meta & ARTIGO_IVA) {
             case ARTIGO_IVA_NORMAL: iva = ARTIGO_IVA_NORMAL_VAL; break;
@@ -389,18 +390,18 @@ void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* co
                i,                              //
                protectStr(a->nome),            //
                a->preco_cent,                  //
-               (uint64_t)(a->preco_cent * iva) //
+               (int64_t)(a->preco_cent * iva) //
         );
 
         if (a->meta & ARTIGO_NECESSITA_RECEITA) {
-            printf("Número: %s\n", protectStr(e->artigos.data[i].receita));
+            printf("Número: %s\n", protectStr(e->compras.data[i].receita));
         } else {
             printf("N/A\n");
         }
     }
 
-    printf("\n*** Preço base: %luc\n", precoSemIva);
-    printf("\n*** Preço com IVA: %luc\n", precoComIva);
+    printf("\n*** Preço base: %ldc\n", precoSemIva);
+    printf("\n*** Preço com IVA: %ldc\n", precoComIva);
     menu_printDiv();
 }
 
@@ -414,7 +415,7 @@ void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* co
  * @param e     Coleção das encomendas.
  * @param uv    Coleção dos utilizadores.
  */
-void menu_printReciboMensal(const uint64_t ID_U, int mes, int ano, const encomendacol* const e,
+void menu_printReciboMensal(const int64_t ID_U, int mes, int ano, const encomendacol* const e,
                             const utilizadorcol* const uv, const artigocol* const av) {
     ano -= 1900;
     mes -= 1;
@@ -469,9 +470,9 @@ INICIO:
         menu_printEncomendaBrief(atual, uv, av);
         printf("\n");
         size_t art;
-        for (art = 0; art < atual->artigos.size; ++art) {
+        for (art = 0; art < atual->compras.size; ++art) {
             printf("    ");
-            menu_printArtigo(&av->data[atual->artigos.data[art].IDartigo]);
+            menu_printArtigo(&av->data[atual->compras.data[art].IDartigo]);
             printf("\n");
         }
         tot_art += art;
@@ -479,9 +480,9 @@ INICIO:
         tot_preco += encomenda_CalcPreco(atual, av);
     }
     printf("\n");
-    printf("*** Encomendas feitas (%d/%d):    %lu\n", ano + 1900, mes + 1, tot_enc);
-    printf("*** Artigos encomendados (%d/%d): %lu\n", ano + 1900, mes + 1, tot_art);
-    printf("*** Preço final do mês (%d/%d):   %luc\n", ano + 1900, mes + 1, tot_preco);
+    printf("*** Encomendas feitas (%d/%d):    %ld\n", ano + 1900, mes + 1, tot_enc);
+    printf("*** Artigos encomendados (%d/%d): %ld\n", ano + 1900, mes + 1, tot_art);
+    printf("*** Preço final do mês (%d/%d):   %ldc\n", ano + 1900, mes + 1, tot_preco);
 
     if (stdout != stdoutTMP) {
         fclose(stdout);

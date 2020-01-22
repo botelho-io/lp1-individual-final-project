@@ -18,14 +18,13 @@
 
 // https://www.infarmed.pt/documents/15786/17838/Normas_Prescri%C3%A7%C3%A3o/bcd0b378-3b00-4ee0-9104-28d0db0b7872
 typedef struct {
-    uint64_t IDartigo;    //< ID do artigo
-    uint64_t qtd;         //< Quantidade de artigos encomendados
+    int64_t IDartigo;    //< ID do artigo
+    int64_t qtd;         //< Quantidade de artigos encomendados
     char     receita[19]; //< Receita do artigo
 } compra;
 
-int          save_compra(FILE* const f, const compra* const data);
-int          load_compra(FILE* const f, compra* const data);
-void         free_compra(compra* const data);
+int    save_compra(FILE* const f, const compra* const data);
+int    load_compra(FILE* const f, compra* const data);
 compra new_compra();
 
 #endif

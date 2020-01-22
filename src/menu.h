@@ -53,8 +53,8 @@
 #endif
 
 int      menu_readIntMinMax(const int min, const int max);
-uint64_t menu_readUint64_tMinMax(const uint64_t min, const uint64_t max);
-uint64_t menu_selection(const strcol* const itens);
+int64_t menu_readInt64_tMinMax(const int64_t min, const int64_t max);
+int64_t menu_selection(const strcol* const itens);
 char*    menu_readString();
 char*    menu_readNotNulStr();
 void     menu_printDiv();
@@ -65,7 +65,7 @@ void     menu_printUtilizador(const utilizador u);
 void     menu_printArtigo(const artigo* const a);
 void     menu_printArtigoStock(const artigo* const a);
 int      menu_readInt();
-uint64_t menu_readUint64_t();
+int64_t menu_readInt64_t();
 float    menu_readFloat();
 int      menu_YN(const char Y, const char N);
 
@@ -75,7 +75,7 @@ void menu_printEncomendaBrief(const encomenda* const e,
 void menu_printEncomendaDetail(const encomenda* const e,
                                    const utilizadorcol* const uv,
                                    const artigocol* const av);
-void menu_printReciboMensal(const uint64_t ID_U, int mes, int ano,
+void menu_printReciboMensal(const int64_t ID_U, int mes, int ano,
                                 const encomendacol* const e,
                                 const utilizadorcol* const uv,
                                 const artigocol* const av);

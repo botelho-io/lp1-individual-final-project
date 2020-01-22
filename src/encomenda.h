@@ -39,7 +39,6 @@
 #    define compracol_H
 #    define COL_TIPO compra
 #    define COL_NOME compracol
-#    define COL_DEALOC(X) free_compra(X)
 #    define COL_WRITE(X, F) save_compra(F, X)
 #    define COL_READ(X, F) load_compra(F, X)
 #    include "./colecao.h"
@@ -54,7 +53,7 @@
 
 typedef struct {
     compracol compras;    ///< Compras que fazem parte da encomenda.
-    uint64_t  ID_cliente; ///< ID do cliente que formalizou a encomenda.
+    int64_t  ID_cliente; ///< ID do cliente que formalizou a encomenda.
     time_t    tempo;
 } encomenda;
 
@@ -62,6 +61,6 @@ encomenda newEncomenda();
 void      freeEncomenda(encomenda* const e);
 int       save_encomenda(FILE* const f, const encomenda* const data);
 int       load_encomenda(FILE* const f, encomenda* const data);
-uint64_t  encomenda_CalcPreco(const encomenda* const e, const artigocol* const av);
+int64_t  encomenda_CalcPreco(const encomenda* const e, const artigocol* const av);
 
 #endif

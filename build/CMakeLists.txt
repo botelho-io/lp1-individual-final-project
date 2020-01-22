@@ -18,4 +18,4 @@ add_executable(main.x86
                ../src/utilities.c
                ../src/utilizador.c
                ../src/outrasListagens.c
-               ../src/parIdReceita.c)
+               ../src/compra.c)
