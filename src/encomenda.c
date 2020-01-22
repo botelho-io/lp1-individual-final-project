@@ -27,8 +27,8 @@
 encomenda newEncomenda() {
     return (encomenda) {
         .compras    = compracol_new(), //
-        .ID_cliente = 0,              //
-        .tempo      = time(NULL)      //
+        .ID_cliente = 0,               //
+        .tempo      = time(NULL)       //
     };
 }
 
@@ -49,7 +49,7 @@ void freeEncomenda(encomenda* const e) { compracol_free(&e->compras); }
 int64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av) {
     int64_t precoFinal = 0;
     int64_t precoPreTax;
-    artigo*  artAtual;
+    artigo* artAtual;
     for (int64_t i = 0; i < e->compras.size; i++) {
         artAtual    = &(av->data[e->compras.data[i].IDartigo]);
         precoPreTax = artAtual->preco_cent;

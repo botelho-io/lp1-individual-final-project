@@ -108,8 +108,8 @@
  */
 typedef uint32_t colSize_t;
 typedef struct {
-    colSize_t  alocated; ///< Tamanho alocado de objetos.
-    colSize_t  size;     ///< Tamanho de objetos que foi populado.
+    colSize_t alocated; ///< Tamanho alocado de objetos.
+    colSize_t size;     ///< Tamanho de objetos que foi populado.
     COL_TIPO* data;     ///< Começa em data[0] e acaba em data[size-1].
 } COL_NOME;
 typedef int (*COL_FUN(_pred_t))(COL_TIPO*, void*);
@@ -447,17 +447,17 @@ int COL_FUN(_read)(COL_NOME* const v, FILE* f) {
 #endif
 
 #ifdef COL_DECLARACAO
-COL_NOME COL_FUN(_new)();
-COL_TIPO COL_FUN(_pop)(COL_NOME* const v);
-void     COL_FUN(_free)(COL_NOME* const v);
-int      COL_FUN(_adjust)(COL_NOME* const v);
-int      COL_FUN(_addCell)(COL_NOME* const v);
-int      COL_FUN(_reserve)(COL_NOME* const v, colSize_t space);
-int      COL_FUN(_push)(COL_NOME* const v, COL_TIPO const newObj);
-void     COL_FUN(_moveBelow)(COL_NOME* const v, const colSize_t i);
-void     COL_FUN(_removeAt)(COL_NOME* const v, colSize_t position);
-int      COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i);
-COL_TIPO COL_FUN(_popAt)(COL_NOME* const v, const colSize_t position);
+COL_NOME  COL_FUN(_new)();
+COL_TIPO  COL_FUN(_pop)(COL_NOME* const v);
+void      COL_FUN(_free)(COL_NOME* const v);
+int       COL_FUN(_adjust)(COL_NOME* const v);
+int       COL_FUN(_addCell)(COL_NOME* const v);
+int       COL_FUN(_reserve)(COL_NOME* const v, colSize_t space);
+int       COL_FUN(_push)(COL_NOME* const v, COL_TIPO const newObj);
+void      COL_FUN(_moveBelow)(COL_NOME* const v, const colSize_t i);
+void      COL_FUN(_removeAt)(COL_NOME* const v, colSize_t position);
+int       COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i);
+COL_TIPO  COL_FUN(_popAt)(COL_NOME* const v, const colSize_t position);
 colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
 colSize_t COL_FUN(_iterateBW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
 #    ifdef COL_DEALOC

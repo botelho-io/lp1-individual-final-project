@@ -53,7 +53,7 @@
 
 typedef struct {
     compracol compras;    ///< Compras que fazem parte da encomenda.
-    int64_t  ID_cliente; ///< ID do cliente que formalizou a encomenda.
+    int64_t   ID_cliente; ///< ID do cliente que formalizou a encomenda.
     time_t    tempo;
 } encomenda;
 
@@ -61,6 +61,6 @@ encomenda newEncomenda();
 void      freeEncomenda(encomenda* const e);
 int       save_encomenda(FILE* const f, const encomenda* const data);
 int       load_encomenda(FILE* const f, encomenda* const data);
-int64_t  encomenda_CalcPreco(const encomenda* const e, const artigocol* const av);
+int64_t   encomenda_CalcPreco(const encomenda* const e, const artigocol* const av);
 
 #endif

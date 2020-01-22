@@ -44,20 +44,22 @@ int   load_str(FILE* const f, char** const data);
 #define MACRO_QUOTE(X) __MACRO_QUOTE_INTERNAL(X)
 #define __MACRO_QUOTE_INTERNAL(X) #X
 
-# define protectVarFcnCall(VAR, FCN, ERRMSG)                                                                           \
-        VAR = FCN;                                                                                                     \
-        if (!VAR) {                                                                                                    \
-            printf("File: [" __FILE__ "] Funcion: [%s] Line: [" MACRO_QUOTE(__LINE__) "]\n"                            \
-            "ERRO: " ERRMSG "\n", __func__);                                                                           \
-            exit(EXIT_FAILURE);                                                                                        \
-        }
+#define protectVarFcnCall(VAR, FCN, ERRMSG)                                                                            \
+    VAR = FCN;                                                                                                         \
+    if (!VAR) {                                                                                                        \
+        printf("File: [" __FILE__ "] Funcion: [%s] Line: [" MACRO_QUOTE(__LINE__) "]\n"                                \
+                                                                                  "ERRO: " ERRMSG "\n",                \
+               __func__);                                                                                              \
+        exit(EXIT_FAILURE);                                                                                            \
+    }
 
-# define protectFcnCall(FCN, ERRMSG)                                                                                   \
-        if (!FCN) {                                                                                                    \
-            printf("File: [" __FILE__ "] Funcion: [%s] Line: [" MACRO_QUOTE(__LINE__) "]\n"                            \
-            "ERRO: " ERRMSG "\n", __func__);                                                                           \
-            exit(EXIT_FAILURE);                                                                                        \
-        }
+#define protectFcnCall(FCN, ERRMSG)                                                                                    \
+    if (!FCN) {                                                                                                        \
+        printf("File: [" __FILE__ "] Funcion: [%s] Line: [" MACRO_QUOTE(__LINE__) "]\n"                                \
+                                                                                  "ERRO: " ERRMSG "\n",                \
+               __func__);                                                                                              \
+        exit(EXIT_FAILURE);                                                                                            \
+    }
 
 
 #endif

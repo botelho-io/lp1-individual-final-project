@@ -36,8 +36,8 @@
  *          tipo de medicamento (taxa de IVA e grupo).
  */
 typedef struct {
-    char*    nome;       ///< Nome do artigo
-    uint8_t  meta;       ///< Info sobre o artigo
+    char*   nome;       ///< Nome do artigo
+    uint8_t meta;       ///< Info sobre o artigo
     int64_t preco_cent; ///< Preçco base do artigo em cêntimos
     int64_t stock;      ///< Stock do artigo
 

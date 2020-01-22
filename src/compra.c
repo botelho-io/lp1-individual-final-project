@@ -7,13 +7,11 @@
  *
  * @copyright Copyright (c) 2020
  */
-//TODO: Update brief
+// TODO: Update brief
 
 #include "compra.h"
 
-compra new_compra() {
-    return (compra) { .IDartigo = 0 };
-}
+compra new_compra() { return (compra) {.IDartigo = 0}; }
 
 int save_compra(FILE* const f, const compra* const data) {
     int written = 0;

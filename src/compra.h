@@ -7,7 +7,7 @@
  *
  * @copyright Copyright (c) 2020
  */
-//TODO: Update brief
+// TODO: Update brief
 
 #ifndef PARIDNUM_H
 #define PARIDNUM_H
@@ -20,7 +20,7 @@
 typedef struct {
     int64_t IDartigo;    //< ID do artigo
     int64_t qtd;         //< Quantidade de artigos encomendados
-    char     receita[19]; //< Receita do artigo
+    char    receita[19]; //< Receita do artigo
 } compra;
 
 int    save_compra(FILE* const f, const compra* const data);

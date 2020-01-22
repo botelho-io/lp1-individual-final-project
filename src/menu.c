@@ -87,9 +87,7 @@ char* menu_readString() {
 char* menu_readNotNulStr() {
     static char* value;
     value = NULL;
-    while (!value) {
-        value = menu_readString();
-    }
+    while (!value) { value = menu_readString(); }
     return value;
 }
 
@@ -197,7 +195,7 @@ int64_t menu_readInt64_tMinMax(const int64_t min, const int64_t max) {
  *              selecionada ou "Sair" para -1
  */
 int64_t menu_selection(const strcol* const itens) {
-    int64_t op  = -2;
+    int64_t op = -2;
     int64_t max;
     menu_printDiv();
     while (op == -2) {
@@ -206,7 +204,7 @@ int64_t menu_selection(const strcol* const itens) {
         printf("         -1   |   Sair\n");
         max = 0;
         strcol_iterateFW((strcol*) itens, (strcol_pred_t) &printItemVP, &max);
-        op = menu_readInt64_tMinMax(-2, max-1);
+        op = menu_readInt64_tMinMax(-2, max - 1);
     }
     return op;
 }
@@ -225,11 +223,12 @@ int64_t menu_selection(const strcol* const itens) {
 int menu_YN(const char Y, const char N) {
     int i = toupper(getchar());
     cleanInputBuffer();
-    if(i == toupper(Y)) {
+    if (i == toupper(Y)) {
         return 1;
     } else if (i == toupper(N)) {
         return 0;
-    } else return 2;
+    } else
+        return 2;
 }
 
 /**
@@ -387,9 +386,9 @@ void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* co
         precoComIva += (a->preco_cent * iva);
 
         printf("* %8lu | %35.35s | %8lu | %8lu | ",
-               i,                              //
-               protectStr(a->nome),            //
-               a->preco_cent,                  //
+               i,                             //
+               protectStr(a->nome),           //
+               a->preco_cent,                 //
                (int64_t)(a->preco_cent * iva) //
         );
 

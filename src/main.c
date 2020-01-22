@@ -52,9 +52,9 @@
 #    include "./colecao.h"
 #endif
 
-artigocol     artigos;                   ///< Artigos da seção atual
-encomendacol  encomendas;                ///< Encomendas
-utilizadorcol utilizadores;              ///< Utilizadores existentes no registo
+artigocol     artigos;      ///< Artigos da seção atual
+encomendacol  encomendas;   ///< Encomendas
+utilizadorcol utilizadores; ///< Utilizadores existentes no registo
 
 #include "outrasListagens.h"
 
@@ -110,7 +110,7 @@ Cliente –
  *          utilizadores impressos.
  * @returns 0
  */
-void printUtiVP(utilizador const * const u, int64_t const * i) {
+void printUtiVP(utilizador const* const u, int64_t const* i) {
     printf("   %8lu   |   ", *i++);
     menu_printUtilizador(*u);
     printf("\n");
@@ -123,7 +123,8 @@ void form_editar_cliente(utilizador const* u, int isNew) {
 
 
 
-// De interface_artigo **************************************************************************************************
+// De interface_artigo
+// **************************************************************************************************
 /**
  * @brief   Pode ser utilizado como um iterador, imprime um artigo.
  * @param a Artigo a ser impresso.
@@ -131,7 +132,7 @@ void form_editar_cliente(utilizador const* u, int isNew) {
  *          artigos impressos.
  * @returns 0
  */
-void printArtVP(artigo const * const a, int64_t const * i) {
+void printArtVP(artigo const* const a, int64_t const* i) {
     printf("   %8lu   |   ", *i++);
     menu_printArtigo(a);
     printf("\n");
@@ -144,7 +145,8 @@ void form_editar_artigo(artigo const* a, int isNew) {
 
 
 
-// De interface_encomenda ***********************************************************************************************
+// De interface_encomenda
+// ***********************************************************************************************
 /**
  * @brief   Pode ser utilizado como um iterador, imprime uma encomenda.
  * @param e encomenda a ser impresso.
@@ -152,7 +154,7 @@ void form_editar_artigo(artigo const* a, int isNew) {
  *          encomendas impressas.
  * @returns 0
  */
-void printEncVP(encomenda const * const e, int64_t const * i) {
+void printEncVP(encomenda const* const e, int64_t const* i) {
     printf("   %8lu   |   ", *i++);
     menu_printEncomendaBrief(e, &utilizadores, &artigos);
     printf("\n");
@@ -166,43 +168,46 @@ void form_editar_encomenda(encomenda const* e, int isNew) {
 
 
 // De interface_diretor ************************************************************************************************
-#define GENERIC_EDIT(nome, iterateFW, col, col_pred_t, col_pred, push, editfnc, nomenew)\
-    menu_printDiv();                                                           \
-    menu_printHeader("Selecione " nome);                                       \
-    int64_t id  = -2;                                                          \
-    int64_t max;                                                               \
-    while (id == -2) {                                                         \
-        printf("      ID      |   Item\n");                                    \
-        printf("         -2   |   Reimprimir\n");                              \
-        printf("         -1   |   Sair\n");                                    \
-        max = 0;                                                               \
-        iterateFW(&col, (col_pred_t) &col_pred, &max);                         \
-        printf("   %8lu   |   Criar Novo " nome "\n", max++);                  \
-        menu_printInfo("Insira o ID do " nome " para editar");                 \
-        id = menu_readInt64_tMinMax(-2, max-1);                                \
-    }                                                                          \
-    if(id == -1) return;                                                       \
-    if(id == max-1) {                                                          \
-        /* Novo, adicionar ao vetor*/                                          \
-        protectFcnCall(push(&col, nomenew()), #push " falhou");                \
-    }                                                                          \
-                                                                               \
-    /* id é o ID do cliente a editar*/                                         \
-    editfnc(&col.data[id], id == max-1);                                       \
+#define GENERIC_EDIT(nome, iterateFW, col, col_pred_t, col_pred, push, editfnc, nomenew)                               \
+    menu_printDiv();                                                                                                   \
+    menu_printHeader("Selecione " nome);                                                                               \
+    int64_t id = -2;                                                                                                   \
+    int64_t max;                                                                                                       \
+    while (id == -2) {                                                                                                 \
+        printf("      ID      |   Item\n");                                                                            \
+        printf("         -2   |   Reimprimir\n");                                                                      \
+        printf("         -1   |   Sair\n");                                                                            \
+        max = 0;                                                                                                       \
+        iterateFW(&col, (col_pred_t) &col_pred, &max);                                                                 \
+        printf("   %8lu   |   Criar Novo " nome "\n", max++);                                                          \
+        menu_printInfo("Insira o ID do " nome " para editar");                                                         \
+        id = menu_readInt64_tMinMax(-2, max - 1);                                                                      \
+    }                                                                                                                  \
+    if (id == -1) return;                                                                                              \
+    if (id == max - 1) {                                                                                               \
+        /* Novo, adicionar ao vetor*/                                                                                  \
+        protectFcnCall(push(&col, nomenew()), #push " falhou");                                                        \
+    }                                                                                                                  \
+                                                                                                                       \
+    /* id é o ID do cliente a editar*/                                                                                \
+    editfnc(&col.data[id], id == max - 1);
 
 /**
  * @brief Permite selecionar um utilizador que será editado/criado
  */
 void interface_editar_cliente() {
-    GENERIC_EDIT("Cliente", utilizadorcol_iterateFW, utilizadores, utilizadorcol_pred_t, printUtiVP, utilizadorcol_push, form_editar_cliente, newUtilizador);
+    GENERIC_EDIT("Cliente", utilizadorcol_iterateFW, utilizadores, utilizadorcol_pred_t, printUtiVP, utilizadorcol_push,
+                 form_editar_cliente, newUtilizador);
 }
 
 void interface_editar_artigo() {
-    GENERIC_EDIT("Artigo", artigocol_iterateFW, artigos, artigocol_pred_t, printArtVP, artigocol_push, form_editar_artigo, newArtigo);
+    GENERIC_EDIT("Artigo", artigocol_iterateFW, artigos, artigocol_pred_t, printArtVP, artigocol_push,
+                 form_editar_artigo, newArtigo);
 }
 
 void interface_editar_encomenda() {
-    GENERIC_EDIT("Encomenda", encomendacol_iterateFW, encomendas, encomendacol_pred_t, printEncVP, encomendacol_push, form_editar_encomenda, newEncomenda);
+    GENERIC_EDIT("Encomenda", encomendacol_iterateFW, encomendas, encomendacol_pred_t, printEncVP, encomendacol_push,
+                 form_editar_encomenda, newEncomenda);
 }
 
 void interface_imprimir_recibo() {
@@ -232,22 +237,20 @@ void interface_diretor() {
     while (1) {
         menu_printDiv();
         menu_printHeader("Menu de Diretor Clínico");
-        switch( menu_selection( &(strcol) {
-            .size = 5,
-            .data = (char*[]) {
-                "Editar/ criar cliente",  //
-                "Editar/ criar artigo",   //
-                "Editar/ criar encomenda",//
-                "Imprimir recibo",        //
-                "Outras Listagens",       //
-            }
-        } ) ){
+        switch (menu_selection(&(strcol) {.size = 5,
+                                          .data = (char*[]) {
+                                              "Editar/ criar cliente",   //
+                                              "Editar/ criar artigo",    //
+                                              "Editar/ criar encomenda", //
+                                              "Imprimir recibo",         //
+                                              "Outras Listagens",        //
+                                          }})) {
             case -1: return;
-            case  0: interface_editar_cliente()  ; break;
-            case  1: interface_editar_artigo()   ; break;
-            case  2: interface_editar_encomenda(); break;
-            case  3: interface_imprimir_recibo() ; break;
-            case  4: interface_outras_listagens(); break;
+            case 0: interface_editar_cliente(); break;
+            case 1: interface_editar_artigo(); break;
+            case 2: interface_editar_encomenda(); break;
+            case 3: interface_imprimir_recibo(); break;
+            case 4: interface_outras_listagens(); break;
         }
     }
 }
@@ -259,16 +262,14 @@ void interface_funcionario() {
     while (1) {
         menu_printDiv();
         menu_printHeader("Menu de Funcionário");
-        switch( menu_selection( &(strcol) {
-            .size = 2,
-            .data = (char*[]) {
-                "Editar/ criar cliente", //
-                "Criar compra",          //
-            }
-        } ) ){
+        switch (menu_selection(&(strcol) {.size = 2,
+                                          .data = (char*[]) {
+                                              "Editar/ criar cliente", //
+                                              "Criar compra",          //
+                                          }})) {
             case -1: return;
-            case  0: interface_editar_cliente() ; break;
-            case  1: interface_criar_compra()   ; break;
+            case 0: interface_editar_cliente(); break;
+            case 1: interface_criar_compra(); break;
         }
     }
 }
@@ -336,21 +337,19 @@ void funcional_load() {
 void interface_inicio() {
     char* login = NULL;
     while (1) {
-        switch( menu_selection( & (strcol) {
-            .size = 3,
-            .data = (char*[]) {
-                "Log in",         // 0
-                "Salvar Dados",   // 1
-                "Carregar Dados", // 2
-            }
-        }) ) {
+        switch (menu_selection(&(strcol) {.size = 3,
+                                          .data = (char*[]) {
+                                              "Log in",         // 0
+                                              "Salvar Dados",   // 1
+                                              "Carregar Dados", // 2
+                                          }})) {
             case -1: return;
-            case  0:
+            case 0:
                 printf("(F / DC)");
                 login = menu_readNotNulStr();
-                if( strcmp(login, "F") == 0 ) {
+                if (strcmp(login, "F") == 0) {
                     interface_funcionario();
-                } else if( strcmp(login, "DC") == 0 ) {
+                } else if (strcmp(login, "DC") == 0) {
                     interface_diretor();
                 } else {
                     menu_printError("Log in %s é inválido", login);
@@ -358,7 +357,7 @@ void interface_inicio() {
                            "Inserir \"DC\" para permissões de diretor clínico\n");
                 }
                 freeN(login);
-            break;
+                break;
             case 1: funcional_save(); break;
             case 2: funcional_load(); break;
         }
@@ -381,12 +380,11 @@ int main() {
            " \nVERÇÂO DO COMPILADOR: " MACRO_QUOTE(_MSC_VER)
 #    elif defined(__clang__)
            "CLANG"
-           " \nVERÇÂO DO COMPILADOR: " MACRO_QUOTE(__clang_major__) "."
-           MACRO_QUOTE(__clang_minor__) "." MACRO_QUOTE(__clang_patchlevel__)
+           " \nVERÇÂO DO COMPILADOR: " MACRO_QUOTE(__clang_major__) "." MACRO_QUOTE(__clang_minor__) "." MACRO_QUOTE(
+               __clang_patchlevel__)
 #    elif defined(__MINGW32__)
            "MINGW"
-           " \nVERÇÂO DO COMPILADOR: " MACRO_QUOTE(__MINGW32_MAJOR_VERSION) "."
-           MACRO_QUOTE(__MINGW32_MINOR_VERSION)
+           " \nVERÇÂO DO COMPILADOR: " MACRO_QUOTE(__MINGW32_MAJOR_VERSION) "." MACRO_QUOTE(__MINGW32_MINOR_VERSION)
 #    elif defined(__TINYC__)
            "TINY C"
 #    elif defined(__llvm__)
@@ -402,9 +400,9 @@ int main() {
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
     // TODO: REMOVE, WINDOWS ONLY
-   stdin  = (&_iob[STDIN_FILENO]);
-   stdout = (&_iob[STDOUT_FILENO]);
-   stderr = (&_iob[STDERR_FILENO]);
+    stdin  = (&_iob[STDIN_FILENO]);
+    stdout = (&_iob[STDOUT_FILENO]);
+    stderr = (&_iob[STDERR_FILENO]);
 #endif
 
     menu_printDiv();
