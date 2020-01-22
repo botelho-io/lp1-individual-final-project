@@ -1,5 +1,5 @@
 /**
- * @file    parIdReceita.c
+ * @file    compra.c
  * @author  André Botelho (keyoted@gmail.com)
  * @brief
  * @version 1
@@ -9,13 +9,13 @@
  */
 //TODO: Update brief
 
-#include "parIdReceita.h"
+#include "compra.h"
 
-parIdReceita new_parIdReceita() {
-    return (parIdReceita) { .IDartigo = 0 };
+compra new_compra() {
+    return (compra) { .IDartigo = 0 };
 }
 
-int save_parIdReceita(FILE* const f, const parIdReceita* const data) {
+int save_compra(FILE* const f, const compra* const data) {
     int written = 0;
     written += fwrite(&data->IDartigo, sizeof(uint64_t), 1, f);
     written += fwrite(&data->qtd, sizeof(uint64_t), 1, f);
@@ -23,7 +23,7 @@ int save_parIdReceita(FILE* const f, const parIdReceita* const data) {
     return written == 21;
 }
 
-int load_parIdReceita(FILE* const f, parIdReceita* const data) {
+int load_compra(FILE* const f, compra* const data) {
     int written = 0;
     written += fread(&data->IDartigo, sizeof(uint64_t), 1, f);
     written += fread(&data->qtd, sizeof(uint64_t), 1, f);

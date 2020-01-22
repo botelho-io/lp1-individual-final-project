@@ -26,7 +26,7 @@
  */
 encomenda newEncomenda() {
     return (encomenda) {
-        .artigos    = parIRcol_new(), //
+        .compras    = compracol_new(), //
         .ID_cliente = 0,              //
         .tempo      = time(NULL)      //
     };
@@ -36,7 +36,7 @@ encomenda newEncomenda() {
  * @brief           Responsavél por libertar a memória da encomenda.
  * @param e         Encomenda para ser libertado.
  */
-void freeEncomenda(encomenda* const e) { parIRcol_free(&e->artigos); }
+void freeEncomenda(encomenda* const e) { compracol_free(&e->compras); }
 
 /**
  * @brief           Calcula o preço de uma encomenda, em cêntimos.
@@ -50,8 +50,8 @@ uint64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av
     uint64_t precoFinal = 0;
     uint64_t precoPreTax;
     artigo*  artAtual;
-    for (uint64_t i = 0; i < e->artigos.size; i++) {
-        artAtual    = &(av->data[e->artigos.data[i].IDartigo]);
+    for (uint64_t i = 0; i < e->compras.size; i++) {
+        artAtual    = &(av->data[e->compras.data[i].IDartigo]);
         precoPreTax = artAtual->preco_cent;
         switch (artAtual->meta & ARTIGO_IVA) {
             case ARTIGO_IVA_NORMAL: precoPreTax *= ARTIGO_IVA_NORMAL_VAL; break;
@@ -72,8 +72,8 @@ uint64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av
  */
 int save_encomenda(FILE* const f, const encomenda* const data) {
     // Gravar artigos
-    if (!parIRcol_write(&(data->artigos), f)) {
-        menu_printError("ao gravar encomenda - parIRcol_write falhou");
+    if (!compracol_write(&(data->compras), f)) {
+        menu_printError("ao gravar encomenda - compracol_write falhou");
         return 0;
     }
     return fwrite(&data->ID_cliente, sizeof(uint64_t), 1, f);
@@ -88,9 +88,9 @@ int save_encomenda(FILE* const f, const encomenda* const data) {
  */
 int load_encomenda(FILE* const f, encomenda* const data) {
     // Carregar artigos
-    data->artigos = parIRcol_new();
-    if (!parIRcol_read(&(data->artigos), f)) {
-        menu_printError("ao carregar encomenda - parIRcol_read falhou");
+    data->compras = compracol_new();
+    if (!compracol_read(&(data->compras), f)) {
+        menu_printError("ao carregar encomenda - compracol_read falhou");
         return 0;
     }
     return fread(&data->ID_cliente, sizeof(uint64_t), 1, f);

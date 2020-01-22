@@ -1,5 +1,5 @@
 /**
- * @file    parIdReceita.h
+ * @file    compra.h
  * @author  André Botelho (keyoted@gmail.com)
  * @brief
  * @version 1
@@ -21,11 +21,11 @@ typedef struct {
     uint64_t IDartigo;    //< ID do artigo
     uint64_t qtd;         //< Quantidade de artigos encomendados
     char     receita[19]; //< Receita do artigo
-} parIdReceita;
+} compra;
 
-int          save_parIdReceita(FILE* const f, const parIdReceita* const data);
-int          load_parIdReceita(FILE* const f, parIdReceita* const data);
-void         free_parIdReceita(parIdReceita* const data);
-parIdReceita new_parIdReceita();
+int          save_compra(FILE* const f, const compra* const data);
+int          load_compra(FILE* const f, compra* const data);
+void         free_compra(compra* const data);
+compra new_compra();
 
 #endif

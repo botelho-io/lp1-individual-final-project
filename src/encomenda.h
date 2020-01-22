@@ -23,7 +23,7 @@
 #include <time.h>
 
 #include "artigo.h"
-#include "parIdReceita.h"
+#include "compra.h"
 
 #ifndef artigocol_H
 #    define artigocol_H
@@ -35,13 +35,13 @@
 #    include "./colecao.h"
 #endif
 
-#ifndef parcol_H
-#    define parcol_H
-#    define COL_TIPO parIdReceita
-#    define COL_NOME parIRcol
-#    define COL_DEALOC(X) free_parIdReceita(X)
-#    define COL_WRITE(X, F) save_parIdReceita(F, X)
-#    define COL_READ(X, F) load_parIdReceita(F, X)
+#ifndef compracol_H
+#    define compracol_H
+#    define COL_TIPO compra
+#    define COL_NOME compracol
+#    define COL_DEALOC(X) free_compra(X)
+#    define COL_WRITE(X, F) save_compra(F, X)
+#    define COL_READ(X, F) load_compra(F, X)
 #    include "./colecao.h"
 #endif
 
@@ -53,9 +53,9 @@
  */
 
 typedef struct {
-    parIRcol artigos;    ///< Artigos que fazem parte da encomenda.
-    uint64_t ID_cliente; ///< ID do cliente que formalizou a encomenda.
-    time_t   tempo;
+    compracol compras;    ///< Compras que fazem parte da encomenda.
+    uint64_t  ID_cliente; ///< ID do cliente que formalizou a encomenda.
+    time_t    tempo;
 } encomenda;
 
 encomenda newEncomenda();
