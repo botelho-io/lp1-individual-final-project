@@ -113,6 +113,7 @@ Cliente –
 void printUtiVP(utilizador const * const u, uint64_t const * i) {
     printf("   %8lu   |   ", i++);
     menu_printUtilizador(*u);
+    printf("\n");
 }
 
 void form_editar_cliente(utilizador const* u, int isNew) {
@@ -125,7 +126,7 @@ void form_editar_cliente(utilizador const* u, int isNew) {
 // De interface_artigo **************************************************************************************************
 /**
  * @brief   Pode ser utilizado como um iterador, imprime um artigo.
- * @param u Artigo a ser impresso.
+ * @param a Artigo a ser impresso.
  * @param i Deve ser inicializado como 0, no final irá conter o número de
  *          artigos impressos.
  * @returns 0
@@ -133,9 +134,31 @@ void form_editar_cliente(utilizador const* u, int isNew) {
 void printArtVP(artigo const * const a, uint64_t const * i) {
     printf("   %8lu   |   ", i++);
     menu_printArtigo(a);
+    printf("\n");
 }
 
 void form_editar_artigo(artigo const* a, int isNew) {
+    // TODO: implementar
+}
+
+
+
+
+// De interface_encomenda ***********************************************************************************************
+/**
+ * @brief   Pode ser utilizado como um iterador, imprime uma encomenda.
+ * @param e encomenda a ser impresso.
+ * @param i Deve ser inicializado como 0, no final irá conter o número de
+ *          encomendas impressas.
+ * @returns 0
+ */
+void printEncVP(encomenda const * const e, uint64_t const * i) {
+    printf("   %8lu   |   ", i++);
+    menu_printEncomendaBrief(e, &utilizadores, &artigos);
+    printf("\n");
+}
+
+void form_editar_encomenda(encomenda const* e, int isNew) {
     // TODO: implementar
 }
 
@@ -178,8 +201,8 @@ void interface_editar_artigo() {
     GENERIC_EDIT("Artigo", artigocol_iterateFW, artigos, artigocol_pred_t, printArtVP, artigocol_push, form_editar_artigo, newArtigo);
 }
 
-void interface_editar_compra() {
-    // TODO: Implementar
+void interface_editar_encomenda() {
+    GENERIC_EDIT("Encomenda", encomendacol_iterateFW, encomendas, encomendacol_pred_t, printEncVP, encomendacol_push, form_editar_encomenda, newEncomenda);
 }
 
 void interface_imprimir_recibo() {
@@ -212,17 +235,17 @@ void interface_diretor() {
         switch( menu_selection( &(strcol) {
             .size = 5,
             .data = (char*[]) {
-                "Editar/ criar cliente", //
-                "Editar/ criar artigo",  //
-                "Editar/ criar compra",  //
-                "Imprimir recibo",       //
-                "Outras Listagens",      //
+                "Editar/ criar cliente",  //
+                "Editar/ criar artigo",   //
+                "Editar/ criar encomenda",//
+                "Imprimir recibo",        //
+                "Outras Listagens",       //
             }
         } ) ){
             case -1: return;
             case  0: interface_editar_cliente()  ; break;
             case  1: interface_editar_artigo()   ; break;
-            case  2: interface_editar_compra()   ; break;
+            case  2: interface_editar_encomenda(); break;
             case  3: interface_imprimir_recibo() ; break;
             case  4: interface_outras_listagens(); break;
         }
