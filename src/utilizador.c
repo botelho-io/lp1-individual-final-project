@@ -78,7 +78,7 @@ void freeUtilizador(utilizador* const u) { freeN(u->nome); }
 int save_utilizador(FILE* const f, const utilizador* const data) {
     int written = 0;
     written += save_str(f, data->nome);
-    if (!data->nome) { menu_printInfo("ao gravar utilizador - nome inválido."); }
+    if (!data->nome) { menu_printInfo("ao gravar utilizador - nome inválido"); }
     written += fwrite(&data->NIF, sizeof(uint8_t), 9, f);
     written += fwrite(&data->CC, sizeof(uint8_t), 12, f);
     return written == (1 + 9 + 12);
@@ -94,7 +94,7 @@ int save_utilizador(FILE* const f, const utilizador* const data) {
 int load_utilizador(FILE* const f, utilizador* const data) {
     int written = 0;
     written += load_str(f, &data->nome);
-    if (!data->nome) { menu_printInfo("ao carregar utilizador - nome inválido."); }
+    if (!data->nome) { menu_printInfo("ao carregar utilizador - nome inválido"); }
     written += fread(&data->NIF, sizeof(uint8_t), 9, f);
     written += fread(&data->CC, sizeof(uint8_t), 12, f);
     return written == (1 + 9 + 12);

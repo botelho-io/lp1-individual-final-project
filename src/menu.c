@@ -57,7 +57,7 @@ char* menu_readString() {
     size_t    alocated = STEP;
     size_t    size     = 0;
     char*     str;
-    protectVarFcnCall(str, malloc(STEP), "menu_readString - alocação de memória recusada.");
+    protectVarFcnCall(str, malloc(STEP), "alocação de memória recusada");
 
     int ch;
     printf(" $ ");
@@ -67,7 +67,7 @@ char* menu_readString() {
             char* tmp = realloc(str, alocated += STEP);
             if (!tmp) {
                 --size;
-                menu_printError("menu_readString - realocação de memória recusada.");
+                menu_printError("menu_readString - realocação de memória recusada");
                 break;
             }
             str = tmp;
@@ -102,7 +102,7 @@ float menu_readFloat() {
     while (1) {
         printf(" $ ");
         if (scanf("%f", &value) != 1) {
-            menu_printError("Não foi inserido um número válido.");
+            menu_printError("Não foi inserido um número válido");
             cleanInputBuffer();
             continue;
         }
@@ -120,7 +120,7 @@ int menu_readInt() {
     while (1) {
         printf(" $ ");
         if (scanf("%d", value) != 1) {
-            menu_printError("Não foi inserido um número válido.");
+            menu_printError("Não foi inserido um número válido");
             cleanInputBuffer();
             continue;
         }
@@ -138,7 +138,7 @@ uint64_t menu_readUint64_t() {
     while (1) {
         printf(" $ ");
         if (scanf("%lu", value) != 1) {
-            menu_printError("Não foi inserido um número válido.");
+            menu_printError("Não foi inserido um número válido");
             cleanInputBuffer();
             continue;
         }
@@ -162,9 +162,9 @@ int menu_readIntMinMax(const int min, const int max) {
             if (value <= max) {
                 return;
             } else
-                menu_printError("[%d] é maior que [%d].", value, max);
+                menu_printError("[%d] é maior que [%d]", value, max);
         } else
-            menu_printError("[%d] é menor que [%d].", value, min);
+            menu_printError("[%d] é menor que [%d]", value, min);
     }
 }
 
@@ -183,9 +183,9 @@ uint64_t menu_readUint64_tMinMax(const uint64_t min, const uint64_t max) {
             if (value <= max) {
                 return;
             } else
-                menu_printError("[%lu] é maior que [%lu].", value, max);
+                menu_printError("[%lu] é maior que [%lu]", value, max);
         } else
-            menu_printError("[%lu] é menor que [%lu].", value, min);
+            menu_printError("[%lu] é menor que [%lu]", value, min);
     }
 }
 
@@ -441,7 +441,7 @@ void menu_printReciboMensal(const uint64_t ID_U, int mes, int ano, const encomen
             }
             stdout = fopen(nomeFicheiro, "w");
             if (!stdout) {
-                menu_printError("impossivel abrir ficheiro '%s' :%d!", nomeFicheiro, errno);
+                menu_printError("impossivel abrir ficheiro '%s' :%d", nomeFicheiro, errno);
                 stdout = stdoutTMP;
                 return;
             }

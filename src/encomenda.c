@@ -73,7 +73,7 @@ uint64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av
 int save_encomenda(FILE* const f, const encomenda* const data) {
     // Gravar artigos
     if (!parIRcol_write(&(data->artigos), f)) {
-        menu_printError("ao gravar encomenda - parIRcol_write falhou.");
+        menu_printError("ao gravar encomenda - parIRcol_write falhou");
         return 0;
     }
     return fwrite(&data->ID_cliente, sizeof(uint64_t), 1, f);
@@ -90,7 +90,7 @@ int load_encomenda(FILE* const f, encomenda* const data) {
     // Carregar artigos
     data->artigos = parIRcol_new();
     if (!parIRcol_read(&(data->artigos), f)) {
-        menu_printError("ao carregar encomenda - parIRcol_read falhou.");
+        menu_printError("ao carregar encomenda - parIRcol_read falhou");
         return 0;
     }
     return fread(&data->ID_cliente, sizeof(uint64_t), 1, f);

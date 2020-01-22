@@ -283,23 +283,23 @@ void interface_funcionario() {
  */
 void funcional_save() {
     menu_printDiv();
-    menu_printInfo("a escrever em ficheiro.");
+    menu_printInfo("a escrever em ficheiro");
 
     // Abrir ficheiro
     FILE* dataFile;
-    protectVarFcnCall(dataFile, fopen("saved_data.bin", "wb"), "Ficheiro não pode ser aberto.");
+    protectVarFcnCall(dataFile, fopen("saved_data.bin", "wb"), "ficheiro não pode ser aberto");
 
     // Escrever artigos
-    protectFcnCall(artigocol_write(&artigos, dataFile), "impossível escrever artigos no ficheiro.");
+    protectFcnCall(artigocol_write(&artigos, dataFile), "impossível escrever artigos no ficheiro");
 
     // Escrever encomendas
-    protectFcnCall(encomendacol_write(&encomendas, dataFile), "impossível escrever encomendas no ficheiro.");
+    protectFcnCall(encomendacol_write(&encomendas, dataFile), "impossível escrever encomendas no ficheiro");
 
     // Escrever utilizadores
-    protectFcnCall(utilizadorcol_write(&utilizadores, dataFile), "impossível escrever utilizadores no ficheiro.");
+    protectFcnCall(utilizadorcol_write(&utilizadores, dataFile), "impossível escrever utilizadores no ficheiro");
 
     fclose(dataFile);
-    menu_printInfo("ficheiro gravado.");
+    menu_printInfo("ficheiro gravado");
 }
 
 /**
@@ -307,7 +307,7 @@ void funcional_save() {
  */
 void funcional_load() {
     menu_printDiv();
-    menu_printInfo("a carregar de ficheiro.");
+    menu_printInfo("a carregar de ficheiro");
 
     // Eliminar dados
     artigocol_free(&artigos);
@@ -316,19 +316,19 @@ void funcional_load() {
 
     // Abrir ficheiro
     FILE* dataFile;
-    protectVarFcnCall(dataFile, fopen("saved_data.bin", "rb"), "Ficheiro não pode ser aberto.");
+    protectVarFcnCall(dataFile, fopen("saved_data.bin", "rb"), "ficheiro não pode ser aberto");
 
     // Carregar artigos
-    protectFcnCall(artigocol_read(&artigos, dataFile), "impossível carregar artigos de ficheiro.");
+    protectFcnCall(artigocol_read(&artigos, dataFile), "impossível carregar artigos de ficheiro");
 
     // Carregar encomendas
-    protectFcnCall(encomendacol_read(&encomendas, dataFile), "impossível carregar encomendas de ficheiro.");
+    protectFcnCall(encomendacol_read(&encomendas, dataFile), "impossível carregar encomendas de ficheiro");
 
     // Carregar utilizadores
-    protectFcnCall(utilizadorcol_read(&utilizadores, dataFile), "impossível carregar utilizadores de ficheiro.");
+    protectFcnCall(utilizadorcol_read(&utilizadores, dataFile), "impossível carregar utilizadores de ficheiro");
 
     fclose(dataFile);
-    menu_printInfo("dados carregados.");
+    menu_printInfo("dados carregados");
 }
 
 
