@@ -102,13 +102,80 @@ Cliente –
 
 
 
+// De interface_cliente ************************************************************************************************
+/**
+ * @brief   Pode ser utilizado como um iterador, imprime um utilizador.
+ * @param u Cliente a ser impresso.
+ * @param i Deve ser inicializado como 0, no final irá conter o número de
+ *          utilizadores impressos.
+ * @returns 0
+ */
+void printUtiVP(utilizador const * const u, uint64_t const * i) {
+    printf("   %8lu   |   ", i++);
+    menu_printUtilizador(*u);
+}
+
+void form_editar_cliente(utilizador const* u, int isNew) {
+    // TODO: implementar
+}
+
+
+
+
+// De interface_artigo **************************************************************************************************
+/**
+ * @brief   Pode ser utilizado como um iterador, imprime um artigo.
+ * @param u Artigo a ser impresso.
+ * @param i Deve ser inicializado como 0, no final irá conter o número de
+ *          artigos impressos.
+ * @returns 0
+ */
+void printArtVP(artigo const * const a, uint64_t const * i) {
+    printf("   %8lu   |   ", i++);
+    menu_printArtigo(a);
+}
+
+void form_editar_artigo(artigo const* a, int isNew) {
+    // TODO: implementar
+}
+
+
+
+
 // De interface_diretor ************************************************************************************************
+#define GENERIC_EDIT(nome, iterateFW, col, col_pred_t, col_pred, push, editfnc, nomenew)\
+    menu_printDiv();                                                           \
+    menu_printHeader("Selecione " nome);                                       \
+    uint64_t id  = -2;                                                         \
+    uint64_t max;                                                              \
+    while (id == -2) {                                                         \
+        printf("      ID      |   Item\n");                                    \
+        printf("         -2   |   Reimprimir\n");                              \
+        printf("         -1   |   Sair\n");                                    \
+        max = 0;                                                               \
+        iterateFW(&col, (col_pred_t) &col_pred, &max);                         \
+        printf("   %8lu   |   Criar Novo " nome, max++);                       \
+        printf("Insira o ID do " nome " para editar");                         \
+        id = menu_readUint64_tMinMax(-2, max-1);                               \
+    }                                                                          \
+    if(id == -1) return;                                                       \
+    if(id == max-1) {                                                          \
+        /* Novo, adicionar ao vetor*/                                          \
+        protectFcnCall(push(&col, nomenew()), #push " falhou");                \
+    }                                                                          \
+                                                                               \
+    /* id é o ID do cliente a editar*/                                         \
+    editfnc(&col.data[id], id == max-1);                                       \
+
+/**
+ * @brief Permite selecionar um utilizador que será editado/criado
+ */
 void interface_editar_cliente() {
-    // TODO: Implementar
+    GENERIC_EDIT("Cliente", utilizadorcol_iterateFW, utilizadores, utilizadorcol_pred_t, printUtiVP, utilizadorcol_push, form_editar_cliente, newUtilizador);
 }
 
 void interface_editar_artigo() {
-    // TODO: Implementar
+    GENERIC_EDIT("Artigo", artigocol_iterateFW, artigos, artigocol_pred_t, printArtVP, artigocol_push, form_editar_artigo, newArtigo);
 }
 
 void interface_editar_compra() {
