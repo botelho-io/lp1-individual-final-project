@@ -44,35 +44,20 @@ int   load_str(FILE* const f, char** const data);
 #define MACRO_QUOTE(X) __MACRO_QUOTE_INTERNAL(X)
 #define __MACRO_QUOTE_INTERNAL(X) #X
 
-#ifdef DEBUG_BUILD
-#    define protectVarFcnCall(VAR, FCN, ERRMSG)                                                                        \
+# define protectVarFcnCall(VAR, FCN, ERRMSG)                                                                           \
         VAR = FCN;                                                                                                     \
         if (!VAR) {                                                                                                    \
-            printf("File: [" __FILE__ "] Funcion: [%s] Line: [" MACRO_QUOTE(__LINE__) "]\n", __func__);                \
-            printf(ERRMSG);                                                                                            \
+            printf("File: [" __FILE__ "] Funcion: [%s] Line: [" MACRO_QUOTE(__LINE__) "]\n"                            \
+            "ERRO: " ERRMSG "\n", __func__);                                                                           \
             exit(EXIT_FAILURE);                                                                                        \
         }
 
-#    define protectFcnCall(FCN, ERRMSG)                                                                                \
+# define protectFcnCall(FCN, ERRMSG)                                                                                   \
         if (!FCN) {                                                                                                    \
-            printf("File: " __FILE__ "        Funcion: %s        Line: " MACRO_QUOTE(__LINE__) "\n", __func__);        \
-            printf(ERRMSG);                                                                                            \
+            printf("File: [" __FILE__ "] Funcion: [%s] Line: [" MACRO_QUOTE(__LINE__) "]\n"                            \
+            "ERRO: " ERRMSG "\n", __func__);                                                                           \
             exit(EXIT_FAILURE);                                                                                        \
         }
-#else
-#    define protectVarFcnCall(VAR, FCN, ERRMSG)                                                                        \
-        VAR = FCN;                                                                                                     \
-        if (!VAR) {                                                                                                    \
-            printf(ERRMSG "\n");                                                                                       \
-            exit(EXIT_FAILURE);                                                                                        \
-        }
-
-#    define protectFcnCall(FCN, ERRMSG)                                                                                \
-        if (!FCN) {                                                                                                    \
-            printf(ERRMSG "\n");                                                                                       \
-            exit(EXIT_FAILURE);                                                                                        \
-        }
-#endif
 
 
 #endif

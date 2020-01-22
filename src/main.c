@@ -195,35 +195,7 @@ void interface_outras_listagens() {
 
 // De interface_funcionario ********************************************************************************************
 void interface_criar_compra() {
-    // TODO: acabar de implementar
-    parIRcol ar = parIRcol_new();
-
-    while (1) {
-        menu_printInfo("numero de artigos atuais: %lu.", ar.size);
-        menu_printHeader("Selecionar Artigo Para Editar:");
-
-        uint64_t op  = -2;
-        uint64_t max = ar.size;
-        while (op == -2) {
-            printf("   Opção      |   Item\n");
-            printf("         -2   |   Reimprimir\n");
-            printf("         -1   |   Sair\n");
-            uint64_t i = 0;
-            parIRcol_iterateFW(&ar, (parIRcol_pred_t) &printItemVP, &i);
-            menu_readUint64_t(-2, max - 1);
-        }
-
-        // Option was gotten -------------------------
-        if (op == -1) return;
-        if (op == (int) max) {
-            protectFcnCall(artigovec_push(ar, newArtigo()), "funcional_editar_artigos - artigovec_push falhou.");
-        }
-        if (!funcional_editar_artigo(&ar.data[op], (op == (int) max))) {
-            artigovec_moveBelow(ar, op);
-            menu_printInfo("Artigo removido.");
-        }
-    }
-
+    // TODO: implementar
 }
 
 
