@@ -147,6 +147,115 @@ int form_editar_artigo(artigo const* a, int isNew) {
 
 
 
+// De form_editar_encomenda
+// ***********************************************************************************************
+/**
+ * @brief   Pode ser utilizado como um iterador, imprime uma compra.
+ * @param c Compra a ser impressa.
+ * @param i Deve ser inicializado como 0, no final irá conter o número de
+ *          compras impressas.
+ * @returns 0
+ */
+int printComVP(compra const* const c, int64_t const* i) {
+    printf("   %8lu   |   ", *i++);
+    menu_printCompra(c, &artigos);
+    printf("\n");
+    return 0;
+}
+
+/**
+ * @brief       Função responsável por editar todos os parametros de uma compra.
+ * @param c     Compra que será editada.
+ * @param isNew Deve ser 1 se o artigo é um novo artigo e 0 se é um artigo
+ *              válido que será editado.
+ * @returns     1 Se o artigo foi editado.
+ * @returns     0 Se a compra não foi editada/ foi eleminada; a compra c terá
+ *              que ser eleminada pois é inválida.
+ */
+int form_editar_compra(compra* const c, int isNew) {
+    menu_printDiv();
+    if(isNew) menu_printHeader("Criar Nova Compra");
+    else menu_printHeader("Editar Compra");
+
+    artigo* art;
+    if(!isNew) {
+        art = &artigos.data[c->IDartigo];
+        // Fazer reset do stock
+        art->stock += c->qtd;
+        // Eleminar compra
+        printf("Eleminar compra (S / N)");
+        int YN = 2;
+        while (YN == 2) {
+            YN = menu_YN('S', 'N');
+            switch(YN) {
+                case 0: break;
+                case 1: return 0;
+                default: menu_printError("resposta inválida, devia de ser S ou N");
+            }
+        }
+    } else {
+        // Ler tipo de artigo
+        menu_printInfo("escolher artigo");
+        int64_t id = -2;
+        int64_t max;
+        while (id == -2) {
+            printf("      ID      |   Item\n");
+            printf("         -2   |   Reimprimir\n");
+            printf("         -1   |   Sair\n");
+            max = 0;
+            artigocol_iterateFW(&artigos, (artigocol_pred_t) &printComVP, &max);
+            menu_printInfo("Insira o ID do artigo que será vendido na compra");
+            id = menu_readInt64_tMinMax(-2, max - 1);
+        }
+        c->IDartigo = id;
+        art = &artigos.data[id];
+
+        // Ler receita
+        if(art->meta & ARTIGO_NECESSITA_RECEITA) {
+            char* tmp = NULL;
+            menu_printInfo("artigo necessita de receita para ser vendido");
+            while (1) {
+                printf("Insira os 12 characteres da receita do artigo");
+                freeN(tmp);
+                tmp = menu_readNotNulStr();
+                if(strlen(tmp) != 12) {
+                    menu_printError("receitas médicas necessitam de ter 12 dígitos");
+                } else {
+                    size_t i;
+                    for (i = 0; i < 12; i++) {
+                        if(!isdigit(tmp[i])) {
+                            menu_printError("receitas médicas são compostas apenas de dígitos");
+                            break;
+                        }
+                    }
+                    if(i == 12) {
+                        memcpy(&c->receita, tmp, 12);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Ler quantidade
+    if(art->stock == 0) {
+        menu_printError("não existe stock do artigo atua");
+        return 0;
+    }
+    if(art->meta & ARTIGO_DESATIVADO) {
+        menu_printError("o artigo selecionado não se encontra disponivél para venda");
+        return 0;
+    }
+    printf("Insira a quantidade de artigos para vender nesta compra");
+    if(!isNew) printf(" (%ld)", c->qtd);
+    c->qtd = menu_readInt64_tMinMax(1, art->stock);
+    art->stock -= c->qtd;
+    return 1;
+}
+
+
+
+
 // De interface_encomenda
 // ***********************************************************************************************
 /**
