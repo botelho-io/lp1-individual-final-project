@@ -64,6 +64,7 @@ void    menu_printHeader(const char* header);
 void    menu_printUtilizador(const utilizador u);
 void    menu_printArtigo(const artigo* const a);
 void    menu_printArtigoStock(const artigo* const a);
+void    menu_printCompra(const compra* const c, const artigocol* const av);
 int     menu_readInt();
 int64_t menu_readInt64_t();
 float   menu_readFloat();

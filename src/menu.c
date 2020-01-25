@@ -330,6 +330,15 @@ void menu_printArtigo(const artigo* const a) {
 }
 
 /**
+ * @brief   Imprime informação sobre o artigo.
+ * @param c Compra a ser impressa.
+ */
+void menu_printCompra(const compra* const c, const artigocol* const av) {
+    printf("QTD: %lu  |  ", c->qtd);
+    menu_printArtigo(&(av->data[c->IDartigo]));
+}
+
+/**
  * @brief   Imprime informação sobre o artigo e o stcok.
  * @param a Artigo para ser impresso.
  */
@@ -382,24 +391,23 @@ void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* co
             case ARTIGO_IVA_REDUZIDO: iva = ARTIGO_IVA_REDUZIDO_VAL; break;
             default: iva = ARTIGO_IVA_INTERMEDIO_VAL; break;
         }
-        precoSemIva += a->preco_cent;
-        precoComIva += (a->preco_cent * iva);
+        precoSemIva += a->preco_cent * e->compras.data[i].qtd;
+        precoComIva += precoSemIva * iva;
 
-        printf("* %8lu | %35.35s | %8lu | %8lu | ",
-               i,                             //
-               protectStr(a->nome),           //
-               a->preco_cent,                 //
-               (int64_t)(a->preco_cent * iva) //
+        printf("* %8lu | QTD: %lu | %30.30s | %8lu | %8lu | ",
+               i,                               //
+               e->compras.data[i].qtd,          //
+               protectStr(a->nome),             //
+               a->preco_cent,                   //
+               (int64_t)(a->preco_cent * iva)   //
         );
 
         if (a->meta & ARTIGO_NECESSITA_RECEITA) {
-            printf("Número: %s\n", protectStr(e->compras.data[i].receita));
-        } else {
-            printf("N/A\n");
+            printf("Receita: %19.19s\n", e->compras.data[i].receita);
         }
     }
 
-    printf("\n*** Preço base: %ldc\n", precoSemIva);
+    printf("\n*** Preço líquido: %ldc\n", precoSemIva);
     printf("\n*** Preço com IVA: %ldc\n", precoComIva);
     menu_printDiv();
 }
@@ -450,12 +458,14 @@ void menu_printReciboMensal(const int64_t ID_U, int mes, int ano, const encomend
     size_t tot_enc;
     size_t tot_art;
     size_t tot_preco;
+    size_t artVendidos;
 
 INICIO:
 
     tot_enc   = 0;
     tot_art   = 0;
     tot_preco = 0;
+    artVendidos = 0;
 
     menu_printDiv();
     printf("*** Fatura de %d/%d\n", ano + 1900, mes + 1);
@@ -468,20 +478,22 @@ INICIO:
         encomenda* atual = &e->data[i];
         menu_printEncomendaBrief(atual, uv, av);
         printf("\n");
-        size_t art;
-        for (art = 0; art < atual->compras.size; ++art) {
+        size_t cmpr;
+        for (cmpr = 0; cmpr < atual->compras.size; ++cmpr) {
             printf("    ");
-            menu_printArtigo(&av->data[atual->compras.data[art].IDartigo]);
+            menu_printCompra(&atual->compras.data[cmpr], av);
             printf("\n");
+            artVendidos += atual->compras.data[cmpr].qtd;
         }
-        tot_art += art;
+        tot_art += cmpr;
         ++tot_enc;
         tot_preco += encomenda_CalcPreco(atual, av);
     }
     printf("\n");
-    printf("*** Encomendas feitas (%d/%d):    %ld\n", ano + 1900, mes + 1, tot_enc);
-    printf("*** Artigos encomendados (%d/%d): %ld\n", ano + 1900, mes + 1, tot_art);
-    printf("*** Preço final do mês (%d/%d):   %ldc\n", ano + 1900, mes + 1, tot_preco);
+    printf("*** Encomendas feitas  (%d/%d):    %ld\n", ano + 1900, mes + 1, tot_enc);
+    printf("*** Compras realizadas (%d/%d):    %ld\n", ano + 1900, mes + 1, tot_art);
+    printf("*** Artigos realizados (%d/%d):    %ld\n", ano + 1900, mes + 1, artVendidos);
+    printf("*** Preço final do mês (%d/%d):    %ldc\n", ano + 1900, mes + 1, tot_preco);
 
     if (stdout != stdoutTMP) {
         fclose(stdout);
