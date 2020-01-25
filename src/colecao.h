@@ -47,9 +47,9 @@
  * @def COL_DEALOC(X)
  *                  Maneira de dealocar COL_TIPO, se necessário
  *                  (pode não ser definido). X é do tipo 'COL_TIPO*'.
- * @def PASTER(X, Y)
+ * @def COL_PASTER(X, Y)
  *                  Macro auxiliar para juntar COL_NOME e Y.
- * @def EVAL(X, Y)
+ * @def COL_EVAL(X, Y)
  *                  Macro auxiliar para avaliar COL_NOME de modo a poder
  *                  juntá-lo com o nome da função.
  * @def COL_FUN(X)
@@ -90,9 +90,9 @@
 #    define COL_NOME coleção
 #endif
 
-#define PASTER(X, Y) X##Y
-#define EVAL(X, Y) PASTER(X, Y)
-#define COL_FUN(X) EVAL(COL_NOME, X)
+#define COL_PASTER(X, Y) X##Y
+#define COL_EVAL(X, Y)   COL_PASTER(X, Y)
+#define COL_FUN(X)       COL_EVAL(COL_NOME, X)
 
 #if !(defined(COL_IMPLEMENTACAO) || defined(COL_DECLARACAO))
 #    define COL_DECLARACAO
