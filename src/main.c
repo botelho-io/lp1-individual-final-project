@@ -110,13 +110,14 @@ Cliente –
  *          utilizadores impressos.
  * @returns 0
  */
-void printUtiVP(utilizador const* const u, int64_t const* i) {
+int printUtiVP(utilizador const* const u, int64_t const* i) {
     printf("   %8lu   |   ", *i++);
     menu_printUtilizador(*u);
     printf("\n");
+    return 0;
 }
 
-void form_editar_cliente(utilizador const* u, int isNew) {
+int form_editar_cliente(utilizador const* u, int isNew) {
     // TODO: implementar
 }
 
@@ -132,13 +133,14 @@ void form_editar_cliente(utilizador const* u, int isNew) {
  *          artigos impressos.
  * @returns 0
  */
-void printArtVP(artigo const* const a, int64_t const* i) {
+int printArtVP(artigo const* const a, int64_t const* i) {
     printf("   %8lu   |   ", *i++);
     menu_printArtigo(a);
     printf("\n");
+    return 0;
 }
 
-void form_editar_artigo(artigo const* a, int isNew) {
+int form_editar_artigo(artigo const* a, int isNew) {
     // TODO: implementar
 }
 
@@ -149,18 +151,19 @@ void form_editar_artigo(artigo const* a, int isNew) {
 // ***********************************************************************************************
 /**
  * @brief   Pode ser utilizado como um iterador, imprime uma encomenda.
- * @param e encomenda a ser impresso.
+ * @param e Encomenda a ser impressa.
  * @param i Deve ser inicializado como 0, no final irá conter o número de
  *          encomendas impressas.
  * @returns 0
  */
-void printEncVP(encomenda const* const e, int64_t const* i) {
+int printEncVP(encomenda const* const e, int64_t const* i) {
     printf("   %8lu   |   ", *i++);
     menu_printEncomendaBrief(e, &utilizadores, &artigos);
     printf("\n");
+    return 0;
 }
 
-void form_editar_encomenda(encomenda const* e, int isNew) {
+int form_editar_encomenda(encomenda const* e, int isNew) {
     // TODO: implementar
 }
 
@@ -168,7 +171,7 @@ void form_editar_encomenda(encomenda const* e, int isNew) {
 
 
 // De interface_diretor ************************************************************************************************
-#define GENERIC_EDIT(nome, iterateFW, col, col_pred_t, col_pred, push, editfnc, nomenew)                               \
+#define GENERIC_EDIT(nome, colect, col, col_pred, editfnc, nomenew)                                                    \
     menu_printDiv();                                                                                                   \
     menu_printHeader("Selecione " nome);                                                                               \
     int64_t id = -2;                                                                                                   \
@@ -178,7 +181,7 @@ void form_editar_encomenda(encomenda const* e, int isNew) {
         printf("         -2   |   Reimprimir\n");                                                                      \
         printf("         -1   |   Sair\n");                                                                            \
         max = 0;                                                                                                       \
-        iterateFW(&col, (col_pred_t) &col_pred, &max);                                                                 \
+        COL_EVAL(colect, _iterateFW)(&col, (COL_EVAL(colect, _pred_t)) &col_pred, &max);                               \
         printf("   %8lu   |   Criar Novo " nome "\n", max++);                                                          \
         menu_printInfo("Insira o ID do " nome " para editar");                                                         \
         id = menu_readInt64_tMinMax(-2, max - 1);                                                                      \
@@ -186,28 +189,29 @@ void form_editar_encomenda(encomenda const* e, int isNew) {
     if (id == -1) return;                                                                                              \
     if (id == max - 1) {                                                                                               \
         /* Novo, adicionar ao vetor*/                                                                                  \
-        protectFcnCall(push(&col, nomenew()), #push " falhou");                                                        \
+        protectFcnCall(COL_EVAL(colect, _push)(&col, nomenew()), #colect "_push falhou");                              \
     }                                                                                                                  \
                                                                                                                        \
-    /* id é o ID do cliente a editar*/                                                                                \
-    editfnc(&col.data[id], id == max - 1);
+    /* id é o ID do cliente a editar*/                                                                                 \
+    if(!editfnc(&col.data[id], id == max - 1)) {                                                                       \
+        COL_EVAL(colect, _DEALOC)(&col.data[id]);                                                                      \
+        COL_EVAL(colect, _moveBelow) (&col, id);                                                                       \
+        menu_printInfo(nome " removido.");                                                                             \
+    }                                                                                                                  \
 
 /**
  * @brief Permite selecionar um utilizador que será editado/criado
  */
 void interface_editar_cliente() {
-    GENERIC_EDIT("Cliente", utilizadorcol_iterateFW, utilizadores, utilizadorcol_pred_t, printUtiVP, utilizadorcol_push,
-                 form_editar_cliente, newUtilizador);
+    GENERIC_EDIT("Cliente", utilizadorcol, utilizadores, printUtiVP, form_editar_cliente, newUtilizador);
 }
 
 void interface_editar_artigo() {
-    GENERIC_EDIT("Artigo", artigocol_iterateFW, artigos, artigocol_pred_t, printArtVP, artigocol_push,
-                 form_editar_artigo, newArtigo);
+    GENERIC_EDIT("Artigo", artigocol, artigos, printArtVP, form_editar_artigo, newArtigo);
 }
 
 void interface_editar_encomenda() {
-    GENERIC_EDIT("Encomenda", encomendacol_iterateFW, encomendas, encomendacol_pred_t, printEncVP, encomendacol_push,
-                 form_editar_encomenda, newEncomenda);
+    GENERIC_EDIT("Encomenda", encomendacol, encomendas, printEncVP, form_editar_encomenda, newEncomenda);
 }
 
 void interface_imprimir_recibo() {
