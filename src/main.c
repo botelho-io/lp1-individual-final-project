@@ -402,7 +402,6 @@ int form_editar_encomenda(encomenda* const  e, int isNew) {
     if ( (!isNew) || menu_YN('S', 'N') ) {
         menu_printHeader("Selecione Cliente");
         id = -2;
-        max;
         while (id == -2) {
             printf("      ID      |   Item\n");
             printf("         -2   |   Reimprimir\n");
