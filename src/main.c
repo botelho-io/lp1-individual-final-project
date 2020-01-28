@@ -168,9 +168,9 @@ int printComVP(compra const* const c, int64_t const* i) {
 /**
  * @brief       Função responsável por editar todos os parametros de uma compra.
  * @param c     Compra que será editada.
- * @param isNew Deve ser 1 se o artigo é um novo artigo e 0 se é um artigo
- *              válido que será editado.
- * @returns     1 Se o artigo foi editado.
+ * @param isNew Deve ser 1 se o artigo é nova e 0 se é uma compra
+ *              válida que será editada.
+ * @returns     1 Se a compra foi editada.
  * @returns     0 Se a compra não foi editada/ foi eleminada; a compra c terá
  *              que ser eleminada pois é inválida.
  */
@@ -303,11 +303,20 @@ int printEncVP(encomenda const* const e, int64_t const* i) {
     return 0;
 }
 
+/**
+ * @brief       Função responsável por editar todos os parametros de uma encomenda.
+ * @param e     encomenda que será editada.
+ * @param isNew Deve ser 1 se o artigo é nova e 0 se é uma encomenda
+ *              válida que será editada.
+ * @returns     1 Se a encomenda foi editada.
+ * @returns     0 Se a encomenda não foi editada/ foi eleminada; a encomenda c terá
+ *              que ser eleminada pois é inválida.
+ */
 int form_editar_encomenda(encomenda* const  e, int isNew) {
     GENERIC_EDIT("Compra", compracol, e->compras, printComVP, form_editar_compra, new_compra);
 
-    printf("Deseja alterar o id do cliente? (S / N)");
-    if ( menu_YN('S', 'N') == 1 ) {
+    if(!isNew) printf("Deseja alterar o id do cliente? (S / N)");
+    if ( (!isNew) || menu_YN('S', 'N') == 1 ) {
         menu_printHeader("Selecione Cliente");
         id = -2;
         max;
@@ -322,9 +331,10 @@ int form_editar_encomenda(encomenda* const  e, int isNew) {
         }
         if (id != -1) {
             e->ID_cliente = id;
-        }
+        } else return 1;
     }
     e->tempo = time(NULL);
+    return 1;
 }
 
 
