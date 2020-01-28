@@ -434,6 +434,7 @@ int form_editar_compra(compra* const c, int isNew) {
     if(!isNew) printf(" (%ld)", c->qtd);
     c->qtd = menu_readInt64_tMinMax(1, art->stock);
     art->stock -= c->qtd;
+
     return 1;
 }
 
