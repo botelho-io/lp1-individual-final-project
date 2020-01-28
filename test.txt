@@ -1,176 +1,153 @@
 # ((cat src/test.txt | grep -vE "(^#.*)") && cat) | bin/main.x86
+0
+DC
+#                                       Criar Artigo
 1
 0
-1000
+HUMANO NORMAL LIVRE
+100
+10
+#   IVA
+0
+#   Receita
+N
+H
+#                                       Criar Artigo
 1
 1
-2000
+HUMANO NORMAL RECEITA
+200
+20
+#   IVA
+0
+#   Receita
+S
+H
+#
+#
+#                                       Criar Artigo
 1
 2
-3000
+HUMANO INTERMEDIO LIVRE
+300
+30
+#   IVA
+1
+#   Receita
+N
+H
+#                                       Criar Artigo
 1
 3
-4000
+HUMANO INTERMEDIO RECEITA
+400
+40
+#   IVA
+1
+#   Receita
+S
+H
+#
+#
+#                                       Criar Artigo
 1
 4
-5000
-1
-5
+HUMANO REDUZIDO LIVRE
 500
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+50
+#   IVA
 2
-1
-0
-0.5
-1.4
-1.3
-1.1
-1.0
-1.1
-1.2
-1.25
-1.3
-1.4
-#
-2
-1
-1
-1.4
-0.5
-1.4
-1.3
-1.1
-1.0
-1.1
-1.2
-1.25
-1.3
-#
-2
-1
-2
-1.3
-1.4
-0.5
-1.4
-1.3
-1.1
-1.0
-1.1
-1.2
-1.25
-#
-2
-1
-3
-1.25
-1.3
-1.4
-0.5
-1.4
-1.3
-1.1
-1.0
-1.1
-1.2
-#
-2
-1
-4
-1.2
-1.25
-1.3
-1.4
-0.5
-1.4
-1.3
-1.1
-1.0
-1.1
-#
-2
+#   Receita
+N
+H
+#                                       Criar Artigo
 1
 5
-1.1
-1.2
-1.25
-1.3
-1.4
-0.5
-1.4
-1.3
-1.1
-1.0
-#
+HUMANO REDUZIDO RECEITA
+600
+60
+#   IVA
 2
+#   Receita
+S
+H
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#                                       Criar Artigo
 1
 6
-1.0
-1.1
-1.2
-1.25
-1.3
-1.4
-0.5
-1.4
-1.3
-1.1
-#
-2
+ANIMAL NORMAL LIVRE
+700
+70
+#   IVA
+0
+#   Receita
+N
+A
+#                                       Criar Artigo
 1
 7
-1.1
-1.0
-1.1
-1.2
-1.25
-1.3
-1.4
-0.5
-1.4
-1.3
+ANIMAL NORMAL RECEITA
+800
+80
+#   IVA
+0
+#   Receita
+S
+A
 #
-2
+#
+#                                       Criar Artigo
 1
 8
-1.3
-1.1
-1.0
-1.1
-1.2
-1.25
-1.3
-1.4
-0.5
-1.4
-#
-2
+ANIMAL INTERMEDIO LIVRE
+900
+90
+#   IVA
+1
+#   Receita
+N
+A
+#                                       Criar Artigo
 1
 9
-1.4
-1.3
-1.1
-1.0
-1.1
-1.2
-1.25
-1.3
-1.4
-0.5
+ANIMAL INTERMEDIO RECEITA
+1000
+100
+#   IVA
+1
+#   Receita
+S
+A
+#
+#
+#                                       Criar Artigo
+1
+10
+ANIMAL REDUZIDO LIVRE
+1100
+110
+#   IVA
+2
+#   Receita
+N
+A
+#                                       Criar Artigo
+1
+11
+ANIMAL REDUZIDO RECEITA
+1200
+120
+#   IVA
+2
+#   Receita
+S
+A

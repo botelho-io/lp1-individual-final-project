@@ -147,8 +147,8 @@ int printencRecVP(encomenda const* const e, struct {int ano; int mes;}* data) {
  *          utilizadores impressos.
  * @returns 0
  */
-int printUtiVP(utilizador const* const u, int64_t const* i) {
-    printf("   %8lu   |   ", *i++);
+int printUtiVP(utilizador const* const u, int64_t* const i) {
+    printf("   %8lu   |   ", (*i)++);
     menu_printUtilizador(*u);
     printf("\n");
     return 0;
@@ -235,8 +235,8 @@ int form_editar_cliente(utilizador* const u, int isNew) {
  *          artigos impressos.
  * @returns 0
  */
-int printArtVP(artigo const* const a, int64_t const* i) {
-    printf("   %8lu   |   ", *i++);
+int printArtVP(artigo const* const a, int64_t* const i) {
+    printf("   %8lu   |   ", (*i)++);
     menu_printArtigo(a);
     printf("\n");
     return 0;
@@ -258,7 +258,7 @@ int form_editar_artigo(artigo* const a, int isNew) {
 
     if(!isNew) {
         printf("Desativar artigo? (S / N)");
-        if(!isNew) printf(" ( o artigo está %s)", (a->meta & ARTIGO_DESATIVADO)? "ativado" : "desativado");
+        if(!isNew) printf(" (o artigo está %s)", (a->meta & ARTIGO_DESATIVADO)? "desativado" : "ativado");
         if(menu_YN('S', 'N')) {
             a->meta = a->meta | ARTIGO_DESATIVADO;
             return 1;
@@ -272,8 +272,8 @@ int form_editar_artigo(artigo* const a, int isNew) {
     a->nome = menu_readNotNulStr();
 
     while (1) {
-        printf("Inserir preço de artigo");
-        if(!isNew) printf(" (%ld)", a->preco_cent);
+        printf("Inserir preço de artigo (cent)");
+        if(!isNew) printf(" (%ldc)", a->preco_cent);
         tmp = menu_readInt64_t();
         if(tmp < 0) {
             menu_printError("preço de artigo tem que ser positivo");
@@ -298,9 +298,9 @@ int form_editar_artigo(artigo* const a, int isNew) {
     printf("Qual a taxa de IVA do artigo?");
     if(!isNew) {
         switch(a->meta & ARTIGO_IVA) {
-            case ARTIGO_IVA_NORMAL: printf(" (normal)"); break;
-            case ARTIGO_IVA_INTERMEDIO: printf(" (intermédio)"); break;
-            case ARTIGO_IVA_REDUZIDO: printf(" (reduzido)"); break;
+            case ARTIGO_IVA_NORMAL: printf(" ( Normal )\n"); break;
+            case ARTIGO_IVA_INTERMEDIO: printf(" ( Intermédio )\n"); break;
+            case ARTIGO_IVA_REDUZIDO: printf(" ( Reduzido )\n"); break;
         }
     }
 
@@ -319,12 +319,12 @@ int form_editar_artigo(artigo* const a, int isNew) {
     }
 
     printf("O artigo necessita de receita? (S / N)");
-    if(!isNew) printf(" ( o artigo %snecessita de receita)", (a->meta & ARTIGO_NECESSITA_RECEITA)? "" : "não ");
+    if(!isNew) printf(" ( o artigo %snecessita de receita )", (a->meta & ARTIGO_NECESSITA_RECEITA)? "" : "não ");
     if(menu_YN('S', 'N')) a->meta = a->meta | ARTIGO_NECESSITA_RECEITA;
     else  a->meta = a->meta & (~ARTIGO_NECESSITA_RECEITA);
 
     printf("O artigo é de utilização Animal ou Humana? (A / H)");
-    if(!isNew) printf(" ( o artigo é do grupo %s)", (a->meta & ARTIGO_GRUPO_ANIMAL)? "animal" : "humano");
+    if(!isNew) printf(" ( o artigo é do grupo %s )", (a->meta & ARTIGO_GRUPO_ANIMAL)? "animal" : "humano");
     if(menu_YN('A', 'H')) a->meta = a->meta | ARTIGO_GRUPO_ANIMAL;
     else a->meta = a->meta & (~ARTIGO_GRUPO_ANIMAL);
 
@@ -343,8 +343,8 @@ int form_editar_artigo(artigo* const a, int isNew) {
  *          compras impressas.
  * @returns 0
  */
-int printComVP(compra const* const c, int64_t const* i) {
-    printf("   %8lu   |   ", *i++);
+int printComVP(compra const* const c, int64_t* const i) {
+    printf("   %8lu   |   ", (*i)++);
     menu_printCompra(c, &artigos);
     printf("\n");
     return 0;
@@ -481,8 +481,8 @@ int form_editar_compra(compra* const c, int isNew) {
  *          encomendas impressas.
  * @returns 0
  */
-int printEncVP(encomenda const* const e, int64_t const* i) {
-    printf("   %8lu   |   ", *i++);
+int printEncVP(encomenda const* const e, int64_t* const i) {
+    printf("   %8lu   |   ", (*i)++);
     menu_printEncomendaBrief(e, &utilizadores, &artigos);
     printf("\n");
     return 0;
@@ -529,6 +529,20 @@ int form_editar_encomenda(encomenda* const  e, int isNew) {
 /**
  * @brief Permite selecionar um utilizador que será editado/criado
  */
+/**
+ * @brief   Pode ser utilizado como um iterador, imprime o stock de um artigo.
+ * @param a Artigo a imprimir.
+ * @param i Deve ser inicializado como 0, no final irá conter o número de
+ *          artigos impressos.
+ * @returns 0
+ */
+int printArtStokVP(artigo const* const a, int64_t* const i) {
+    printf("ID:    %8lu   |   ", (*i)++);
+    menu_printArtigoStock(a);
+    printf("\n");
+    return 0;
+}
+
 void interface_editar_cliente() {
     GENERIC_EDIT("Cliente", utilizadorcol, utilizadores, printUtiVP, form_editar_cliente, newUtilizador);
 }
@@ -618,23 +632,26 @@ void interface_criar_encomenda() {
  * @brief As opções que remetem ao diretor
  */
 void interface_diretor() {
+    int64_t i;
     while (1) {
         menu_printDiv();
         menu_printHeader("Menu de Diretor Clínico");
-        switch (menu_selection(&(strcol) {.size = 5,
+        switch (menu_selection(&(strcol) {.size = 6,
                                           .data = (char*[]) {
                                               "Editar/ criar cliente",   // 0
                                               "Editar/ criar artigo",    // 1
                                               "Editar/ criar encomenda", // 2
-                                              "Imprimir recibo",         // 3
-                                              "Outras Listagens",        // 4
+                                              "Consultar stock",         // 3
+                                              "Imprimir recibo",         // 4
+                                              "Outras Listagens",        // 5
                                           }})) {
             case -1: return;
             case 0: interface_editar_cliente(); break;
             case 1: interface_editar_artigo(); break;
             case 2: interface_editar_encomenda(); break;
-            case 3: interface_imprimir_recibo(); break;
-            case 4: interface_outras_listagens(); break;
+            case 3: i = 0; artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &i); break;
+            case 4: interface_imprimir_recibo(); break;
+            case 5: interface_outras_listagens(); break;
         }
     }
 }
@@ -643,17 +660,20 @@ void interface_diretor() {
  * @brief As opções que remetem a um funcionario
  */
 void interface_funcionario() {
+    int64_t i;
     while (1) {
         menu_printDiv();
         menu_printHeader("Menu de Funcionário");
-        switch (menu_selection(&(strcol) {.size = 2,
+        switch (menu_selection(&(strcol) {.size = 3,
                                           .data = (char*[]) {
                                               "Editar/ criar cliente", // 0
                                               "Criar encomenda",       // 1
+                                              "Consultar stock",       // 2
                                           }})) {
             case -1: return;
             case 0: interface_editar_cliente(); break;
             case 1: interface_criar_encomenda(); break;
+            case 2: i = 0; artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &i); break;
         }
     }
 }
@@ -732,9 +752,9 @@ void interface_inicio() {
             case 0:
                 printf("(F / DC)");
                 login = menu_readNotNulStr();
-                if (strcmp(login, "F") == 0) {
+                if (strcasecmp(login, "F") == 0) {
                     interface_funcionario();
-                } else if (strcmp(login, "DC") == 0) {
+                } else if (strcasecmp(login, "DC") == 0) {
                     interface_diretor();
                 } else {
                     menu_printError("Log in %s é inválido", login);

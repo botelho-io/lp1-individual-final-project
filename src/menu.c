@@ -222,6 +222,7 @@ int64_t menu_selection(const strcol* const itens) {
 int menu_YN(const char Y, const char N) {
     int i;
     while (1) {
+        printf(" $ ");
         i = toupper(getchar());
         cleanInputBuffer();
         if (i == toupper(Y)) {
@@ -321,13 +322,13 @@ void menu_printArtigo(const artigo* const a) {
         default: iva = "intermédio"; break;
     }
 
-    printf("%s%s -  Preço: %ld + (IVA %s)  -  Grupo %s %s",
+    printf("%s%s -  Preço: %ldc + (IVA %s)  -  Grupo %s %s",
            (a->meta & ARTIGO_DESATIVADO) ? "[ DESATIVADO ]" : "",                      //
            protectStr(a->nome),                                                        //
            a->preco_cent,                                                              //
            iva,                                                                        //
            (a->meta & ARTIGO_GRUPO_ANIMAL) ? "animal" : "humano",                      //
-           (a->meta & ARTIGO_NECESSITA_RECEITA) ? "venda livre" : "receita necessária" //
+           (a->meta & ARTIGO_NECESSITA_RECEITA) ? "receita necessária" : "venda livre" //
     );
 }
 
@@ -352,7 +353,7 @@ void menu_printArtigoStock(const artigo* const a) {
         default: iva = "intermédio"; break;
     }
 
-    printf("%s (%ld em stock) -  Preço: %ld + (IVA %s)  -  Grupo %s %s %s",
+    printf("%s (%ld em stock) -  Preço: %ldc + (IVA %s)  -  Grupo %s %s %s",
            protectStr(a->nome),                                                         //
            a->stock,                                                                    //
            a->preco_cent,                                                               //

@@ -20,6 +20,9 @@ print:
 clip:
 	(cat ./test.txt | grep -vE "(^#.*)") | xclip -sel clip
 
+clipWin:
+	(cat ./test.txt | grep -vE "(^#.*)") | clip.exe
+
 run:
 	./bin/main.x86
 
@@ -33,7 +36,7 @@ dgb:
 	(((cat ./test.txt | grep -vE "(^#.*)") && cat) | ./bin/main.x86)
 
 valgrind:
-	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=yes --suppressions=./valgrind.supp ./bin/main.x86
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=yes --suppressions=./valgrind.supp ./bin/main.x86
 
 format:
 	clang-format-7 -i src/*
