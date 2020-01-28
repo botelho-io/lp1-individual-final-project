@@ -103,6 +103,41 @@ Cliente –
 
 
 
+// De interface_imprimir_recibo
+// *********************************************************************************************************************
+int printencRecVP(encomenda const* const e, struct {uint64_t ano; uint64_t mes;}* data) {
+    struct tm const * const t = localtime(e->tempo);
+    if(t->tm_mon == data->mes && t->tm_year == data->ano) {
+        printf("* Dia %lu/%lu/%lu\n", 1900 + t->tm_year, t->tm_mon + 1, t->tm_mday);
+        printf("    * NOME %s\n", utilizadores.data[e->ID_cliente].nome);
+        printf("    * NIF  %9.9s\n", utilizadores.data[e->ID_cliente].NIF);
+        printf("    * CC   %12.12s\n", utilizadores.data[e->ID_cliente].CC);
+        printf("    * ARTIGOS COMPRADOS::\n");
+        printf("        * QTD - Artigo");
+        for (colSize_t i = 0; i < e->compras.size; i++) {
+            compra const * const c = &e->compras.data[i];
+            artigo const * const a = &artigos.data[c->IDartigo];
+            printf("        * Qtd %lu - %s CONSUMO %s", c->qtd, a->nome,
+                (a->meta & ARTIGO_GRUPO_ANIMAL) ? "ANIMAL" : "HUMANO"
+            );
+            if(a->meta & ARTIGO_NECESSITA_RECEITA) {
+                printf(" RECEITA (%19.19s)", c->receita);
+            }
+            printf(" PREÇO %luc   IVA");
+            switch (a->meta & ARTIGO_IVA) {
+                case ARTIGO_IVA_INTERMEDIO: printf(" %d%\n", (int)((ARTIGO_IVA_INTERMEDIO_VAL-1)*100)); break;
+                case ARTIGO_IVA_NORMAL: printf(" %d%\n", (int)((ARTIGO_IVA_NORMAL_VAL-1)*100)); break;
+                case ARTIGO_IVA_REDUZIDO: printf(" %d%\n", (int)((ARTIGO_IVA_REDUZIDO_VAL-1)*100)); break;
+            }
+        }
+    }
+    return 0;
+}
+
+
+
+
+
 // De interface_cliente
 // *********************************************************************************************************************
 /**
@@ -440,7 +475,52 @@ void interface_editar_encomenda() {
 }
 
 void interface_imprimir_recibo() {
-    // TODO: Implementar
+    printf("Inserir ano");
+    int64_t ano = menu_readInt64_t();
+    printf("Inserir mês");
+    int64_t mes = menu_readInt64_t();
+
+    FILE const * const stdoutTMP = stdout;
+    int printBoth = 0;
+    switch (menu_selection(&(strcol) {
+        .size = 3,
+        .data = (char*[]) {
+            "Imprimir no ecrã",     // 0
+            "Imprimir em ficheiro", // 1
+            "Imprimir em ambos",    // 2
+        }
+    })) {
+        case 0: break;
+        case 2: printBoth = 1;
+        case 1:
+            printf("Introduza nome de ficheiro");
+            char* f = menu_readNotNulStr();
+            protectVarFcnCall(stdout, fopen(f, "w"), "impossível abrir ficheiro");
+        break;
+    }
+
+PRINT_BEGUIN:
+    menu_printDiv();
+    menu_printHeader("Recibo Mensal");
+
+    printf("\n*** Mês do recibo: %lu/%lu", ano, mes);
+    struct {
+        int64_t ano;
+        int64_t mes;
+    } data;
+    data.ano = ano - 1900;
+    data.mes = mes - 1;
+    encomendacol_iterateFW(&encomendas, (encomendacol_pred_t) &printencRecVP, &data);
+    menu_printHeader("Final do Recibo");
+    menu_printDiv();
+
+    if(stdout != stdoutTMP) {
+        fclose(stdout);
+        stdout = stdoutTMP;
+        if(printBoth) {
+            goto PRINT_BEGUIN;
+        }
+    }
 }
 
 void interface_outras_listagens() {
