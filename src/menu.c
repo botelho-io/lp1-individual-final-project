@@ -218,17 +218,19 @@ int64_t menu_selection(const strcol* const itens) {
  * @param N Caracter correspendente ao nao
  * @returns 0 se o utilizador introduziu 'N'
  * @returns 1 se o utilizador introduziu 'S'
- * @returns 2 noutro caso
  */
 int menu_YN(const char Y, const char N) {
-    int i = toupper(getchar());
-    cleanInputBuffer();
-    if (i == toupper(Y)) {
-        return 1;
-    } else if (i == toupper(N)) {
-        return 0;
-    } else
-        return 2;
+    int i;
+    while (1) {
+        i = toupper(getchar());
+        cleanInputBuffer();
+        if (i == toupper(Y)) {
+            return 1;
+        } else if (i == toupper(N)) {
+            return 0;
+        } else
+            menu_printError("tem que inserir [%c] ou [%c]", Y, N);
+    }
 }
 
 /**

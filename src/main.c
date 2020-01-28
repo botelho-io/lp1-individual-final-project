@@ -142,8 +142,92 @@ int printArtVP(artigo const* const a, int64_t const* i) {
     return 0;
 }
 
+/**
+ * @brief       Função responsável por editar todos os parametros de um artigo.
+ * @param a     Artigo que será editada.
+ * @param isNew Deve ser 1 se o artigo é novo e 0 se é um artigo válido que será
+ *              editado.
+ * @returns     1 Se o artigo foi editado.
+ * @returns     0 Se o artigo não foi editado/ foi eleminado; a artigo a terá
+ *              que ser eleminado pois é inválido.
+ */
 int form_editar_artigo(artigo* const a, int isNew) {
-    // TODO: implementar
+    menu_printDiv();
+    menu_printHeader("Editar Artigo");
+    int64_t tmp;
+
+    if(!isNew) {
+        printf("Desativar artigo? (S / N)");
+        if(!isNew) printf(" ( o artigo está %s)", (a->meta & ARTIGO_DESATIVADO)? "ativado" : "desativado");
+        if(menu_YN('S', 'N')) {
+            a->meta = a->meta | ARTIGO_DESATIVADO;
+            return 1;
+        }
+        else a->meta = a->meta & (~ARTIGO_DESATIVADO);
+    }
+
+    printf("Inserir nome de artigo");
+    if(!isNew) printf(" (%s)", a->nome);
+    a->nome = menu_readNotNulStr();
+
+    while (1) {
+        printf("Inserir preço de artigo");
+        if(!isNew) printf(" (%ld)", a->preco_cent);
+        tmp = menu_readInt64_t();
+        if(tmp < 0) {
+            menu_printError("preço de artigo tem que ser positivo");
+        } else {
+            a->preco_cent = tmp;
+            break;
+        }
+    }
+
+    while (1) {
+        printf("Inserir stock de artigo");
+        if(!isNew) printf(" (%ld)", a->stock);
+        tmp = menu_readInt64_t();
+        if(tmp < 0) {
+            menu_printError("stock de artigo tem que ser positivo");
+        } else {
+            a->stock = tmp;
+            break;
+        }
+    }
+
+    printf("Qual a taxa de IVA do artigo?");
+    if(!isNew) {
+        switch(a->meta & ARTIGO_IVA) {
+            case ARTIGO_IVA_NORMAL: printf(" (normal)"); break;
+            case ARTIGO_IVA_INTERMEDIO: printf(" (intermédio)"); break;
+            case ARTIGO_IVA_REDUZIDO: printf(" (reduzido)"); break;
+        }
+    }
+
+    switch (menu_selection(&(strcol) {
+        .size = 3,
+        .data = (char*[]) {
+            "Artigo tem IVA normal",     // 0
+            "Artigo tem IVA intermédio", // 1
+            "Artigo tem IVA reduzido"    // 2
+        }
+    })) {
+        case -1: break;
+        case 0: a->meta = (a->meta & (~ARTIGO_IVA)) + ARTIGO_IVA_NORMAL; break;
+        case 1: a->meta = (a->meta & (~ARTIGO_IVA)) + ARTIGO_IVA_INTERMEDIO; break;
+        case 2: a->meta = (a->meta & (~ARTIGO_IVA)) + ARTIGO_IVA_REDUZIDO; break;
+    }
+
+    printf("O artigo necessita de receita? (S / N)");
+    if(!isNew) printf(" ( o artigo %snecessita de receita)", (a->meta & ARTIGO_NECESSITA_RECEITA)? "" : "não ");
+    if(menu_YN('S', 'N')) a->meta = a->meta | ARTIGO_NECESSITA_RECEITA;
+    else  a->meta = a->meta & (~ARTIGO_NECESSITA_RECEITA);
+
+    printf("O artigo é de utilização Animal ou Humana? (A / H)");
+    if(!isNew) printf(" ( o artigo é do grupo %s)", (a->meta & ARTIGO_GRUPO_ANIMAL)? "animal" : "humano");
+    if(menu_YN('A', 'H')) a->meta = a->meta | ARTIGO_GRUPO_ANIMAL;
+    else a->meta = a->meta & (~ARTIGO_GRUPO_ANIMAL);
+
+    return 1;
 }
 
 
@@ -192,7 +276,6 @@ int form_editar_compra(compra* const c, int isNew) {
             switch(YN) {
                 case 0: break;
                 case 1: return 0;
-                default: menu_printError("resposta inválida, devia de ser S ou N");
             }
         }
     } else {
@@ -316,7 +399,7 @@ int form_editar_encomenda(encomenda* const  e, int isNew) {
     GENERIC_EDIT("Compra", compracol, e->compras, printComVP, form_editar_compra, new_compra);
 
     if(!isNew) printf("Deseja alterar o id do cliente? (S / N)");
-    if ( (!isNew) || menu_YN('S', 'N') == 1 ) {
+    if ( (!isNew) || menu_YN('S', 'N') ) {
         menu_printHeader("Selecione Cliente");
         id = -2;
         max;
