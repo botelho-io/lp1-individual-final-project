@@ -453,8 +453,13 @@ void interface_outras_listagens() {
 
 // De interface_funcionario
 // *********************************************************************************************************************
-void interface_criar_compra() {
-    // TODO: implementar
+void interface_criar_encomenda() {
+    encomendacol_push(&encomendas, newEncomenda());
+    int toDelete = form_editar_encomenda(&encomendas.data[encomendas.size-1], 0);
+    if(toDelete) {
+        freeEncomenda(&encomendas.data[encomendas.size-1]);
+        encomendacol_pop(&encomendas);
+    }
 }
 
 
@@ -471,11 +476,11 @@ void interface_diretor() {
         menu_printHeader("Menu de Diretor Clínico");
         switch (menu_selection(&(strcol) {.size = 5,
                                           .data = (char*[]) {
-                                              "Editar/ criar cliente",   //
-                                              "Editar/ criar artigo",    //
-                                              "Editar/ criar encomenda", //
-                                              "Imprimir recibo",         //
-                                              "Outras Listagens",        //
+                                              "Editar/ criar cliente",   // 0
+                                              "Editar/ criar artigo",    // 1
+                                              "Editar/ criar encomenda", // 2
+                                              "Imprimir recibo",         // 3
+                                              "Outras Listagens",        // 4
                                           }})) {
             case -1: return;
             case 0: interface_editar_cliente(); break;
@@ -496,12 +501,12 @@ void interface_funcionario() {
         menu_printHeader("Menu de Funcionário");
         switch (menu_selection(&(strcol) {.size = 2,
                                           .data = (char*[]) {
-                                              "Editar/ criar cliente", //
-                                              "Criar compra",          //
+                                              "Editar/ criar cliente", // 0
+                                              "Criar encomenda",       // 1
                                           }})) {
             case -1: return;
             case 0: interface_editar_cliente(); break;
-            case 1: interface_criar_compra(); break;
+            case 1: interface_criar_encomenda(); break;
         }
     }
 }
