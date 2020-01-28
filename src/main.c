@@ -105,10 +105,10 @@ Cliente –
 
 // De interface_imprimir_recibo
 // *********************************************************************************************************************
-int printencRecVP(encomenda const* const e, struct {uint64_t ano; uint64_t mes;}* data) {
-    struct tm const * const t = localtime(e->tempo);
+int printencRecVP(encomenda const* const e, struct {int ano; int mes;}* data) {
+    struct tm const * const t = localtime(&e->tempo);
     if(t->tm_mon == data->mes && t->tm_year == data->ano) {
-        printf("* Dia %lu/%lu/%lu\n", 1900 + t->tm_year, t->tm_mon + 1, t->tm_mday);
+        printf("* Dia %d/%d/%d\n", 1900 + t->tm_year, t->tm_mon + 1, t->tm_mday);
         printf("    * NOME %s\n", utilizadores.data[e->ID_cliente].nome);
         printf("    * NIF  %9.9s\n", utilizadores.data[e->ID_cliente].NIF);
         printf("    * CC   %12.12s\n", utilizadores.data[e->ID_cliente].CC);
@@ -123,11 +123,11 @@ int printencRecVP(encomenda const* const e, struct {uint64_t ano; uint64_t mes;}
             if(a->meta & ARTIGO_NECESSITA_RECEITA) {
                 printf(" RECEITA (%19.19s)", c->receita);
             }
-            printf(" PREÇO %luc   IVA");
+            printf(" PREÇO %luc   IVA", a->preco_cent);
             switch (a->meta & ARTIGO_IVA) {
-                case ARTIGO_IVA_INTERMEDIO: printf(" %d%\n", (int)((ARTIGO_IVA_INTERMEDIO_VAL-1)*100)); break;
-                case ARTIGO_IVA_NORMAL: printf(" %d%\n", (int)((ARTIGO_IVA_NORMAL_VAL-1)*100)); break;
-                case ARTIGO_IVA_REDUZIDO: printf(" %d%\n", (int)((ARTIGO_IVA_REDUZIDO_VAL-1)*100)); break;
+                case ARTIGO_IVA_INTERMEDIO: printf(" %d%%\n", (int)((ARTIGO_IVA_INTERMEDIO_VAL-1)*100)); break;
+                case ARTIGO_IVA_NORMAL: printf(" %d%%\n", (int)((ARTIGO_IVA_NORMAL_VAL-1)*100)); break;
+                case ARTIGO_IVA_REDUZIDO: printf(" %d%%\n", (int)((ARTIGO_IVA_REDUZIDO_VAL-1)*100)); break;
             }
         }
     }
@@ -209,7 +209,7 @@ int form_editar_cliente(utilizador* const u, int isNew) {
         printf("Inserir CC");
         if(!isNew) printf(" (%12.12s)", u->CC);
         tmp = menu_readNotNulStr();
-        if(strlen(tmp) == 12 && utilizador_eNIFValido(tmp)) {
+        if(strlen(tmp) == 12 && utilizador_eCCValido(tmp)) {
             for (int i = 0; i < 12; i++) {
                 u->CC[i] = tmp[i];
             }
@@ -219,6 +219,8 @@ int form_editar_cliente(utilizador* const u, int isNew) {
         }
     }
     freeN(tmp);
+
+    return 1;
 }
 
 
@@ -545,7 +547,7 @@ void interface_imprimir_recibo() {
     printf("Inserir mês");
     int64_t mes = menu_readInt64_t();
 
-    FILE const * const stdoutTMP = stdout;
+    FILE* const stdoutTMP = stdout;
     int printBoth = 0;
     switch (menu_selection(&(strcol) {
         .size = 3,
@@ -571,11 +573,11 @@ PRINT_BEGUIN:
 
     printf("\n*** Mês do recibo: %lu/%lu", ano, mes);
     struct {
-        int64_t ano;
-        int64_t mes;
+        int ano;
+        int mes;
     } data;
-    data.ano = ano - 1900;
-    data.mes = mes - 1;
+    data.ano = ((int)ano) - 1900;
+    data.mes = ((int)mes) - 1;
     encomendacol_iterateFW(&encomendas, (encomendacol_pred_t) &printencRecVP, &data);
     menu_printHeader("Final do Recibo");
     menu_printDiv();

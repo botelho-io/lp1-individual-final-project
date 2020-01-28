@@ -16,11 +16,12 @@
 /**
  * @brief    Responsável por verificar se um número de cartão de cidadão é
  *           válido.
- * @param cc Número de cartão de cidadão para ser validado.
+ * @param cc Número de cartão de cidadão para ser validado (tem que ter 12
+ *           characteres).
  * @returns  0 se o número de cartão de cidadão é inválido.
  * @returns  1 se o número de cartão de cidadão é válido.
  */
-int utilizador_eCCValido(const uint8_t* const cc) {
+int utilizador_eCCValido(const char* const cc) {
     int i = 0;
 
     // Assegurar 9 digitos
@@ -33,21 +34,6 @@ int utilizador_eCCValido(const uint8_t* const cc) {
 
     // Asegurar ultimo digito
     if (!isdigit(cc[i])) return 0;
-
-    return 1;
-}
-
-/**
- * @brief     Responsável por verificar se um NIF é válido.
- * @param NIF NIF para ser validado.
- * @returns   0 se o NIF é inválido.
- * @returns   1 se o NIF é válido.
- */
-int utilizador_eNIFValido(const uint8_t* const NIF) {
-    int i = 0;
-    // Assegurar 9 digitos
-    for (; i < 9; ++i)
-        if (!isdigit(NIF[i])) return 0;
 
     return 1;
 }

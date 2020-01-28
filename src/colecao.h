@@ -393,9 +393,11 @@ int COL_FUN(_reserve)(COL_NOME* const v, colSize_t space) {
  *                  a inclusão do ficheiro colecao.h.
  * @param X         O parametro X do macro 'COL_DEALOC'.
  */
+void COL_FUN(_DEALOC)(COL_TIPO* const X) {
 #    ifdef COL_DEALOC
-void COL_FUN(_DEALOC)(COL_TIPO* const X) { COL_DEALOC(X); }
+    COL_DEALOC(X);
 #    endif
+}
 
 #    ifdef COL_WRITE
 /**
@@ -460,9 +462,7 @@ int       COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i);
 COL_TIPO  COL_FUN(_popAt)(COL_NOME* const v, const colSize_t position);
 colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
 colSize_t COL_FUN(_iterateBW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
-#    ifdef COL_DEALOC
 void COL_FUN(_DEALOC)(COL_TIPO* const X);
-#    endif
 #    ifdef COL_WRITE
 int COL_FUN(_write)(const COL_NOME* const v, FILE* f);
 #    endif
