@@ -155,7 +155,70 @@ int printUtiVP(utilizador const* const u, int64_t const* i) {
 }
 
 int form_editar_cliente(utilizador* const u, int isNew) {
-    // TODO: implementar
+    menu_printDiv();
+    if(isNew) menu_printHeader("Novo Utilizador");
+    else menu_printHeader("Editar Utilizador");
+
+    printf("Inserir nome");
+    if(!isNew) printf(" (%s)", u->nome);
+    freeN(u->nome);
+    u->nome = menu_readNotNulStr();
+
+    char* tmp;
+    while (1) {
+        freeN(tmp);
+        printf("Inserir NIF");
+        if(!isNew) printf(" (%9.9s)", u->NIF);
+        tmp = menu_readNotNulStr();
+        if(strlen(tmp) == 9) {
+            for (int i = 0; i < 9; i++) {
+                if(!isdigit(tmp[i])) {
+                    menu_printError("digitos do NIF são characteres");
+                    break;
+                }
+                u->NIF[i] = tmp[i];
+            }
+            break;
+        } else {
+            menu_printError("NIF tem 9 caracteres");
+        }
+    }
+
+    printf("Inserir NIF");
+    if(!isNew) printf(" (%9.9s)", u->NIF);
+    while (1) {
+        freeN(tmp);
+        tmp = menu_readNotNulStr();
+        if(strlen(tmp) == 9) {
+            for (int i = 0; i < 9; i++) {
+                if(!isdigit(tmp[i])) {
+                    menu_printError("digitos do NIF são characteres");
+                    break;
+                }
+                u->NIF[i] = tmp[i];
+            }
+            break;
+        } else {
+            menu_printError("NIF tem 9 caracteres");
+        }
+        printf("Inserir NIF");
+    }
+
+    while (1) {
+        freeN(tmp);
+        printf("Inserir CC");
+        if(!isNew) printf(" (%12.12s)", u->CC);
+        tmp = menu_readNotNulStr();
+        if(strlen(tmp) == 12 && utilizador_eNIFValido(tmp)) {
+            for (int i = 0; i < 12; i++) {
+                u->CC[i] = tmp[i];
+            }
+            break;
+        } else {
+            menu_printError("CC tem 12 caracteres [9] digitos seguidos de [2] letras e [1] digito final");
+        }
+    }
+    freeN(tmp);
 }
 
 
@@ -203,6 +266,7 @@ int form_editar_artigo(artigo* const a, int isNew) {
 
     printf("Inserir nome de artigo");
     if(!isNew) printf(" (%s)", a->nome);
+    freeN(a->nome);
     a->nome = menu_readNotNulStr();
 
     while (1) {
@@ -496,6 +560,7 @@ void interface_imprimir_recibo() {
             printf("Introduza nome de ficheiro");
             char* f = menu_readNotNulStr();
             protectVarFcnCall(stdout, fopen(f, "w"), "impossível abrir ficheiro");
+            freeN(f);
         break;
     }
 
