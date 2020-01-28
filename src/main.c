@@ -15,7 +15,8 @@
 #include <errno.h>
 #include <stdint.h>
 
-// Estado do programa **************************************************************************************************
+// Estado do programa
+// *********************************************************************************************************************
 #define COL_IMPLEMENTACAO
 #include "artigo.h"
 #include "encomenda.h"
@@ -102,7 +103,8 @@ Cliente –
 
 
 
-// De interface_cliente ************************************************************************************************
+// De interface_cliente
+// *********************************************************************************************************************
 /**
  * @brief   Pode ser utilizado como um iterador, imprime um utilizador.
  * @param u Cliente a ser impresso.
@@ -117,7 +119,7 @@ int printUtiVP(utilizador const* const u, int64_t const* i) {
     return 0;
 }
 
-int form_editar_cliente(utilizador const* u, int isNew) {
+int form_editar_cliente(utilizador* const u, int isNew) {
     // TODO: implementar
 }
 
@@ -125,7 +127,7 @@ int form_editar_cliente(utilizador const* u, int isNew) {
 
 
 // De interface_artigo
-// **************************************************************************************************
+// *********************************************************************************************************************
 /**
  * @brief   Pode ser utilizado como um iterador, imprime um artigo.
  * @param a Artigo a ser impresso.
@@ -140,7 +142,7 @@ int printArtVP(artigo const* const a, int64_t const* i) {
     return 0;
 }
 
-int form_editar_artigo(artigo const* a, int isNew) {
+int form_editar_artigo(artigo* const a, int isNew) {
     // TODO: implementar
 }
 
@@ -148,7 +150,7 @@ int form_editar_artigo(artigo const* a, int isNew) {
 
 
 // De form_editar_encomenda
-// ***********************************************************************************************
+// *********************************************************************************************************************
 /**
  * @brief   Pode ser utilizado como um iterador, imprime uma compra.
  * @param c Compra a ser impressa.
@@ -256,30 +258,6 @@ int form_editar_compra(compra* const c, int isNew) {
 
 
 
-// De interface_encomenda
-// ***********************************************************************************************
-/**
- * @brief   Pode ser utilizado como um iterador, imprime uma encomenda.
- * @param e Encomenda a ser impressa.
- * @param i Deve ser inicializado como 0, no final irá conter o número de
- *          encomendas impressas.
- * @returns 0
- */
-int printEncVP(encomenda const* const e, int64_t const* i) {
-    printf("   %8lu   |   ", *i++);
-    menu_printEncomendaBrief(e, &utilizadores, &artigos);
-    printf("\n");
-    return 0;
-}
-
-int form_editar_encomenda(encomenda const* e, int isNew) {
-    // TODO: implementar
-}
-
-
-
-
-// De interface_diretor ************************************************************************************************
 #define GENERIC_EDIT(nome, colect, col, col_pred, editfnc, nomenew)                                                    \
     menu_printDiv();                                                                                                   \
     menu_printHeader("Selecione " nome);                                                                               \
@@ -295,19 +273,65 @@ int form_editar_encomenda(encomenda const* e, int isNew) {
         menu_printInfo("Insira o ID do " nome " para editar");                                                         \
         id = menu_readInt64_tMinMax(-2, max - 1);                                                                      \
     }                                                                                                                  \
-    if (id == -1) return;                                                                                              \
-    if (id == max - 1) {                                                                                               \
-        /* Novo, adicionar ao vetor*/                                                                                  \
-        protectFcnCall(COL_EVAL(colect, _push)(&col, nomenew()), #colect "_push falhou");                              \
-    }                                                                                                                  \
+    if (id != -1) {                                                                                                    \
+        if (id == max - 1) {                                                                                           \
+            /* Novo, adicionar ao vetor*/                                                                              \
+            protectFcnCall(COL_EVAL(colect, _push)(&col, nomenew()), #colect "_push falhou");                          \
+        }                                                                                                              \
                                                                                                                        \
-    /* id é o ID do cliente a editar*/                                                                                 \
-    if(!editfnc(&col.data[id], id == max - 1)) {                                                                       \
-        COL_EVAL(colect, _DEALOC)(&col.data[id]);                                                                      \
-        COL_EVAL(colect, _moveBelow) (&col, id);                                                                       \
-        menu_printInfo(nome " removido.");                                                                             \
+        /* id é o ID do cliente a editar*/                                                                             \
+        if(!editfnc(&col.data[id], id == max - 1)) {                                                                   \
+            COL_EVAL(colect, _DEALOC)(&col.data[id]);                                                                  \
+            COL_EVAL(colect, _moveBelow) (&col, id);                                                                   \
+            menu_printInfo(nome " removido.");                                                                         \
+        }                                                                                                              \
     }                                                                                                                  \
 
+// De interface_encomenda
+// *********************************************************************************************************************
+/**
+ * @brief   Pode ser utilizado como um iterador, imprime uma encomenda.
+ * @param e Encomenda a ser impressa.
+ * @param i Deve ser inicializado como 0, no final irá conter o número de
+ *          encomendas impressas.
+ * @returns 0
+ */
+int printEncVP(encomenda const* const e, int64_t const* i) {
+    printf("   %8lu   |   ", *i++);
+    menu_printEncomendaBrief(e, &utilizadores, &artigos);
+    printf("\n");
+    return 0;
+}
+
+int form_editar_encomenda(encomenda* const  e, int isNew) {
+    GENERIC_EDIT("Compra", compracol, e->compras, printComVP, form_editar_compra, new_compra);
+
+    printf("Deseja alterar o id do cliente? (S / N)");
+    if ( menu_YN('S', 'N') == 1 ) {
+        menu_printHeader("Selecione Cliente");
+        id = -2;
+        max;
+        while (id == -2) {
+            printf("      ID      |   Item\n");
+            printf("         -2   |   Reimprimir\n");
+            printf("         -1   |   Sair\n");
+            max = 0;
+            utilizadorcol_iterateFW(&utilizadores, (utilizadorcol_pred_t) &printUtiVP, &max);
+            menu_printInfo("Insira o ID do Cliente");
+            id = menu_readInt64_tMinMax(-2, max - 1);
+        }
+        if (id != -1) {
+            e->ID_cliente = id;
+        }
+    }
+    e->tempo = time(NULL);
+}
+
+
+
+
+// De inteface_diretor
+// *********************************************************************************************************************
 /**
  * @brief Permite selecionar um utilizador que será editado/criado
  */
@@ -334,7 +358,8 @@ void interface_outras_listagens() {
 
 
 
-// De interface_funcionario ********************************************************************************************
+// De interface_funcionario
+// *********************************************************************************************************************
 void interface_criar_compra() {
     // TODO: implementar
 }
@@ -342,7 +367,8 @@ void interface_criar_compra() {
 
 
 
-// De interface_inicio *************************************************************************************************
+// De interface_inicio
+// *********************************************************************************************************************
 /**
  * @brief As opções que remetem ao diretor
  */
@@ -443,7 +469,8 @@ void funcional_load() {
 
 
 
-// Entry point *********************************************************************************************************
+// Entry point
+// *********************************************************************************************************************
 /**
  * @brief Menu Inicial
  */
