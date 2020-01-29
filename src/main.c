@@ -109,7 +109,7 @@ int printencRecVP(encomenda const* const e, struct {int ano; int mes;}* data) {
     struct tm const * const t = localtime(&e->tempo);
     if(t->tm_mon == data->mes && t->tm_year == data->ano) {
         printf("* Dia %d/%d/%d\n", 1900 + t->tm_year, t->tm_mon + 1, t->tm_mday);
-        printf("    * NOME %s\n", utilizadores.data[e->ID_cliente].nome);
+        printf("    * NOME %s\n", protectStr(utilizadores.data[e->ID_cliente].nome));
         printf("    * NIF  %9.9s\n", utilizadores.data[e->ID_cliente].NIF);
         printf("    * CC   %12.12s\n", utilizadores.data[e->ID_cliente].CC);
         printf("    * ARTIGOS COMPRADOS::\n");
@@ -117,7 +117,7 @@ int printencRecVP(encomenda const* const e, struct {int ano; int mes;}* data) {
         for (colSize_t i = 0; i < e->compras.size; i++) {
             compra const * const c = &e->compras.data[i];
             artigo const * const a = &artigos.data[c->IDartigo];
-            printf("        * Qtd %lu - %s CONSUMO %s", c->qtd, a->nome,
+            printf("        * Qtd %lu - %s CONSUMO %s", c->qtd, protectStr(a->nome),
                 (a->meta & ARTIGO_GRUPO_ANIMAL) ? "ANIMAL" : "HUMANO"
             );
             if(a->meta & ARTIGO_NECESSITA_RECEITA) {
@@ -160,11 +160,11 @@ int form_editar_cliente(utilizador* const u, int isNew) {
     else menu_printHeader("Editar Utilizador");
 
     printf("Inserir nome");
-    if(!isNew) printf(" (%s)", u->nome);
+    if(!isNew) printf(" (%s)", protectStr(u->nome));
     freeN(u->nome);
     u->nome = menu_readNotNulStr();
 
-    char* tmp;
+    char* tmp = NULL;
     while (1) {
         freeN(tmp);
         printf("Inserir NIF");
@@ -182,26 +182,6 @@ int form_editar_cliente(utilizador* const u, int isNew) {
         } else {
             menu_printError("NIF tem 9 caracteres");
         }
-    }
-
-    printf("Inserir NIF");
-    if(!isNew) printf(" (%9.9s)", u->NIF);
-    while (1) {
-        freeN(tmp);
-        tmp = menu_readNotNulStr();
-        if(strlen(tmp) == 9) {
-            for (int i = 0; i < 9; i++) {
-                if(!isdigit(tmp[i])) {
-                    menu_printError("digitos do NIF são characteres");
-                    break;
-                }
-                u->NIF[i] = tmp[i];
-            }
-            break;
-        } else {
-            menu_printError("NIF tem 9 caracteres");
-        }
-        printf("Inserir NIF");
     }
 
     while (1) {
@@ -267,7 +247,7 @@ int form_editar_artigo(artigo* const a, int isNew) {
     }
 
     printf("Inserir nome de artigo");
-    if(!isNew) printf(" (%s)", a->nome);
+    if(!isNew) printf(" (%s)", protectStr(a->nome));
     freeN(a->nome);
     a->nome = menu_readNotNulStr();
 

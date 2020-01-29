@@ -151,3 +151,54 @@ ANIMAL REDUZIDO RECEITA
 #   Receita
 S
 A
+#
+#
+#
+#
+#
+#                                      Log in como funcionario
+-1
+0
+f
+#                                      Criar cliente
+0
+0
+Almeida, Pedro T.
+123456789
+123456789XX1
+#                                      Criar cliente
+0
+1
+Rocha Elias M.
+661739146
+661739146XX1
+#                                      Criar cliente
+0
+2
+Joaquina, Pedro T.
+397535145
+397535145XX1
+#                                      Criar cliente
+0
+3
+Mateus, Caetana F.
+241453181
+241453181XX1
+#                                      Criar cliente
+0
+4
+Magro, Arsénio N.
+457503230
+457503230XX1
+#                                      Criar cliente
+0
+5
+Magalhães, Lídia L.
+746518963
+746518963XX1
+#                                      Criar cliente
+0
+6
+Crespo, Rosalina G.
+696708867
+696708867XX1

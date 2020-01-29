@@ -308,7 +308,9 @@ void menu_printEncomendaBrief(const encomenda* const e, const utilizadorcol* con
  * @brief   Imprime informação sobre o utilizador.
  * @param u Utilizador para ser impresso.
  */
-void menu_printUtilizador(const utilizador u) { printf("Nome: %s NIF(%.9s)", protectStr(u.nome), u.NIF); }
+void menu_printUtilizador(const utilizador u) {
+    printf("NIF: %.9s CC: %12.12s Nome: %s", u.NIF, u.CC, protectStr(u.nome));
+}
 
 /**
  * @brief   Imprime informação sobre o artigo.

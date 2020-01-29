@@ -44,17 +44,10 @@
 #    include "./colecao.h"
 #endif
 
-/**
- * A encomenda percorre uma certa distância e tem diversos estados como
- * ENCOMENDA_ESTADO_EM_ENTREGA ou tipos como ENCOMENDA_TIPO_URGENTE.
- * Adicionalmente a encomenda armazena a tabela de preços ativa quando esta foi
- * criada, a data de criação e o ID do cliente que criou a encomenda.
- */
-
 typedef struct {
     compracol compras;    ///< Compras que fazem parte da encomenda.
     int64_t   ID_cliente; ///< ID do cliente que formalizou a encomenda.
-    time_t    tempo;
+    time_t    tempo;      ///< Data de criação da encomenda
 } encomenda;
 
 encomenda newEncomenda();
