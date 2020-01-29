@@ -105,9 +105,12 @@ Cliente –
 
 // De interface_imprimir_recibo
 // *********************************************************************************************************************
-int printencRecVP(encomenda const* const e, struct {int ano; int mes;}* data) {
-    struct tm const * const t = localtime(&e->tempo);
-    if(t->tm_mon == data->mes && t->tm_year == data->ano) {
+int printencRecVP(encomenda const* const e, struct {
+    int ano;
+    int mes;
+} * data) {
+    struct tm const* const t = localtime(&e->tempo);
+    if (t->tm_mon == data->mes && t->tm_year == data->ano) {
         printf("* Dia %d/%d/%d\n", 1900 + t->tm_year, t->tm_mon + 1, t->tm_mday);
         printf("    * NOME %s\n", protectStr(utilizadores.data[e->ID_cliente].nome));
         printf("    * NIF  %9.9s\n", utilizadores.data[e->ID_cliente].NIF);
@@ -115,25 +118,21 @@ int printencRecVP(encomenda const* const e, struct {int ano; int mes;}* data) {
         printf("    * ARTIGOS COMPRADOS::\n");
         printf("        * QTD - Artigo");
         for (colSize_t i = 0; i < e->compras.size; i++) {
-            compra const * const c = &e->compras.data[i];
-            artigo const * const a = &artigos.data[c->IDartigo];
+            compra const* const c = &e->compras.data[i];
+            artigo const* const a = &artigos.data[c->IDartigo];
             printf("        * Qtd %lu - %s CONSUMO %s", c->qtd, protectStr(a->nome),
-                (a->meta & ARTIGO_GRUPO_ANIMAL) ? "ANIMAL" : "HUMANO"
-            );
-            if(a->meta & ARTIGO_NECESSITA_RECEITA) {
-                printf(" RECEITA (%19.19s)", c->receita);
-            }
+                   (a->meta & ARTIGO_GRUPO_ANIMAL) ? "ANIMAL" : "HUMANO");
+            if (a->meta & ARTIGO_NECESSITA_RECEITA) { printf(" RECEITA (%19.19s)", c->receita); }
             printf(" PREÇO %luc   IVA", a->preco_cent);
             switch (a->meta & ARTIGO_IVA) {
-                case ARTIGO_IVA_INTERMEDIO: printf(" %d%%\n", (int)((ARTIGO_IVA_INTERMEDIO_VAL-1)*100)); break;
-                case ARTIGO_IVA_NORMAL: printf(" %d%%\n", (int)((ARTIGO_IVA_NORMAL_VAL-1)*100)); break;
-                case ARTIGO_IVA_REDUZIDO: printf(" %d%%\n", (int)((ARTIGO_IVA_REDUZIDO_VAL-1)*100)); break;
+                case ARTIGO_IVA_INTERMEDIO: printf(" %d%%\n", (int) ((ARTIGO_IVA_INTERMEDIO_VAL - 1) * 100)); break;
+                case ARTIGO_IVA_NORMAL: printf(" %d%%\n", (int) ((ARTIGO_IVA_NORMAL_VAL - 1) * 100)); break;
+                case ARTIGO_IVA_REDUZIDO: printf(" %d%%\n", (int) ((ARTIGO_IVA_REDUZIDO_VAL - 1) * 100)); break;
             }
         }
     }
     return 0;
 }
-
 
 
 
@@ -156,11 +155,13 @@ int printUtiVP(utilizador const* const u, int64_t* const i) {
 
 int form_editar_cliente(utilizador* const u, int isNew) {
     menu_printDiv();
-    if(isNew) menu_printHeader("Novo Utilizador");
-    else menu_printHeader("Editar Utilizador");
+    if (isNew)
+        menu_printHeader("Novo Utilizador");
+    else
+        menu_printHeader("Editar Utilizador");
 
     printf("Inserir nome");
-    if(!isNew) printf(" (%s)", protectStr(u->nome));
+    if (!isNew) printf(" (%s)", protectStr(u->nome));
     freeN(u->nome);
     u->nome = menu_readNotNulStr();
 
@@ -168,11 +169,11 @@ int form_editar_cliente(utilizador* const u, int isNew) {
     while (1) {
         freeN(tmp);
         printf("Inserir NIF");
-        if(!isNew) printf(" (%9.9s)", u->NIF);
+        if (!isNew) printf(" (%9.9s)", u->NIF);
         tmp = menu_readNotNulStr();
-        if(strlen(tmp) == 9) {
+        if (strlen(tmp) == 9) {
             for (int i = 0; i < 9; i++) {
-                if(!isdigit(tmp[i])) {
+                if (!isdigit(tmp[i])) {
                     menu_printError("digitos do NIF são characteres");
                     break;
                 }
@@ -187,12 +188,10 @@ int form_editar_cliente(utilizador* const u, int isNew) {
     while (1) {
         freeN(tmp);
         printf("Inserir CC");
-        if(!isNew) printf(" (%12.12s)", u->CC);
+        if (!isNew) printf(" (%12.12s)", u->CC);
         tmp = menu_readNotNulStr();
-        if(strlen(tmp) == 12 && utilizador_eCCValido(tmp)) {
-            for (int i = 0; i < 12; i++) {
-                u->CC[i] = tmp[i];
-            }
+        if (strlen(tmp) == 12 && utilizador_eCCValido(tmp)) {
+            for (int i = 0; i < 12; i++) { u->CC[i] = tmp[i]; }
             break;
         } else {
             menu_printError("CC tem 12 caracteres [9] digitos seguidos de [2] letras e [1] digito final");
@@ -236,26 +235,26 @@ int form_editar_artigo(artigo* const a, int isNew) {
     menu_printHeader("Editar Artigo");
     int64_t tmp;
 
-    if(!isNew) {
+    if (!isNew) {
         printf("Desativar artigo? (S / N)");
-        if(!isNew) printf(" (o artigo está %s)", (a->meta & ARTIGO_DESATIVADO)? "desativado" : "ativado");
-        if(menu_YN('S', 'N')) {
+        if (!isNew) printf(" (o artigo está %s)", (a->meta & ARTIGO_DESATIVADO) ? "desativado" : "ativado");
+        if (menu_YN('S', 'N')) {
             a->meta = a->meta | ARTIGO_DESATIVADO;
             return 1;
-        }
-        else a->meta = a->meta & (~ARTIGO_DESATIVADO);
+        } else
+            a->meta = a->meta & (~ARTIGO_DESATIVADO);
     }
 
     printf("Inserir nome de artigo");
-    if(!isNew) printf(" (%s)", protectStr(a->nome));
+    if (!isNew) printf(" (%s)", protectStr(a->nome));
     freeN(a->nome);
     a->nome = menu_readNotNulStr();
 
     while (1) {
         printf("Inserir preço de artigo (cent)");
-        if(!isNew) printf(" (%ldc)", a->preco_cent);
+        if (!isNew) printf(" (%ldc)", a->preco_cent);
         tmp = menu_readInt64_t();
-        if(tmp < 0) {
+        if (tmp < 0) {
             menu_printError("preço de artigo tem que ser positivo");
         } else {
             a->preco_cent = tmp;
@@ -265,9 +264,9 @@ int form_editar_artigo(artigo* const a, int isNew) {
 
     while (1) {
         printf("Inserir stock de artigo");
-        if(!isNew) printf(" (%ld)", a->stock);
+        if (!isNew) printf(" (%ld)", a->stock);
         tmp = menu_readInt64_t();
-        if(tmp < 0) {
+        if (tmp < 0) {
             menu_printError("stock de artigo tem que ser positivo");
         } else {
             a->stock = tmp;
@@ -276,22 +275,20 @@ int form_editar_artigo(artigo* const a, int isNew) {
     }
 
     printf("Qual a taxa de IVA do artigo?");
-    if(!isNew) {
-        switch(a->meta & ARTIGO_IVA) {
+    if (!isNew) {
+        switch (a->meta & ARTIGO_IVA) {
             case ARTIGO_IVA_NORMAL: printf(" ( Normal )\n"); break;
             case ARTIGO_IVA_INTERMEDIO: printf(" ( Intermédio )\n"); break;
             case ARTIGO_IVA_REDUZIDO: printf(" ( Reduzido )\n"); break;
         }
     }
 
-    switch (menu_selection(&(strcol) {
-        .size = 3,
-        .data = (char*[]) {
-            "Artigo tem IVA normal",     // 0
-            "Artigo tem IVA intermédio", // 1
-            "Artigo tem IVA reduzido"    // 2
-        }
-    })) {
+    switch (menu_selection(&(strcol) {.size = 3,
+                                      .data = (char*[]) {
+                                          "Artigo tem IVA normal",     // 0
+                                          "Artigo tem IVA intermédio", // 1
+                                          "Artigo tem IVA reduzido"    // 2
+                                      }})) {
         case -1: break;
         case 0: a->meta = (a->meta & (~ARTIGO_IVA)) + ARTIGO_IVA_NORMAL; break;
         case 1: a->meta = (a->meta & (~ARTIGO_IVA)) + ARTIGO_IVA_INTERMEDIO; break;
@@ -299,14 +296,18 @@ int form_editar_artigo(artigo* const a, int isNew) {
     }
 
     printf("O artigo necessita de receita? (S / N)");
-    if(!isNew) printf(" ( o artigo %snecessita de receita )", (a->meta & ARTIGO_NECESSITA_RECEITA)? "" : "não ");
-    if(menu_YN('S', 'N')) a->meta = a->meta | ARTIGO_NECESSITA_RECEITA;
-    else  a->meta = a->meta & (~ARTIGO_NECESSITA_RECEITA);
+    if (!isNew) printf(" ( o artigo %snecessita de receita )", (a->meta & ARTIGO_NECESSITA_RECEITA) ? "" : "não ");
+    if (menu_YN('S', 'N'))
+        a->meta = a->meta | ARTIGO_NECESSITA_RECEITA;
+    else
+        a->meta = a->meta & (~ARTIGO_NECESSITA_RECEITA);
 
     printf("O artigo é de utilização Animal ou Humana? (A / H)");
-    if(!isNew) printf(" ( o artigo é do grupo %s )", (a->meta & ARTIGO_GRUPO_ANIMAL)? "animal" : "humano");
-    if(menu_YN('A', 'H')) a->meta = a->meta | ARTIGO_GRUPO_ANIMAL;
-    else a->meta = a->meta & (~ARTIGO_GRUPO_ANIMAL);
+    if (!isNew) printf(" ( o artigo é do grupo %s )", (a->meta & ARTIGO_GRUPO_ANIMAL) ? "animal" : "humano");
+    if (menu_YN('A', 'H'))
+        a->meta = a->meta | ARTIGO_GRUPO_ANIMAL;
+    else
+        a->meta = a->meta & (~ARTIGO_GRUPO_ANIMAL);
 
     return 1;
 }
@@ -341,11 +342,13 @@ int printComVP(compra const* const c, int64_t* const i) {
  */
 int form_editar_compra(compra* const c, int isNew) {
     menu_printDiv();
-    if(isNew) menu_printHeader("Criar Nova Compra");
-    else menu_printHeader("Editar Compra");
+    if (isNew)
+        menu_printHeader("Criar Nova Compra");
+    else
+        menu_printHeader("Editar Compra");
 
     artigo* art;
-    if(!isNew) {
+    if (!isNew) {
         art = &artigos.data[c->IDartigo];
         // Fazer reset do stock
         art->stock += c->qtd;
@@ -354,7 +357,7 @@ int form_editar_compra(compra* const c, int isNew) {
         int YN = 2;
         while (YN == 2) {
             YN = menu_YN('S', 'N');
-            switch(YN) {
+            switch (YN) {
                 case 0: break;
                 case 1: return 0;
             }
@@ -374,27 +377,27 @@ int form_editar_compra(compra* const c, int isNew) {
             id = menu_readInt64_tMinMax(-2, max - 1);
         }
         c->IDartigo = id;
-        art = &artigos.data[id];
+        art         = &artigos.data[id];
 
         // Ler receita
-        if(art->meta & ARTIGO_NECESSITA_RECEITA) {
+        if (art->meta & ARTIGO_NECESSITA_RECEITA) {
             char* tmp = NULL;
             menu_printInfo("artigo necessita de receita para ser vendido");
             while (1) {
                 printf("Insira os 12 characteres da receita do artigo");
                 freeN(tmp);
                 tmp = menu_readNotNulStr();
-                if(strlen(tmp) != 12) {
+                if (strlen(tmp) != 12) {
                     menu_printError("receitas médicas necessitam de ter 12 dígitos");
                 } else {
                     size_t i;
                     for (i = 0; i < 12; i++) {
-                        if(!isdigit(tmp[i])) {
+                        if (!isdigit(tmp[i])) {
                             menu_printError("receitas médicas são compostas apenas de dígitos");
                             break;
                         }
                     }
-                    if(i == 12) {
+                    if (i == 12) {
                         memcpy(&c->receita, tmp, 12);
                         break;
                     }
@@ -404,16 +407,16 @@ int form_editar_compra(compra* const c, int isNew) {
     }
 
     // Ler quantidade
-    if(art->stock == 0) {
+    if (art->stock == 0) {
         menu_printError("não existe stock do artigo atua");
         return 0;
     }
-    if(art->meta & ARTIGO_DESATIVADO) {
+    if (art->meta & ARTIGO_DESATIVADO) {
         menu_printError("o artigo selecionado não se encontra disponivél para venda");
         return 0;
     }
     printf("Insira a quantidade de artigos para vender nesta compra");
-    if(!isNew) printf(" (%ld)", c->qtd);
+    if (!isNew) printf(" (%ld)", c->qtd);
     c->qtd = menu_readInt64_tMinMax(1, art->stock);
     art->stock -= c->qtd;
 
@@ -433,7 +436,7 @@ int form_editar_compra(compra* const c, int isNew) {
         printf("         -2   |   Reimprimir\n");                                                                      \
         printf("         -1   |   Sair\n");                                                                            \
         max = 0;                                                                                                       \
-        COL_EVAL(colect, _iterateFW)(&col, (COL_EVAL(colect, _pred_t)) &col_pred, &max);                               \
+        COL_EVAL(colect, _iterateFW)(&col, (COL_EVAL(colect, _pred_t)) & col_pred, &max);                              \
         printf("   %8lu   |   Criar Novo " nome "\n", max++);                                                          \
         menu_printInfo("Insira o ID do " nome " para editar");                                                         \
         id = menu_readInt64_tMinMax(-2, max - 1);                                                                      \
@@ -444,13 +447,13 @@ int form_editar_compra(compra* const c, int isNew) {
             protectFcnCall(COL_EVAL(colect, _push)(&col, nomenew()), #colect "_push falhou");                          \
         }                                                                                                              \
                                                                                                                        \
-        /* id é o ID do cliente a editar*/                                                                             \
-        if(!editfnc(&col.data[id], id == max - 1)) {                                                                   \
+        /* id é o ID do cliente a editar*/                                                                            \
+        if (!editfnc(&col.data[id], id == max - 1)) {                                                                  \
             COL_EVAL(colect, _DEALOC)(&col.data[id]);                                                                  \
-            COL_EVAL(colect, _moveBelow) (&col, id);                                                                   \
+            COL_EVAL(colect, _moveBelow)(&col, id);                                                                    \
             menu_printInfo(nome " removido.");                                                                         \
         }                                                                                                              \
-    }                                                                                                                  \
+    }
 
 // De interface_encomenda
 // *********************************************************************************************************************
@@ -477,11 +480,11 @@ int printEncVP(encomenda const* const e, int64_t* const i) {
  * @returns     0 Se a encomenda não foi editada/ foi eleminada; a encomenda c terá
  *              que ser eleminada pois é inválida.
  */
-int form_editar_encomenda(encomenda* const  e, int isNew) {
+int form_editar_encomenda(encomenda* const e, int isNew) {
     GENERIC_EDIT("Compra", compracol, e->compras, printComVP, form_editar_compra, new_compra);
 
-    if(!isNew) printf("Deseja alterar o id do cliente? (S / N)");
-    if ( (!isNew) || menu_YN('S', 'N') ) {
+    if (!isNew) printf("Deseja alterar o id do cliente? (S / N)");
+    if ((!isNew) || menu_YN('S', 'N')) {
         menu_printHeader("Selecione Cliente");
         id = -2;
         while (id == -2) {
@@ -495,7 +498,8 @@ int form_editar_encomenda(encomenda* const  e, int isNew) {
         }
         if (id != -1) {
             e->ID_cliente = id;
-        } else return 1;
+        } else
+            return 1;
     }
     e->tempo = time(NULL);
     return 1;
@@ -542,15 +546,13 @@ void interface_imprimir_recibo() {
     int64_t mes = menu_readInt64_t();
 
     FILE* const stdoutTMP = stdout;
-    int printBoth = 0;
-    switch (menu_selection(&(strcol) {
-        .size = 3,
-        .data = (char*[]) {
-            "Imprimir no ecrã",     // 0
-            "Imprimir em ficheiro", // 1
-            "Imprimir em ambos",    // 2
-        }
-    })) {
+    int         printBoth = 0;
+    switch (menu_selection(&(strcol) {.size = 3,
+                                      .data = (char*[]) {
+                                          "Imprimir no ecrã",     // 0
+                                          "Imprimir em ficheiro", // 1
+                                          "Imprimir em ambos",    // 2
+                                      }})) {
         case 0: break;
         case 2: printBoth = 1;
         case 1:
@@ -558,7 +560,7 @@ void interface_imprimir_recibo() {
             char* f = menu_readNotNulStr();
             protectVarFcnCall(stdout, fopen(f, "w"), "impossível abrir ficheiro");
             freeN(f);
-        break;
+            break;
     }
 
 PRINT_BEGUIN:
@@ -570,18 +572,16 @@ PRINT_BEGUIN:
         int ano;
         int mes;
     } data;
-    data.ano = ((int)ano) - 1900;
-    data.mes = ((int)mes) - 1;
+    data.ano = ((int) ano) - 1900;
+    data.mes = ((int) mes) - 1;
     encomendacol_iterateFW(&encomendas, (encomendacol_pred_t) &printencRecVP, &data);
     menu_printHeader("Final do Recibo");
     menu_printDiv();
 
-    if(stdout != stdoutTMP) {
+    if (stdout != stdoutTMP) {
         fclose(stdout);
         stdout = stdoutTMP;
-        if(printBoth) {
-            goto PRINT_BEGUIN;
-        }
+        if (printBoth) { goto PRINT_BEGUIN; }
     }
 }
 
@@ -596,9 +596,9 @@ void interface_outras_listagens() {
 // *********************************************************************************************************************
 void interface_criar_encomenda() {
     encomendacol_push(&encomendas, newEncomenda());
-    int toDelete = form_editar_encomenda(&encomendas.data[encomendas.size-1], 0);
-    if(toDelete) {
-        freeEncomenda(&encomendas.data[encomendas.size-1]);
+    int toDelete = form_editar_encomenda(&encomendas.data[encomendas.size - 1], 0);
+    if (toDelete) {
+        freeEncomenda(&encomendas.data[encomendas.size - 1]);
         encomendacol_pop(&encomendas);
     }
 }
@@ -629,7 +629,10 @@ void interface_diretor() {
             case 0: interface_editar_cliente(); break;
             case 1: interface_editar_artigo(); break;
             case 2: interface_editar_encomenda(); break;
-            case 3: i = 0; artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &i); break;
+            case 3:
+                i = 0;
+                artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &i);
+                break;
             case 4: interface_imprimir_recibo(); break;
             case 5: interface_outras_listagens(); break;
         }
@@ -653,7 +656,10 @@ void interface_funcionario() {
             case -1: return;
             case 0: interface_editar_cliente(); break;
             case 1: interface_criar_encomenda(); break;
-            case 2: i = 0; artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &i); break;
+            case 2:
+                i = 0;
+                artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &i);
+                break;
         }
     }
 }

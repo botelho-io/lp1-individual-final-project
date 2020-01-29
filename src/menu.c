@@ -400,16 +400,14 @@ void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* co
         precoComIva += precoSemIva * iva;
 
         printf("* %8lu | QTD: %lu | %30.30s | %8lu | %8lu | ",
-               i,                               //
-               e->compras.data[i].qtd,          //
-               protectStr(a->nome),             //
-               a->preco_cent,                   //
-               (int64_t)(a->preco_cent * iva)   //
+               i,                             //
+               e->compras.data[i].qtd,        //
+               protectStr(a->nome),           //
+               a->preco_cent,                 //
+               (int64_t)(a->preco_cent * iva) //
         );
 
-        if (a->meta & ARTIGO_NECESSITA_RECEITA) {
-            printf("Receita: %19.19s\n", e->compras.data[i].receita);
-        }
+        if (a->meta & ARTIGO_NECESSITA_RECEITA) { printf("Receita: %19.19s\n", e->compras.data[i].receita); }
     }
 
     printf("\n*** Preço líquido: %ldc\n", precoSemIva);
@@ -467,9 +465,9 @@ void menu_printReciboMensal(const int64_t ID_U, int mes, int ano, const encomend
 
 INICIO:
 
-    tot_enc   = 0;
-    tot_art   = 0;
-    tot_preco = 0;
+    tot_enc     = 0;
+    tot_art     = 0;
+    tot_preco   = 0;
     artVendidos = 0;
 
     menu_printDiv();

@@ -91,8 +91,8 @@
 #endif
 
 #define COL_PASTER(X, Y) X##Y
-#define COL_EVAL(X, Y)   COL_PASTER(X, Y)
-#define COL_FUN(X)       COL_EVAL(COL_NOME, X)
+#define COL_EVAL(X, Y) COL_PASTER(X, Y)
+#define COL_FUN(X) COL_EVAL(COL_NOME, X)
 
 #if !(defined(COL_IMPLEMENTACAO) || defined(COL_DECLARACAO))
 #    define COL_DECLARACAO
@@ -462,7 +462,7 @@ int       COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i);
 COL_TIPO  COL_FUN(_popAt)(COL_NOME* const v, const colSize_t position);
 colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
 colSize_t COL_FUN(_iterateBW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
-void COL_FUN(_DEALOC)(COL_TIPO* const X);
+void      COL_FUN(_DEALOC)(COL_TIPO* const X);
 #    ifdef COL_WRITE
 int COL_FUN(_write)(const COL_NOME* const v, FILE* f);
 #    endif

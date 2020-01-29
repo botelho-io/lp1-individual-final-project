@@ -19,9 +19,9 @@
  * Capaz de gravar todas as informações sobre um utilizador.
  */
 typedef struct {
-    char*  nome; ///< Nome do cliente.
-    char NIF[9]; ///< NIF do cliente.
-    char CC[12]; ///< Número de cartão de cidadão do cliente.
+    char* nome;   ///< Nome do cliente.
+    char  NIF[9]; ///< NIF do cliente.
+    char  CC[12]; ///< Número de cartão de cidadão do cliente.
 } utilizador;
 
 int        utilizador_eCCValido(const char* const CC);
