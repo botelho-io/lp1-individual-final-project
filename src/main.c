@@ -107,8 +107,8 @@ Cliente –
 // De interface_imprimir_recibo
 // *********************************************************************************************************************
 int printencRecVP(encomenda const* const e, struct {
-    int ano;
-    int mes;
+    int      ano;
+    int      mes;
     uint64_t total;
     uint64_t art;
     uint64_t compras;
@@ -121,13 +121,13 @@ int printencRecVP(encomenda const* const e, struct {
         printf("    * NIF  %9.9s\n", utilizadores.data[e->ID_cliente].NIF);
         printf("    * CC   %12.12s\n", utilizadores.data[e->ID_cliente].CC);
         printf("    * ARTIGOS COMPRADOS:\n");
-        int64_t preco_art;
+        int64_t   preco_art;
         colSize_t i;
         for (i = 0; i < e->compras.size; i++) {
             // inicio
             compra const* const c = &e->compras.data[i];
             artigo const* const a = &artigos.data[c->IDartigo];
-            preco_art = a->preco_cent;
+            preco_art             = a->preco_cent;
             printf("        * ");
             // consumo
             printf("CONSUMO %s", (a->meta & ARTIGO_GRUPO_ANIMAL) ? "ANIMAL" : "HUMANO");
@@ -138,18 +138,18 @@ int printencRecVP(encomenda const* const e, struct {
                 case ARTIGO_IVA_INTERMEDIO:
                     printf(" %d%%", (int) ((ARTIGO_IVA_INTERMEDIO_VAL - 1) * 100));
                     preco_art *= ARTIGO_IVA_INTERMEDIO_VAL;
-                break;
+                    break;
                 case ARTIGO_IVA_NORMAL:
                     printf(" %d%%", (int) ((ARTIGO_IVA_NORMAL_VAL - 1) * 100));
                     preco_art *= ARTIGO_IVA_NORMAL_VAL;
-                break;
+                    break;
                 case ARTIGO_IVA_REDUZIDO:
                     printf(" %d%%", (int) ((ARTIGO_IVA_REDUZIDO_VAL - 1) * 100));
                     preco_art *= ARTIGO_IVA_REDUZIDO_VAL;
-                break;
+                    break;
             }
             // total
-            printf("\t- TOTAL: %ldc", preco_art*c->qtd);
+            printf("\t- TOTAL: %ldc", preco_art * c->qtd);
             // quantidade
             printf("\t- QUANTIDADE: %ld", c->qtd);
             // nome
@@ -583,7 +583,7 @@ void interface_imprimir_recibo() {
     printf("Inserir ano");
     int64_t ano = menu_readInt64_t();
     printf("Inserir mês");
-    int64_t mes = menu_readInt64_tMinMax(1,12);
+    int64_t mes = menu_readInt64_tMinMax(1, 12);
 
     FILE* const stdoutTMP = stdout;
     int         printBoth = 0;
@@ -609,18 +609,18 @@ PRINT_BEGUIN:
 
     printf("\n*** Mês do recibo: %lu/%lu", ano, mes);
     struct {
-        int ano;
-        int mes;
+        int      ano;
+        int      mes;
         uint64_t total;
         uint64_t art;
         uint64_t compras;
         uint64_t encomendas;
     } data;
-    data.ano = ((int) ano) - 1900;
-    data.mes = ((int) mes) - 1;
-    data.total = 0;
-    data.art = 0;
-    data.compras = 0;
+    data.ano        = ((int) ano) - 1900;
+    data.mes        = ((int) mes) - 1;
+    data.total      = 0;
+    data.art        = 0;
+    data.compras    = 0;
     data.encomendas = 0;
     encomendacol_iterateFW(&encomendas, (encomendacol_pred_t) &printencRecVP, &data);
     printf("*** Artigos vendidos neste mês: %ld\n", data.art);
