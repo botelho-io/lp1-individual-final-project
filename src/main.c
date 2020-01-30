@@ -176,7 +176,7 @@ int printencRecVP(encomenda const* const e, struct {
 // *********************************************************************************************************************
 /**
  * @brief   Pode ser utilizado como um iterador, imprime um utilizador.
- * @param u Cliente a ser impresso.
+ * @param u Utilizador a ser impresso.
  * @param i Deve ser inicializado como 0, no final irá conter o número de
  *          utilizadores impressos.
  * @returns 0
@@ -258,12 +258,12 @@ int printArtVP(artigo const* const a, int64_t* const i) {
 
 /**
  * @brief       Função responsável por editar todos os parametros de um artigo.
- * @param a     Artigo que será editada.
+ * @param a     Artigo que será editado.
  * @param isNew Deve ser 1 se o artigo é novo e 0 se é um artigo válido que será
  *              editado.
  * @returns     1 Se o artigo foi editado.
- * @returns     0 Se o artigo não foi editado/ foi eleminado; a artigo a terá
- *              que ser eleminado pois é inválido.
+ * @returns     0 Se o artigo não foi editado/ foi eleminado; o artigo terá que
+ *              ser eleminado pois é inválido.
  */
 int form_editar_artigo(artigo* const a, int isNew) {
     menu_printDiv();
@@ -369,11 +369,11 @@ int printComVP(compra const* const c, int64_t* const i) {
 /**
  * @brief       Função responsável por editar todos os parametros de uma compra.
  * @param c     Compra que será editada.
- * @param isNew Deve ser 1 se o artigo é nova e 0 se é uma compra
+ * @param isNew Deve ser 1 se a compra é nova e 0 se é uma compra
  *              válida que será editada.
  * @returns     1 Se a compra foi editada.
- * @returns     0 Se a compra não foi editada/ foi eleminada; a compra c terá
- *              que ser eleminada pois é inválida.
+ * @returns     0 Se a compra não foi editada/ foi eleminada; a compra terá que
+ *              ser eleminada pois é inválida.
  */
 int form_editar_compra(compra* const c, int isNew) {
     menu_printDiv();
@@ -407,7 +407,7 @@ int form_editar_compra(compra* const c, int isNew) {
             printf("         -2   |   Reimprimir\n");
             printf("         -1   |   Sair\n");
             max = 0;
-            artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtVP, &max);
+            artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &max);
             menu_printInfo("Insira o ID do artigo que será vendido na compra");
             id = menu_readInt64_tMinMax(-2, max - 1);
         }
@@ -511,13 +511,14 @@ int printEncVP(encomenda const* const e, int64_t* const i) {
 }
 
 /**
- * @brief       Função responsável por editar todos os parametros de uma encomenda.
- * @param e     encomenda que será editada.
- * @param isNew Deve ser 1 se o artigo é nova e 0 se é uma encomenda
- *              válida que será editada.
+ * @brief       Função responsável por editar todos os parametros de uma
+ *              encomenda.
+ * @param e     Encomenda que será editada.
+ * @param isNew Deve ser 1 se a encomenda é nova e 0 se é uma encomenda válida
+ *              que será editada.
  * @returns     1 Se a encomenda foi editada.
- * @returns     0 Se a encomenda não foi editada/ foi eleminada; a encomenda c terá
- *              que ser eleminada pois é inválida.
+ * @returns     0 Se a encomenda não foi editada/ foi eleminada; a encomenda
+ *              terá que ser eleminada pois é inválida.
  */
 int form_editar_encomenda(encomenda* const e, int isNew) {
     GENERIC_EDIT("Compra", compracol, e->compras, printComVP, form_editar_compra, new_compra);
@@ -551,9 +552,6 @@ int form_editar_encomenda(encomenda* const e, int isNew) {
 // De inteface_diretor
 // *********************************************************************************************************************
 /**
- * @brief Permite selecionar um utilizador que será editado/criado
- */
-/**
  * @brief   Pode ser utilizado como um iterador, imprime o stock de um artigo.
  * @param a Artigo a imprimir.
  * @param i Deve ser inicializado como 0, no final irá conter o número de
@@ -567,18 +565,30 @@ int printArtStokVP(artigo const* const a, int64_t* const i) {
     return 0;
 }
 
+/**
+ * @brief Premite editar clientes.
+ */
 void interface_editar_cliente() {
     GENERIC_EDIT("Cliente", utilizadorcol, utilizadores, printUtiVP, form_editar_cliente, newUtilizador);
 }
 
+/**
+ * @brief Premite editar artigos.
+ */
 void interface_editar_artigo() {
-    GENERIC_EDIT("Artigo", artigocol, artigos, printArtVP, form_editar_artigo, newArtigo);
+    GENERIC_EDIT("Artigo", artigocol, artigos, printArtStokVP, form_editar_artigo, newArtigo);
 }
 
+/**
+ * @brief Premite editar encomendas.
+ */
 void interface_editar_encomenda() {
     GENERIC_EDIT("Encomenda", encomendacol, encomendas, printEncVP, form_editar_encomenda, newEncomenda);
 }
 
+/**
+ * @brief Premite imprimir um recibo para um certo mês.
+ */
 void interface_imprimir_recibo() {
     printf("Inserir ano");
     int64_t ano = menu_readInt64_t();
@@ -637,6 +647,9 @@ PRINT_BEGUIN:
     }
 }
 
+/**
+ * @brief Listagens proporstas pelo aluno.
+ */
 void interface_outras_listagens() {
     // TODO: Implementar
 }
@@ -646,6 +659,9 @@ void interface_outras_listagens() {
 
 // De interface_funcionario
 // *********************************************************************************************************************
+/**
+ * @brief Permite criar uma nova encomenda.
+ */
 void interface_criar_encomenda() {
     menu_printDiv();
     menu_printHeader("Adicionar Compras a Nova Encomenda");
@@ -662,7 +678,7 @@ void interface_criar_encomenda() {
 // De interface_inicio
 // *********************************************************************************************************************
 /**
- * @brief As opções que remetem ao diretor
+ * @brief As opções que remetem ao diretor.
  */
 void interface_diretor() {
     int64_t i;
@@ -693,7 +709,7 @@ void interface_diretor() {
 }
 
 /**
- * @brief As opções que remetem a um funcionario
+ * @brief As opções que remetem a um funcionário.
  */
 void interface_funcionario() {
     int64_t i;
@@ -704,12 +720,14 @@ void interface_funcionario() {
                                           .data = (char*[]) {
                                               "Editar/ criar cliente", // 0
                                               "Criar encomenda",       // 1
-                                              "Consultar stock",       // 2
+                                              "Imprimir recibo",       // 2
+                                              "Consultar stock",       // 3
                                           }})) {
             case -1: return;
             case 0: interface_editar_cliente(); break;
             case 1: interface_criar_encomenda(); break;
-            case 2:
+            case 2: interface_imprimir_recibo(); break;
+            case 3:
                 i = 0;
                 artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &i);
                 break;
@@ -718,7 +736,7 @@ void interface_funcionario() {
 }
 
 /**
- * @brief Responsavél por gravar os dados em ficheiro
+ * @brief Responsavél por gravar os dados em ficheiro.
  */
 void funcional_save() {
     menu_printDiv();
@@ -742,7 +760,7 @@ void funcional_save() {
 }
 
 /**
- * @brief Responsavél por carregar o estado de ficheiro
+ * @brief Responsavél por carregar o estado de ficheiro.
  */
 void funcional_load() {
     menu_printDiv();
@@ -776,7 +794,7 @@ void funcional_load() {
 // Entry point
 // *********************************************************************************************************************
 /**
- * @brief Menu Inicial
+ * @brief Menu inicial.
  */
 void interface_inicio() {
     char* login = NULL;
