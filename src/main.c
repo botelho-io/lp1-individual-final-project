@@ -372,7 +372,7 @@ int form_editar_compra(compra* const c, int isNew) {
             printf("         -2   |   Reimprimir\n");
             printf("         -1   |   Sair\n");
             max = 0;
-            artigocol_iterateFW(&artigos, (artigocol_pred_t) &printComVP, &max);
+            artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtVP, &max);
             menu_printInfo("Insira o ID do artigo que será vendido na compra");
             id = menu_readInt64_tMinMax(-2, max - 1);
         }
@@ -384,21 +384,21 @@ int form_editar_compra(compra* const c, int isNew) {
             char* tmp = NULL;
             menu_printInfo("artigo necessita de receita para ser vendido");
             while (1) {
-                printf("Insira os 12 characteres da receita do artigo");
+                printf("Insira os 19 characteres da receita do artigo");
                 freeN(tmp);
                 tmp = menu_readNotNulStr();
-                if (strlen(tmp) != 12) {
-                    menu_printError("receitas médicas necessitam de ter 12 dígitos");
+                if (strlen(tmp) != 19) {
+                    menu_printError("receitas médicas necessitam de ter 19 dígitos");
                 } else {
                     size_t i;
-                    for (i = 0; i < 12; i++) {
+                    for (i = 0; i < 19; i++) {
                         if (!isdigit(tmp[i])) {
                             menu_printError("receitas médicas são compostas apenas de dígitos");
                             break;
                         }
                     }
-                    if (i == 12) {
-                        memcpy(&c->receita, tmp, 12);
+                    if (i == 19) {
+                        memcpy(&c->receita, tmp, 19);
                         break;
                     }
                 }
@@ -408,7 +408,7 @@ int form_editar_compra(compra* const c, int isNew) {
 
     // Ler quantidade
     if (art->stock == 0) {
-        menu_printError("não existe stock do artigo atua");
+        menu_printError("não existe stock do artigo atual");
         return 0;
     }
     if (art->meta & ARTIGO_DESATIVADO) {
