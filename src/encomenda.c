@@ -58,7 +58,7 @@ int64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av)
             case ARTIGO_IVA_INTERMEDIO: precoPreTax *= ARTIGO_IVA_INTERMEDIO_VAL; break;
             case ARTIGO_IVA_REDUZIDO: precoPreTax *= ARTIGO_IVA_REDUZIDO_VAL; break;
         }
-        precoFinal += precoPreTax;
+        precoFinal += precoPreTax * (e->compras.data[i].qtd);
     }
     return precoFinal;
 }
