@@ -14,6 +14,7 @@
 
 #include <errno.h>
 #include <stdint.h>
+#include <strings.h>
 
 // Estado do programa
 // *********************************************************************************************************************
@@ -108,6 +109,10 @@ Cliente –
 int printencRecVP(encomenda const* const e, struct {
     int ano;
     int mes;
+    uint64_t total;
+    uint64_t art;
+    uint64_t compras;
+    uint64_t encomendas;
 } * data) {
     struct tm const* const t = localtime(&e->tempo);
     if (t->tm_mon == data->mes && t->tm_year == data->ano) {
@@ -115,22 +120,52 @@ int printencRecVP(encomenda const* const e, struct {
         printf("    * NOME %s\n", protectStr(utilizadores.data[e->ID_cliente].nome));
         printf("    * NIF  %9.9s\n", utilizadores.data[e->ID_cliente].NIF);
         printf("    * CC   %12.12s\n", utilizadores.data[e->ID_cliente].CC);
-        printf("    * ARTIGOS COMPRADOS::\n");
-        printf("        * QTD - Artigo");
-        for (colSize_t i = 0; i < e->compras.size; i++) {
+        printf("    * ARTIGOS COMPRADOS:\n");
+        int64_t preco_art;
+        colSize_t i;
+        for (i = 0; i < e->compras.size; i++) {
+            // inicio
             compra const* const c = &e->compras.data[i];
             artigo const* const a = &artigos.data[c->IDartigo];
-            printf("        * Qtd %lu - %s CONSUMO %s", c->qtd, protectStr(a->nome),
-                   (a->meta & ARTIGO_GRUPO_ANIMAL) ? "ANIMAL" : "HUMANO");
-            if (a->meta & ARTIGO_NECESSITA_RECEITA) { printf(" RECEITA (%19.19s)", c->receita); }
-            printf(" PREÇO %luc   IVA", a->preco_cent);
+            preco_art = a->preco_cent;
+            printf("        * ");
+            // consumo
+            printf("CONSUMO %s", (a->meta & ARTIGO_GRUPO_ANIMAL) ? "ANIMAL" : "HUMANO");
+            // preço
+            printf("\t- PREÇO %luc\t- IVA", a->preco_cent);
+            // iva
             switch (a->meta & ARTIGO_IVA) {
-                case ARTIGO_IVA_INTERMEDIO: printf(" %d%%\n", (int) ((ARTIGO_IVA_INTERMEDIO_VAL - 1) * 100)); break;
-                case ARTIGO_IVA_NORMAL: printf(" %d%%\n", (int) ((ARTIGO_IVA_NORMAL_VAL - 1) * 100)); break;
-                case ARTIGO_IVA_REDUZIDO: printf(" %d%%\n", (int) ((ARTIGO_IVA_REDUZIDO_VAL - 1) * 100)); break;
+                case ARTIGO_IVA_INTERMEDIO:
+                    printf(" %d%%", (int) ((ARTIGO_IVA_INTERMEDIO_VAL - 1) * 100));
+                    preco_art *= ARTIGO_IVA_INTERMEDIO_VAL;
+                break;
+                case ARTIGO_IVA_NORMAL:
+                    printf(" %d%%", (int) ((ARTIGO_IVA_NORMAL_VAL - 1) * 100));
+                    preco_art *= ARTIGO_IVA_NORMAL_VAL;
+                break;
+                case ARTIGO_IVA_REDUZIDO:
+                    printf(" %d%%", (int) ((ARTIGO_IVA_REDUZIDO_VAL - 1) * 100));
+                    preco_art *= ARTIGO_IVA_REDUZIDO_VAL;
+                break;
             }
+            // total
+            printf("\t- TOTAL: %ldc", preco_art*c->qtd);
+            // quantidade
+            printf("\t- QUANTIDADE: %ld", c->qtd);
+            // nome
+            printf("\t\"%s\"", a->nome);
+            // receita
+            if (a->meta & ARTIGO_NECESSITA_RECEITA) { printf("\t- RECEITA (%12.12s)", c->receita); }
+            // fim
+            data->art += c->qtd;
+            printf("\n");
         }
+        const uint64_t tot = encomenda_CalcPreco(e, &artigos);
+        printf("    * TOTAL %ld\n", tot);
+        data->compras += i;
+        data->total += tot;
     }
+    data->encomendas += 1;
     return 0;
 }
 
@@ -427,32 +462,36 @@ int form_editar_compra(compra* const c, int isNew) {
 
 
 #define GENERIC_EDIT(nome, colect, col, col_pred, editfnc, nomenew)                                                    \
-    menu_printDiv();                                                                                                   \
-    menu_printHeader("Selecione " nome);                                                                               \
     int64_t id = -2;                                                                                                   \
     int64_t max;                                                                                                       \
-    while (id == -2) {                                                                                                 \
-        printf("      ID      |   Item\n");                                                                            \
-        printf("         -2   |   Reimprimir\n");                                                                      \
-        printf("         -1   |   Sair\n");                                                                            \
-        max = 0;                                                                                                       \
-        COL_EVAL(colect, _iterateFW)(&col, (COL_EVAL(colect, _pred_t)) & col_pred, &max);                              \
-        printf("   %8lu   |   Criar Novo " nome "\n", max++);                                                          \
-        menu_printInfo("Insira o ID do " nome " para editar");                                                         \
-        id = menu_readInt64_tMinMax(-2, max - 1);                                                                      \
-    }                                                                                                                  \
-    if (id != -1) {                                                                                                    \
-        if (id == max - 1) {                                                                                           \
-            /* Novo, adicionar ao vetor*/                                                                              \
-            protectFcnCall(COL_EVAL(colect, _push)(&col, nomenew()), #colect "_push falhou");                          \
+    while (1) {                                                                                                        \
+        id = -2;                                                                                                       \
+        menu_printDiv();                                                                                               \
+        menu_printHeader("Selecione " nome);                                                                           \
+        while (id == -2) {                                                                                             \
+            printf("      ID      |   Item\n");                                                                        \
+            printf("         -2   |   Reimprimir\n");                                                                  \
+            printf("         -1   |   Sair\n");                                                                        \
+            max = 0;                                                                                                   \
+            COL_EVAL(colect, _iterateFW)(&col, (COL_EVAL(colect, _pred_t)) & col_pred, &max);                          \
+            printf("   %8lu   |   Criar Novo " nome "\n", max++);                                                      \
+            menu_printInfo("Insira o ID do " nome " para editar");                                                     \
+            id = menu_readInt64_tMinMax(-2, max - 1);                                                                  \
         }                                                                                                              \
+        if (id != -1) {                                                                                                \
+            if (id == max - 1) {                                                                                       \
+                /* Novo, adicionar ao vetor*/                                                                          \
+                protectFcnCall(COL_EVAL(colect, _push)(&col, nomenew()), #colect "_push falhou");                      \
+            }                                                                                                          \
                                                                                                                        \
-        /* id é o ID do cliente a editar*/                                                                            \
-        if (!editfnc(&col.data[id], id == max - 1)) {                                                                  \
-            COL_EVAL(colect, _DEALOC)(&col.data[id]);                                                                  \
-            COL_EVAL(colect, _moveBelow)(&col, id);                                                                    \
-            menu_printInfo(nome " removido.");                                                                         \
-        }                                                                                                              \
+            /* id é o ID do cliente a editar */                                                                       \
+            if (!editfnc(&col.data[id], id == max - 1)) {                                                              \
+                COL_EVAL(colect, _DEALOC)(&col.data[id]);                                                              \
+                COL_EVAL(colect, _moveBelow)(&col, id);                                                                \
+                menu_printInfo(nome " removido.");                                                                     \
+            }                                                                                                          \
+        } else                                                                                                         \
+            break;                                                                                                     \
     }
 
 // De interface_encomenda
@@ -483,8 +522,9 @@ int printEncVP(encomenda const* const e, int64_t* const i) {
 int form_editar_encomenda(encomenda* const e, int isNew) {
     GENERIC_EDIT("Compra", compracol, e->compras, printComVP, form_editar_compra, new_compra);
 
+    printf("\nISNEW: %d\n\n", isNew);
     if (!isNew) printf("Deseja alterar o id do cliente? (S / N)");
-    if ((!isNew) || menu_YN('S', 'N')) {
+    if (isNew || menu_YN('S', 'N')) {
         menu_printHeader("Selecione Cliente");
         id = -2;
         while (id == -2) {
@@ -543,7 +583,7 @@ void interface_imprimir_recibo() {
     printf("Inserir ano");
     int64_t ano = menu_readInt64_t();
     printf("Inserir mês");
-    int64_t mes = menu_readInt64_t();
+    int64_t mes = menu_readInt64_tMinMax(1,12);
 
     FILE* const stdoutTMP = stdout;
     int         printBoth = 0;
@@ -571,10 +611,22 @@ PRINT_BEGUIN:
     struct {
         int ano;
         int mes;
+        uint64_t total;
+        uint64_t art;
+        uint64_t compras;
+        uint64_t encomendas;
     } data;
     data.ano = ((int) ano) - 1900;
     data.mes = ((int) mes) - 1;
+    data.total = 0;
+    data.art = 0;
+    data.compras = 0;
+    data.encomendas = 0;
     encomendacol_iterateFW(&encomendas, (encomendacol_pred_t) &printencRecVP, &data);
+    printf("*** Artigos vendidos neste mês: %ld\n", data.art);
+    printf("*** Compras vendidas neste mês: %ld\n", data.compras);
+    printf("*** Encomendas vendidas neste mês: %ld\n", data.encomendas);
+    printf("*** Total mensal: %ld c\n", data.total);
     menu_printHeader("Final do Recibo");
     menu_printDiv();
 
@@ -595,9 +647,10 @@ void interface_outras_listagens() {
 // De interface_funcionario
 // *********************************************************************************************************************
 void interface_criar_encomenda() {
+    menu_printDiv();
+    menu_printHeader("Adicionar Compras a Nova Encomenda");
     encomendacol_push(&encomendas, newEncomenda());
-    int toDelete = form_editar_encomenda(&encomendas.data[encomendas.size - 1], 0);
-    if (toDelete) {
+    if (!form_editar_encomenda(&encomendas.data[encomendas.size - 1], 1)) {
         freeEncomenda(&encomendas.data[encomendas.size - 1]);
         encomendacol_pop(&encomendas);
     }
@@ -787,13 +840,6 @@ int main() {
            "DESCONHECIDO"
 #    endif
                "\n");
-#endif
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-    // TODO: REMOVE, WINDOWS ONLY
-    stdin  = (&_iob[STDIN_FILENO]);
-    stdout = (&_iob[STDOUT_FILENO]);
-    stderr = (&_iob[STDERR_FILENO]);
 #endif
 
     menu_printDiv();

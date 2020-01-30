@@ -435,9 +435,9 @@ void menu_printReciboMensal(const int64_t ID_U, int mes, int ano, const encomend
 
     switch (menu_selection(&(strcol) {.size = 3,
                                       .data = (char*[]) {
-                                          "Imprimir fatura no ecrâ",              //
-                                          "Imprimir fatura em ficheiro",          //
-                                          "Imprimir fatura no ecrâ e em ficheiro" //
+                                          "Imprimir fatura no ecrâ",              // 0
+                                          "Imprimir fatura em ficheiro",          // 1
+                                          "Imprimir fatura no ecrâ e em ficheiro" // 2
                                       }})) {
         case -1: return;
         case 0: break;
