@@ -72,7 +72,5 @@ int     menu_YN(const char Y, const char N);
 
 void menu_printEncomendaBrief(const encomenda* const e, const utilizadorcol* const uv, const artigocol* const av);
 void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* const uv, const artigocol* const av);
-void menu_printReciboMensal(const int64_t ID_U, int mes, int ano, const encomendacol* const e,
-                            const utilizadorcol* const uv, const artigocol* const av);
 
 #endif

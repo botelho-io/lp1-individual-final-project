@@ -46,7 +46,7 @@
 
 typedef struct {
     compracol compras;    ///< Compras que fazem parte da encomenda.
-    int64_t   ID_cliente; ///< ID do cliente que formalizou a encomenda.
+    colSize_t ID_cliente; ///< ID do cliente que formalizou a encomenda.
     time_t    tempo;      ///< Data de criação da encomenda
 } encomenda;
 

@@ -12,10 +12,10 @@
 #    include <sys/stat.h>
 #endif
 
+#include <fcntl.h>
 #include <errno.h>
 #include <stdint.h>
 #include <strings.h>
-#include <fcntl.h>
 
 // Estado do programa
 // *********************************************************************************************************************
@@ -107,6 +107,13 @@ Cliente –
 
 // De interface_imprimir_recibo
 // *********************************************************************************************************************
+/**
+ * @brief      Pode ser utilizado como um iterador, imprime encomenda num recibo.
+ * @param e    Encomenda a ser impressa
+ * @param data Ano e mês do recibo como também alguns dados remetentes ao total
+ *             do preço do recibo e artigos compras e encomendas vendidas.
+ * @returns    0
+ */
 int printencRecVP(encomenda const* const e, struct {
     int      ano;
     int      mes;
@@ -154,8 +161,10 @@ int printencRecVP(encomenda const* const e, struct {
             // quantidade
             printf("\t- QUANTIDADE: %ld", c->qtd);
             // receita
-            if (a->meta & ARTIGO_NECESSITA_RECEITA) { printf("\t- RECEITA (%12.12s)", c->receita); }
-            else                                      printf("\t- ARTIGO DE VENDA LIVRE ");
+            if (a->meta & ARTIGO_NECESSITA_RECEITA) {
+                printf("\t- RECEITA (%12.12s)", c->receita);
+            } else
+                printf("\t- ARTIGO DE VENDA LIVRE ");
             // nome
             printf("\t\"%s\"", protectStr(a->nome));
             // fim
@@ -586,9 +595,9 @@ void interface_imprimir_recibo() {
 
     int bak = dup(1);
     protectFcnCall((bak != -1), "dup falhou");
-    int new = 0;
-    int         printBoth = 0;
-    int         needsToRestoreOut = 0;
+    int new               = 0;
+    int printBoth         = 0;
+    int needsToRestoreOut = 0;
     switch (menu_selection(&(strcol) {.size = 3,
                                       .data = (char*[]) {
                                           "Imprimir no ecrã",     // 0
@@ -602,7 +611,7 @@ void interface_imprimir_recibo() {
             needsToRestoreOut = 1;
             printf("Introduza nome de ficheiro");
             char* f = menu_readNotNulStr();
-            new = open(f, O_WRONLY | O_CREAT);
+            new     = open(f, O_WRONLY | O_CREAT);
             protectFcnCall((new != -1), "open falhou");
             protectFcnCall((dup2(new, 1) != -1), "dup2 falhou");
             close(new);
@@ -650,7 +659,18 @@ PRINT_BEGUIN:
  * @brief Listagens proporstas pelo aluno.
  */
 void interface_outras_listagens() {
-    // TODO: Implementar
+    // TODO: Finalizar mplementação
+    while (1) {
+        menu_printDiv();
+        menu_printHeader("Listagens Extra");
+        switch (menu_selection(&(strcol) {.size = 1,
+                                          .data = (char*[]) {
+                                              "Recibo individual", // 0
+                                          }})) {
+            case -1: return;
+            case 0: listagem_imprimir_recibo(); break;
+        }
+    }
 }
 
 

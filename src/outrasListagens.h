@@ -53,5 +53,6 @@ artigocol     artigos;
 encomendacol  encomendas;
 utilizadorcol utilizadores;
 void          funcional_consultar_estados_encomendas();
+void          listagem_imprimir_recibo();
 
 #endif
