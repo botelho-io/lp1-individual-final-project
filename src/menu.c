@@ -189,8 +189,8 @@ int64_t menu_readInt64_tMinMax(const int64_t min, const int64_t max) {
 
 /**
  * @brief       Imprime um menu deixando o utilizador selecionar uma das opções.
- * @param itens Coleção se strings que constituem as opções que o utilizador pode
- *              selecionar.
+ * @param itens Coleção se strings que constituem as opções que o utilizador
+ *              pode selecionar.
  * @returns     Um valor entre [-1, itens.size[ correspondente à opção
  *              selecionada ou "Sair" para -1
  */
@@ -335,7 +335,7 @@ void menu_printArtigo(const artigo* const a) {
 }
 
 /**
- * @brief   Imprime informação sobre o artigo.
+ * @brief   Imprime informação sobre uma compra.
  * @param c Compra a ser impressa.
  */
 void menu_printCompra(const compra* const c, const artigocol* const av) {

@@ -1,13 +1,12 @@
 /**
  * @file    compra.h
  * @author  André Botelho (keyoted@gmail.com)
- * @brief
+ * @brief   Uma compra representa um conjunto do mesmo artigo a ser vendido.
  * @version 1
  * @date 2020-01-15
  *
  * @copyright Copyright (c) 2020
  */
-// TODO: Update brief
 
 #ifndef PARIDNUM_H
 #define PARIDNUM_H

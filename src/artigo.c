@@ -1,8 +1,8 @@
 /**
  * @file    artigo.c
  * @author  André Botelho (keyoted@gmail.com)
- * @brief   Um artigo é um objeto com um nome, peso e volume que pode ou não
- *          requerer tratamento especial.
+ * @brief   Um artigo é um objeto com um nome, preço, stock e informação
+ *          relativa ao tipo de medicamento (taxa de IVA e grupo).
  * @version 1
  * @date    2019-12-31
  * @copyright Copyright (c) 2019

@@ -18,6 +18,9 @@
 #include <unistd.h>
 #include <strings.h>
 
+
+
+
 // Estado do programa
 // *********************************************************************************************************************
 #define COL_IMPLEMENTACAO
@@ -61,47 +64,6 @@ encomendacol  encomendas;   ///< Encomendas
 utilizadorcol utilizadores; ///< Utilizadores existentes no registo
 
 #include "outrasListagens.h"
-
-/* Descrição do problema ***********************************************************************************************
-Login -
-    Apenas requer “F” ou “DC” (Funcionário ou Diretor Clínico)
-
-Funcionário –
-    Editar/ Criar novos clientes
-    Introduzir a compra do cliente no sistema
-        No final de cada compra o stock deverá ser atualizado automaticamente
-        Não sendo permitida a venda de artigos que se encontrem semstock
-
-Diretor  clínico –
-    Editar/ criar clientes, artigos, compras, entre outras
-    Gerar/reimprimir a fatura para um cliente
-        Gerada no ecrã e/ou escrita para ficheiro
-        Conter a listagem de todosos artigos vendidos
-
-Artigo -
-    É  armazenado  ou  vendido  pela  Farmácia
-    Pode pertencer  ao  grupo  “Humano”  ou  “Animal”
-    De  venda  livre  ou  necessitar  de receita
-    Deve  ser  solicitado  o  número  da receita para que este fique no sistema
-    O preço final de um artigo contem  o valor base e o respetivo valor do IVA
-
-Persistência  de  dados –
-    A  aplicação  deverá  permitir  guardar/carregar  dados  em / de  ficheiro
-
-IVA –
-    Imposto sobre o valor acrescentado associada a um tipo de produto
-    Este pode  variar  de  acordo  com  3  categorias:
-        Taxa normal  (23%),
-        Taxa intermédia  (13%)
-        Taxa reduzida (6%)
-
-Compra –
-    Conjunto  de  artigos  vendidos  a  um  cliente
-
-Cliente –
-    Representa um cliente que faz uma compra
-    Regista  o  nome,  NIF,  número  de  CC
-*/
 
 
 
@@ -202,6 +164,15 @@ int printUtiVP(utilizador const* const u, int64_t* const i) {
     return 0;
 }
 
+/**
+ * @brief       Função responsável por editar todos os parametros de um cliente.
+ * @param c     Cliente que será editado.
+ * @param isNew Deve ser 1 se cliente é novo e 0 se é um cliente válido que será
+ *              editado.
+ * @returns     1 Se o clienre foi editado.
+ * @returns     0 Se o cliente não foi editado/ foi eleminado; o cliente terá
+ *              que ser eleminado pois é inválido.
+ */
 int form_editar_cliente(utilizador* const u, int isNew) {
     menu_printDiv();
     if (isNew)
@@ -383,8 +354,8 @@ int printComVP(compra const* const c, int64_t* const i) {
 /**
  * @brief       Função responsável por editar todos os parametros de uma compra.
  * @param c     Compra que será editada.
- * @param isNew Deve ser 1 se a compra é nova e 0 se é uma compra
- *              válida que será editada.
+ * @param isNew Deve ser 1 se a compra é nova e 0 se é uma compra válida que
+ *              será editada.
  * @returns     1 Se a compra foi editada.
  * @returns     0 Se a compra não foi editada/ foi eleminada; a compra terá que
  *              ser eleminada pois é inválida.
@@ -476,6 +447,23 @@ int form_editar_compra(compra* const c, int isNew) {
 
 
 
+// De interface_encomenda
+// *********************************************************************************************************************
+/**
+ * @def GENERIC_EDIT(nome, colect, col, col_pred, editfnc, nomenew)
+ *          Macro que implementa uma funcionalidade reutilizada bastantes vezes
+ *           para editar uma coleção.
+ *          nome - String com o nome dos objetos representados na coleção;
+ *          colect - prefixo da coleçao a ser editada;
+ *          col - nome da variavél da coleção;
+ *          col_pred - iterador para imprimir objetos da coleção;
+ *          editfnc - função de edita os objetos da coleção, com a assinatura
+ *           int func(col_type* a, int isNew) que retorna 0 caso queira remover
+ *           o objeto da colção - onde 'a' é o objeto - e isNew é 0 caso o
+ *           artigo já exista na coleção;
+ *          nomenew - nome da função que cria um novo artigo, com a assinatura
+ *           col_type func().
+ */
 #define GENERIC_EDIT(nome, colect, col, col_pred, editfnc, nomenew)                                                    \
     int64_t id = -2;                                                                                                   \
     int64_t max;                                                                                                       \
@@ -509,8 +497,6 @@ int form_editar_compra(compra* const c, int isNew) {
             break;                                                                                                     \
     }
 
-// De interface_encomenda
-// *********************************************************************************************************************
 /**
  * @brief   Pode ser utilizado como um iterador, imprime uma encomenda.
  * @param e Encomenda a ser impressa.
