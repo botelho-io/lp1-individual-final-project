@@ -448,6 +448,7 @@ int form_editar_compra(compra* const c, int isNew) {
                     }
                     if (i == 19) {
                         memcpy(&c->receita, tmp, 19);
+                        freeN(tmp);
                         break;
                     }
                 }

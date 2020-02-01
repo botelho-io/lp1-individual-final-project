@@ -76,7 +76,7 @@ int save_encomenda(FILE* const f, const encomenda* const data) {
         menu_printError("ao gravar encomenda - compracol_write falhou");
         return 0;
     }
-    return fwrite(&data->ID_cliente, sizeof(int64_t), 1, f);
+    return fwrite(&data->ID_cliente, sizeof(colSize_t), 1, f);
 }
 
 /**
@@ -93,5 +93,5 @@ int load_encomenda(FILE* const f, encomenda* const data) {
         menu_printError("ao carregar encomenda - compracol_read falhou");
         return 0;
     }
-    return fread(&data->ID_cliente, sizeof(int64_t), 1, f);
+    return fread(&data->ID_cliente, sizeof(colSize_t), 1, f);
 }

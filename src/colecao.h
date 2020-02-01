@@ -75,6 +75,8 @@
  *                  é do tipo 'COL_TIPO*' e F é do tipo FILE* e corresponde ao
  *                  ficheiro onde gravar o objeto. Caso não esteja definido, a
  *                  função _read não vai ser gerada.
+ * @def COL_PRE
+ *                  Define apenas o preprocessadores.
  */
 
 #include <inttypes.h>
@@ -87,32 +89,34 @@
 #endif
 
 #ifndef COL_NOME
-#    define COL_NOME coleção
+#    define COL_NOME colecao
 #endif
 
 #define COL_PASTER(X, Y) X##Y
 #define COL_EVAL(X, Y) COL_PASTER(X, Y)
 #define COL_FUN(X) COL_EVAL(COL_NOME, X)
 
-#if !(defined(COL_IMPLEMENTACAO) || defined(COL_DECLARACAO))
+#if !(defined(COL_IMPLEMENTACAO) || defined(COL_DECLARACAO) || defined(COL_PRE))
 #    define COL_DECLARACAO
 #endif
 
+typedef uint32_t colSize_t;
 #define COL_INVAL_INDEX ~((colSize_t) 0)
 
+#if (defined(COL_IMPLEMENTACAO) || defined(COL_DECLARACAO))
 /**
  * @struct          COL_NOME
  * @brief           Struct com o nome COL_NOME que contém o tipo de dados
  *                  COL_TIPO e informação sobre o numero de objetos guardados,
  *                  pode guardar [0, COL_INVAL_INDEX[ elemntos.
  */
-typedef uint32_t colSize_t;
 typedef struct {
     colSize_t alocated; ///< Tamanho alocado de objetos.
     colSize_t size;     ///< Tamanho de objetos que foi populado.
     COL_TIPO* data;     ///< Começa em data[0] e acaba em data[size-1].
 } COL_NOME;
 typedef int (*COL_FUN(_pred_t))(COL_TIPO*, void*);
+#endif
 
 #ifdef COL_IMPLEMENTACAO
 /**
@@ -476,3 +480,4 @@ int COL_FUN(_read)(COL_NOME* const v, FILE* f);
 #undef COL_DEALOC
 #undef COL_READ
 #undef COL_WRITE
+#undef COL_PRE

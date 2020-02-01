@@ -15,12 +15,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "utilities.h"
+#define COL_PRE
+#include "colecao.h"
 
 // https://www.infarmed.pt/documents/15786/17838/Normas_Prescri%C3%A7%C3%A3o/bcd0b378-3b00-4ee0-9104-28d0db0b7872
 typedef struct {
-    int64_t IDartigo;    //< ID do artigo
-    int64_t qtd;         //< Quantidade de artigos encomendados
-    char    receita[19]; //< Receita do artigo
+    colSize_t IDartigo;    //< ID do artigo
+    int64_t   qtd;         //< Quantidade de artigos encomendados
+    char      receita[19]; //< Receita do artigo
 } compra;
 
 int    save_compra(FILE* const f, const compra* const data);

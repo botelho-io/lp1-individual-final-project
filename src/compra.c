@@ -15,16 +15,16 @@ compra new_compra() { return (compra) {.IDartigo = 0}; }
 
 int save_compra(FILE* const f, const compra* const data) {
     int written = 0;
-    written += fwrite(&data->IDartigo, sizeof(int64_t), 1, f);
+    written += fwrite(&data->IDartigo, sizeof(colSize_t), 1, f);
     written += fwrite(&data->qtd, sizeof(int64_t), 1, f);
-    written += fwrite(data->receita, 1, 19, f);
-    return written == 21;
+    written += fwrite(data->receita, 19, 1, f);
+    return written == 3;
 }
 
 int load_compra(FILE* const f, compra* const data) {
     int written = 0;
-    written += fread(&data->IDartigo, sizeof(int64_t), 1, f);
+    written += fread(&data->IDartigo, sizeof(colSize_t), 1, f);
     written += fread(&data->qtd, sizeof(int64_t), 1, f);
-    written += fread(&data->receita, 1, 12, f);
-    return written == 21;
+    written += fread(&data->receita, 19, 1, f);
+    return written == 3;
 }
