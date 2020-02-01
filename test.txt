@@ -193,6 +193,76 @@ Crespo, Rosalina G.
 1234567890123456789
 # Qtd
 5
+#                           Nova compra
+2
+# Artigo
+2
+# Qtd
+5
+#                           Nova compra
+3
+# Artigo
+3
+# Receita
+1234567890123456789
+# Qtd
+5
+#                           Nova compra
+4
+# Artigo
+4
+# Qtd
+5
+#                           Nova compra
+5
+# Artigo
+5
+# Receita
+1234567890123456789
+# Qtd
+5
+#                           Nova compra
+6
+# Artigo
+6
+# Qtd
+5
+#                           Nova compra
+7
+# Artigo
+7
+# Receita
+1234567890123456789
+# Qtd
+5
+#                           Nova compra
+8
+# Artigo
+8
+# Qtd
+5
+#                           Nova compra
+9
+# Artigo
+9
+# Receita
+1234567890123456789
+# Qtd
+5
+#                           Nova compra
+10
+# Artigo
+10
+# Qtd
+5
+#                           Nova compra
+11
+# Artigo
+11
+# Receita
+1234567890123456789
+# Qtd
+5
 #                                     Finalizar encomenda
 -1
 # Cliente

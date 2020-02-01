@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <stdint.h>
 #include <strings.h>
+#include <fcntl.h>
 
 // Estado do programa
 // *********************************************************************************************************************
@@ -152,16 +153,19 @@ int printencRecVP(encomenda const* const e, struct {
             printf("\t- TOTAL: %ldc", preco_art * c->qtd);
             // quantidade
             printf("\t- QUANTIDADE: %ld", c->qtd);
-            // nome
-            printf("\t\"%s\"", a->nome);
             // receita
             if (a->meta & ARTIGO_NECESSITA_RECEITA) { printf("\t- RECEITA (%12.12s)", c->receita); }
+            else                                      printf("\t- ARTIGO DE VENDA LIVRE ");
+            // nome
+            printf("\t\"%s\"", protectStr(a->nome));
             // fim
             data->art += c->qtd;
             printf("\n");
+            fflush(stdout);
         }
         const uint64_t tot = encomenda_CalcPreco(e, &artigos);
         printf("    * TOTAL %ld\n", tot);
+        fflush(stdout);
         data->compras += i;
         data->total += tot;
     }
@@ -250,8 +254,8 @@ int form_editar_cliente(utilizador* const u, int isNew) {
  * @returns 0
  */
 int printArtVP(artigo const* const a, int64_t* const i) {
-    printf("   %8lu   |   ", (*i)++);
-    menu_printArtigo(a);
+    printf("ID:    %8lu   |   ", (*i)++);
+    menu_printArtigoStock(a);
     printf("\n");
     return 0;
 }
@@ -324,7 +328,7 @@ int form_editar_artigo(artigo* const a, int isNew) {
                                           "Artigo tem IVA intermédio", // 1
                                           "Artigo tem IVA reduzido"    // 2
                                       }})) {
-        case -1: break;
+        case -1: return 0;
         case 0: a->meta = (a->meta & (~ARTIGO_IVA)) + ARTIGO_IVA_NORMAL; break;
         case 1: a->meta = (a->meta & (~ARTIGO_IVA)) + ARTIGO_IVA_INTERMEDIO; break;
         case 2: a->meta = (a->meta & (~ARTIGO_IVA)) + ARTIGO_IVA_REDUZIDO; break;
@@ -407,7 +411,7 @@ int form_editar_compra(compra* const c, int isNew) {
             printf("         -2   |   Reimprimir\n");
             printf("         -1   |   Sair\n");
             max = 0;
-            artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &max);
+            artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtVP, &max);
             menu_printInfo("Insira o ID do artigo que será vendido na compra");
             id = menu_readInt64_tMinMax(-2, max - 1);
         }
@@ -522,8 +526,6 @@ int printEncVP(encomenda const* const e, int64_t* const i) {
  */
 int form_editar_encomenda(encomenda* const e, int isNew) {
     GENERIC_EDIT("Compra", compracol, e->compras, printComVP, form_editar_compra, new_compra);
-
-    printf("\nISNEW: %d\n\n", isNew);
     if (!isNew) printf("Deseja alterar o id do cliente? (S / N)");
     if (isNew || menu_YN('S', 'N')) {
         menu_printHeader("Selecione Cliente");
@@ -551,19 +553,6 @@ int form_editar_encomenda(encomenda* const e, int isNew) {
 
 // De inteface_diretor
 // *********************************************************************************************************************
-/**
- * @brief   Pode ser utilizado como um iterador, imprime o stock de um artigo.
- * @param a Artigo a imprimir.
- * @param i Deve ser inicializado como 0, no final irá conter o número de
- *          artigos impressos.
- * @returns 0
- */
-int printArtStokVP(artigo const* const a, int64_t* const i) {
-    printf("ID:    %8lu   |   ", (*i)++);
-    menu_printArtigoStock(a);
-    printf("\n");
-    return 0;
-}
 
 /**
  * @brief Premite editar clientes.
@@ -576,7 +565,7 @@ void interface_editar_cliente() {
  * @brief Premite editar artigos.
  */
 void interface_editar_artigo() {
-    GENERIC_EDIT("Artigo", artigocol, artigos, printArtStokVP, form_editar_artigo, newArtigo);
+    GENERIC_EDIT("Artigo", artigocol, artigos, printArtVP, form_editar_artigo, newArtigo);
 }
 
 /**
@@ -595,20 +584,28 @@ void interface_imprimir_recibo() {
     printf("Inserir mês");
     int64_t mes = menu_readInt64_tMinMax(1, 12);
 
-    FILE* const stdoutTMP = stdout;
+    int bak = dup(1);
+    protectFcnCall((bak != -1), "dup falhou");
+    int new = 0;
     int         printBoth = 0;
+    int         needsToRestoreOut = 0;
     switch (menu_selection(&(strcol) {.size = 3,
                                       .data = (char*[]) {
                                           "Imprimir no ecrã",     // 0
                                           "Imprimir em ficheiro", // 1
                                           "Imprimir em ambos",    // 2
                                       }})) {
+        case -1: return;
         case 0: break;
         case 2: printBoth = 1;
         case 1:
+            needsToRestoreOut = 1;
             printf("Introduza nome de ficheiro");
             char* f = menu_readNotNulStr();
-            protectVarFcnCall(stdout, fopen(f, "w"), "impossível abrir ficheiro");
+            new = open(f, O_WRONLY | O_CREAT);
+            protectFcnCall((new != -1), "open falhou");
+            protectFcnCall((dup2(new, 1) != -1), "dup2 falhou");
+            close(new);
             freeN(f);
             break;
     }
@@ -640,9 +637,11 @@ PRINT_BEGUIN:
     menu_printHeader("Final do Recibo");
     menu_printDiv();
 
-    if (stdout != stdoutTMP) {
-        fclose(stdout);
-        stdout = stdoutTMP;
+    if (needsToRestoreOut) {
+        needsToRestoreOut = 0;
+        fflush(stdout);
+        dup2(bak, 1);
+        close(bak);
         if (printBoth) { goto PRINT_BEGUIN; }
     }
 }
@@ -691,7 +690,7 @@ void interface_diretor() {
                                               "Editar/ criar artigo",    // 1
                                               "Editar/ criar encomenda", // 2
                                               "Consultar stock",         // 3
-                                              "Imprimir recibo",         // 4
+                                              "Imprimir recibo mensal",  // 4
                                               "Outras Listagens",        // 5
                                           }})) {
             case -1: return;
@@ -700,7 +699,7 @@ void interface_diretor() {
             case 2: interface_editar_encomenda(); break;
             case 3:
                 i = 0;
-                artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &i);
+                artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtVP, &i);
                 break;
             case 4: interface_imprimir_recibo(); break;
             case 5: interface_outras_listagens(); break;
@@ -718,10 +717,10 @@ void interface_funcionario() {
         menu_printHeader("Menu de Funcionário");
         switch (menu_selection(&(strcol) {.size = 3,
                                           .data = (char*[]) {
-                                              "Editar/ criar cliente", // 0
-                                              "Criar encomenda",       // 1
-                                              "Imprimir recibo",       // 2
-                                              "Consultar stock",       // 3
+                                              "Editar/ criar cliente",  // 0
+                                              "Criar encomenda",        // 1
+                                              "Imprimir recibo mensal", // 2
+                                              "Consultar stock",        // 3
                                           }})) {
             case -1: return;
             case 0: interface_editar_cliente(); break;
@@ -729,7 +728,7 @@ void interface_funcionario() {
             case 2: interface_imprimir_recibo(); break;
             case 3:
                 i = 0;
-                artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtStokVP, &i);
+                artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtVP, &i);
                 break;
         }
     }
