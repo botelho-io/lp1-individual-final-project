@@ -267,5 +267,5 @@ Crespo, Rosalina G.
 -1
 # Cliente
 0
-#                                    Consultar stock
-2
+#                                    Sair
+-1

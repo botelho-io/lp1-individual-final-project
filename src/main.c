@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdint.h>
+#include <unistd.h>
 #include <strings.h>
 
 // Estado do programa
@@ -177,8 +178,8 @@ int printencRecVP(encomenda const* const e, struct {
         fflush(stdout);
         data->compras += i;
         data->total += tot;
+        data->encomendas += 1;
     }
-    data->encomendas += 1;
     return 0;
 }
 
@@ -590,7 +591,7 @@ void interface_editar_encomenda() {
 void interface_imprimir_recibo() {
     printf("Inserir ano");
     int64_t ano = menu_readInt64_t();
-    printf("Inserir mês");
+    menu_printInfo("Inserir mês");
     int64_t mes = menu_readInt64_tMinMax(1, 12);
 
     int bak = dup(1);
@@ -623,7 +624,7 @@ PRINT_BEGUIN:
     menu_printDiv();
     menu_printHeader("Recibo Mensal");
 
-    printf("\n*** Mês do recibo: %lu/%lu", ano, mes);
+    printf("\n*** Mês do recibo: %lu/%lu\n", ano, mes);
     struct {
         int      ano;
         int      mes;

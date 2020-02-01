@@ -11,6 +11,7 @@
 #include "outrasListagens.h"
 
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "menu.h"
 #include "utilities.h"
@@ -90,8 +91,8 @@ int listagens_printencRecVP(encomenda const* const e, struct {
         fflush(stdout);
         data->compras += i;
         data->total += tot;
+        data->encomendas += 1;
     }
-    data->encomendas += 1;
     return 0;
 }
 
@@ -106,7 +107,7 @@ int listagens_printencRecVP(encomenda const* const e, struct {
 void listagem_imprimir_recibo() {
     printf("Inserir ano");
     int64_t ano = menu_readInt64_t();
-    printf("Inserir mês");
+    menu_printInfo("Inserir mês");
     int64_t mes = menu_readInt64_tMinMax(1, 12);
 
     // Questionar utilizador
@@ -160,7 +161,7 @@ void listagem_imprimir_recibo() {
 PRINT_BEGUIN:
     menu_printDiv();
     menu_printHeader("Recibo Mensal");
-    printf("\n*** Mês do recibo: %lu/%lu", ano, mes);
+    printf("\n*** Mês do recibo: %lu/%lu\n", ano, mes);
     printf("*** NOME %s\n", protectStr(cliente->nome));
     printf("*** NIF  %9.9s\n", cliente->NIF);
     printf("*** CC   %12.12s\n", cliente->CC);
