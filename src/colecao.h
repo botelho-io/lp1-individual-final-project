@@ -87,9 +87,14 @@
 #ifndef COL_TIPO
 #    define COL_TIPO int
 #endif
-
 #ifndef COL_NOME
 #    define COL_NOME colecao
+#endif
+#ifndef COL_WRITE
+#    define COL_WRITE(X, F) fwrite(X, sizeof(int), 1, F)
+#endif
+#ifndef COL_READ
+#    define COL_READ(X, F) fread(X, sizeof(int), 1, F)
 #endif
 
 #define COL_PASTER(X, Y) X##Y
@@ -119,14 +124,6 @@ typedef int (*COL_FUN(_pred_t))(COL_TIPO*, void*);
 #endif
 
 #ifdef COL_IMPLEMENTACAO
-/**
- * @brief           Aumenta v, se necessário e possivél, para que se possa
- *                  adicionar mais objetos no final.
- * @param v         coleção a que queremos adicionar espaço.
- * @returns         0 se tentou mas não conseguiu alocar memória.
- * @returns         1 se alocou memória.
- * @returns         2 se não necessitou de alocar memoria.
- */
 int COL_FUN(_addCell)(COL_NOME* const v) {
     if (v->alocated == 0) {
         // coleção vazia
@@ -162,20 +159,8 @@ int COL_FUN(_addCell)(COL_NOME* const v) {
     }
 }
 
-/**
- * @brief           Constrotor da coleção.
- * @details         Constroi uma coleção vazia.
- * @return          Uma coleção vazia.
- */
 COL_NOME COL_FUN(_new)() { return (COL_NOME) {.size = 0, .alocated = 0, .data = NULL}; }
 
-/**
- * @brief           Adiciona um objeto no final da coleção.
- * @param v         Ponteiro para a coleção sob o qual operar.
- * @param newObj    Objeto para adicionar à coleção.
- * @returns         0 se não conseguiu inserir o objeto.
- * @returns         1 se conseguiu inserir o objeto.
- */
 int COL_FUN(_push)(COL_NOME* const v, COL_TIPO const newObj) {
     if (!COL_FUN(_addCell)(v)) return 0;
     // Aqui está garantido que existe um espaço alocado e livre na coleção
@@ -184,6 +169,166 @@ int COL_FUN(_push)(COL_NOME* const v, COL_TIPO const newObj) {
     return 1;
 }
 
+void COL_FUN(_moveBelow)(COL_NOME* const v, const colSize_t i) {
+    memmove(&v->data[i], &v->data[i + 1], (v->size - i - 1) * sizeof(COL_TIPO));
+    --(v->size);
+}
+
+int COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i) {
+    if (!COL_FUN(_addCell)(v)) return 0;
+    memmove(&v->data[i + 1], &v->data[i], (v->size - i) * sizeof(COL_TIPO));
+    ++(v->size);
+    return 1;
+}
+
+COL_TIPO COL_FUN(_pop)(COL_NOME* const v) {
+    COL_TIPO toReturn = v->data[v->size - 1];
+    --(v->size);
+    return toReturn;
+}
+
+void COL_FUN(_free)(COL_NOME* const v) {
+#    ifdef COL_DEALOC
+    for (colSize_t i = 0; i < v->size; i++) { COL_DEALOC(&(v->data[i])); }
+#    endif
+    if (v->alocated != 0) free(v->data);
+    v->data     = NULL;
+    v->size     = 0;
+    v->alocated = 0;
+}
+
+int COL_FUN(_adjust)(COL_NOME* const v) {
+    if (v->size == v->alocated) return 2;
+    COL_TIPO* newData = realloc(v->data, v->size * sizeof(COL_TIPO));
+    if (newData == NULL) return 0;
+    v->data     = newData;
+    v->alocated = v->size;
+    return 1;
+}
+
+colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData) {
+    for (colSize_t i = 0; i < v->size; i++) {
+        if (predicate(&(v->data[i]), userData)) return i;
+    }
+    return COL_INVAL_INDEX;
+}
+
+int COL_FUN(_reserve)(COL_NOME* const v, colSize_t space) {
+    if (v->alocated >= space) return 2;
+    void* newData = realloc(v->data, sizeof(COL_TIPO) * (space));
+    if (newData == NULL) return 0;
+    // Memoria alocada, fazer o update da coleção
+    v->alocated = space;
+    v->data     = newData;
+    return 1;
+}
+
+void COL_FUN(_DEALOC)(COL_TIPO* const X) {
+#    ifdef COL_DEALOC
+    COL_DEALOC(X);
+#    endif
+}
+
+#    ifdef COL_WRITE
+int COL_FUN(_write)(const COL_NOME* const v, FILE* f) {
+    // Gravar tamanho da coleção
+    if (!fwrite(&v->size, sizeof(colSize_t), 1, f)) return 0;
+    // Guardar objetos
+    for (colSize_t i = 0; i < v->size; i++) {
+        if (!COL_WRITE(&(v->data[i]), f)) return 0;
+    }
+    return 1;
+}
+#    endif
+
+#    ifdef COL_READ
+int COL_FUN(_read)(COL_NOME* const v, FILE* f) {
+    // Ler tamanho de coleção em ficheiro
+    colSize_t size = 0;
+    if (!fread(&size, sizeof(colSize_t), 1, f)) return 0;
+    // Reservar espaço para coleção
+    if (!COL_FUN(_reserve)(v, size)) return 0;
+    // Ler objetos do ficheiro
+    for (colSize_t i = 0; i < size; i++) {
+        if (!COL_READ(&(v->data[i]), f)) return 0;
+        v->size++;
+    }
+    return 1;
+}
+#    endif
+#endif
+
+
+
+
+#ifdef COL_DECLARACAO
+/**
+ * @brief           Constrotor da coleção.
+ * @details         Constroi uma coleção vazia.
+ * @return          Uma coleção vazia.
+ */
+COL_NOME COL_FUN(_new)();
+/**
+ * @brief           Retorna e remove o último objeto da coleção.
+ * @details         Retorna o o último objeto da coleção, removendo-o, mas sem o
+ *                  dealocar.
+ * @param v         coleção sob o qual operar.
+ * @returns         O o último objeto da coleção.
+ * @warning         O o último objeto da coleção é removido e não é dealocado,
+ *                  terá que ser dealocado posteriormente.
+ */
+COL_TIPO COL_FUN(_pop)(COL_NOME* const v);
+/**
+ * @brief           Apaga e dealoca a coleção.
+ * @details         Dealoca todos os elementos da coleção utilizando o macto
+ *                  'COL_DEALOC', e dealoca a coleção em si, apagando-o.
+ * @param v         Pointeiro para a coleção sob o qual operar.
+ * @note            'v' em si não é dealocado.
+ */
+void COL_FUN(_free)(COL_NOME* const v);
+/**
+ * @brief           Ajusta a coleção para que tenha apenas o tamanho necessario
+ *                  para guardar o seu conteudo.
+ * @details         Ajusta a alocação da coleção para que esta seja igual ao seu
+ *                  tamanho.
+ * @param v         Pointeiro para a coleção sob o qual operar.
+ * @returns         0 se falhou a redimensionar.
+ * @returns         1 se redimensionou.
+ * @returns         2 se não tiver que redimensionar.
+ */
+int COL_FUN(_adjust)(COL_NOME* const v);
+/**
+ * @brief           Aumenta v, se necessário e possivél, para que se possa
+ *                  adicionar mais objetos no final.
+ * @param v         coleção a que queremos adicionar espaço.
+ * @returns         0 se tentou mas não conseguiu alocar memória.
+ * @returns         1 se alocou memória.
+ * @returns         2 se não necessitou de alocar memoria.
+ */
+int COL_FUN(_addCell)(COL_NOME* const v);
+/**
+ * @brief           Reserva espaço na coleção 'v'.
+ * @details         Garante que a coleção 'v' tem no mínimo 'space' celulas de
+ *                  memoria alocadas. Esta função é util quando queremos
+ *                  adicionar um certo numero de objetos à coleção sem ter que o
+ *                  realocar múltiplas vezes.
+ * @param v         Ponteiro para a coleção sob o qual queremos operar.
+ * @param space     Numero de células de memória que queremos alocar.
+ * @returns         0 se tentou mas não conseguiu alocar memória.
+ * @returns         1 se alocou memoria.
+ * @returns         2 se não o necessiou de alocar memória.
+ * @warning         No final de chamar esta função o valor de células de memória
+ *                  alocadas pode ser maior do que 'space'.
+ */
+int COL_FUN(_reserve)(COL_NOME* const v, colSize_t space);
+/**
+ * @brief           Adiciona um objeto no final da coleção.
+ * @param v         Ponteiro para a coleção sob o qual operar.
+ * @param newObj    Objeto para adicionar à coleção.
+ * @returns         0 se não conseguiu inserir o objeto.
+ * @returns         1 se conseguiu inserir o objeto.
+ */
+int COL_FUN(_push)(COL_NOME* const v, COL_TIPO const newObj);
 /**
  * @brief           Move todos os elementos acima de 'i' um espaço para baixo,
  *                  escrevendo sobre 'i'.
@@ -194,11 +339,7 @@ int COL_FUN(_push)(COL_NOME* const v, COL_TIPO const newObj) {
  * @param i         Index do objeto que será escrito por cima.
  * @warning         O objecto no index 'i' não é dealocado por esta função
  */
-void COL_FUN(_moveBelow)(COL_NOME* const v, const colSize_t i) {
-    memmove(&v->data[i], &v->data[i + 1], (v->size - i - 1) * sizeof(COL_TIPO));
-    --(v->size);
-}
-
+void COL_FUN(_moveBelow)(COL_NOME* const v, const colSize_t i);
 /**
  * @brief           Move todos os elementos acima de i e i para cima, criando um
  *                  espaço livre no index i.
@@ -213,81 +354,7 @@ void COL_FUN(_moveBelow)(COL_NOME* const v, const colSize_t i) {
  * @warning         Após chamar esta função, o objeto no index i pode não ser
  *                  válido.
  */
-int COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i) {
-    if (!COL_FUN(_addCell)(v)) return 0;
-    memmove(&v->data[i + 1], &v->data[i], (v->size - i) * sizeof(COL_TIPO));
-    ++(v->size);
-    return 1;
-}
-
-// Adiciona newElement na posição position da coleção
-// Retorna 1 em sucesso, 0 de outro modo
-/**
- * @brief          Adiciona um objeto na coleção.
- * @param v        Ponteiro para a coleção sob o qual operar.
- * @param newObj   Objeto para adicionar à coleção.
- * @param position Index da coleção onde adicionar o objeto.
- * @note           'position' terá que ser menor ou igual ao tamanho da coleção.
- * @returns        0 se não conseguiu inserir o objeto.
- * @returns        1 se conseguiu inserir o objeto.
- */
-int COL_FUN(_pushAt)(COL_NOME* const v, COL_TIPO const newObj, const colSize_t position) {
-    if (!COL_FUN(_moveAbove)(v, position)) return 0;
-    v->data[position] = newObj;
-    return 1;
-}
-
-/**
- * @brief           Retorna e remove o último objeto da coleção.
- * @details         Retorna o o último objeto da coleção, removendo-o, mas sem o
- *                  dealocar.
- * @param v         coleção sob o qual operar.
- * @returns         O o último objeto da coleção.
- * @warning         O o último objeto da coleção é removido e não é dealocado,
- *                  terá que ser dealocado posteriormente.
- */
-COL_TIPO COL_FUN(_pop)(COL_NOME* const v) {
-    COL_TIPO toReturn = v->data[v->size - 1];
-    --(v->size);
-    return toReturn;
-}
-
-/**
- * @brief           Apaga e dealoca a coleção.
- * @details         Dealoca todos os elementos da coleção utilizando o macto
- *                  'COL_DEALOC', e dealoca a coleção em si, apagando-o.
- * @param v         Pointeiro para a coleção sob o qual operar.
- * @note            'v' em si não é dealocado.
- */
-void COL_FUN(_free)(COL_NOME* const v) {
-#    ifdef COL_DEALOC
-    for (colSize_t i = 0; i < v->size; i++) { COL_DEALOC(&(v->data[i])); }
-#    endif
-    if (v->alocated != 0) free(v->data);
-    v->data     = NULL;
-    v->size     = 0;
-    v->alocated = 0;
-}
-
-/**
- * @brief           Ajusta a coleção para que tenha apenas o tamanho necessario
- *                  para guardar o seu conteudo.
- * @details         Ajusta a alocação da coleção para que esta seja igual ao seu
- *                  tamanho.
- * @param v         Pointeiro para a coleção sob o qual operar.
- * @returns         0 se falhou a redimensionar.
- * @returns         1 se redimensionou.
- * @returns         2 se não tiver que redimensionar.
- */
-int COL_FUN(_adjust)(COL_NOME* const v) {
-    if (v->size == v->alocated) return 2;
-    COL_TIPO* newData = realloc(v->data, v->size * sizeof(COL_TIPO));
-    if (newData == NULL) return 0;
-    v->data     = newData;
-    v->alocated = v->size;
-    return 1;
-}
-
+int COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i);
 /**
  * @brief           Aplica a função 'predicate' a todos os elementos da coleção
  *                  'v', do menor ao maior index.
@@ -306,48 +373,13 @@ int COL_FUN(_adjust)(COL_NOME* const v) {
  * @returns         COL_INVAL_INDEX caso a todos os elementos foram iterados sem que
  *                  'predicate' tenha retornado 0.
  */
-colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData) {
-    for (colSize_t i = 0; i < v->size; i++) {
-        if (predicate(&(v->data[i]), userData)) return i;
-    }
-    return COL_INVAL_INDEX;
-}
-
-/**
- * @brief           Reserva espaço na coleção 'v'.
- * @details         Garante que a coleção 'v' tem no mínimo 'space' celulas de
- *                  memoria alocadas. Esta função é util quando queremos
- *                  adicionar um certo numero de objetos à coleção sem ter que o
- *                  realocar múltiplas vezes.
- * @param v         Ponteiro para a coleção sob o qual queremos operar.
- * @param space     Numero de células de memória que queremos alocar.
- * @returns         0 se tentou mas não conseguiu alocar memória.
- * @returns         1 se alocou memoria.
- * @returns         2 se não o necessiou de alocar memória.
- * @warning         No final de chamar esta função o valor de células de memória
- *                  alocadas pode ser maior do que 'space'.
- */
-int COL_FUN(_reserve)(COL_NOME* const v, colSize_t space) {
-    if (v->alocated >= space) return 2;
-    void* newData = realloc(v->data, sizeof(COL_TIPO) * (space));
-    if (newData == NULL) return 0;
-    // Memoria alocada, fazer o update da coleção
-    v->alocated = space;
-    v->data     = newData;
-    return 1;
-}
-
+colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
 /**
  * @brief           Wrapper para que o macro 'COL_DEALOC' possa ser chamado após
  *                  a inclusão do ficheiro colecao.h.
  * @param X         O parametro X do macro 'COL_DEALOC'.
  */
-void COL_FUN(_DEALOC)(COL_TIPO* const X) {
-#    ifdef COL_DEALOC
-    COL_DEALOC(X);
-#    endif
-}
-
+void COL_FUN(_DEALOC)(COL_TIPO* const X);
 #    ifdef COL_WRITE
 /**
  * @brief           Escreve num ficheiro utilizando o macro 'COL_WRITE'.
@@ -359,17 +391,8 @@ void COL_FUN(_DEALOC)(COL_TIPO* const X) {
  * @returns         1 se escreveu a coleção com sucesso.
  * @returns         0 caso contrário.
  */
-int COL_FUN(_write)(const COL_NOME* const v, FILE* f) {
-    // Gravar tamanho da coleção
-    if (!fwrite(&v->size, sizeof(colSize_t), 1, f)) return 0;
-    // Guardar objetos
-    for (colSize_t i = 0; i < v->size; i++) {
-        if (!COL_WRITE(&(v->data[i]), f)) return 0;
-    }
-    return 1;
-}
+int COL_FUN(_write)(const COL_NOME* const v, FILE* f);
 #    endif
-
 #    ifdef COL_READ
 /**
  * @brief           Lê de num ficheiro utilizando o macro 'COL_READ'.
@@ -377,42 +400,10 @@ int COL_FUN(_write)(const COL_NOME* const v, FILE* f) {
  *                  de seguida lê, um a um, utilizando o macro 'COL_READ' os
  *                  objetos da coleção. Aloca espaço, se necessário.
  * @param v         Ponteiro para a coleção sob o qual queremos operar.
- * @param f         Ficheiro onde escrever os conteudos da coleção.
+ * @param f         Ficheiro onde ler os conteudos da coleção.
  * @returns         1 se leu a coleção com sucesso.
  * @returns         0 caso contrário.
  */
-int COL_FUN(_read)(COL_NOME* const v, FILE* f) {
-    // Ler tamanho de coleção em ficheiro
-    colSize_t size = 0;
-    if (!fread(&size, sizeof(colSize_t), 1, f)) return 0;
-    // Reservar espaço para coleção
-    if (!COL_FUN(_reserve)(v, size)) return 0;
-    // Ler objetos do ficheiro
-    for (colSize_t i = 0; i < size; i++) {
-        if (!COL_READ(&(v->data[i]), f)) return 0;
-        v->size++;
-    }
-    return 1;
-}
-#    endif
-#endif
-
-#ifdef COL_DECLARACAO
-COL_NOME  COL_FUN(_new)();
-COL_TIPO  COL_FUN(_pop)(COL_NOME* const v);
-void      COL_FUN(_free)(COL_NOME* const v);
-int       COL_FUN(_adjust)(COL_NOME* const v);
-int       COL_FUN(_addCell)(COL_NOME* const v);
-int       COL_FUN(_reserve)(COL_NOME* const v, colSize_t space);
-int       COL_FUN(_push)(COL_NOME* const v, COL_TIPO const newObj);
-void      COL_FUN(_moveBelow)(COL_NOME* const v, const colSize_t i);
-int       COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i);
-colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
-void      COL_FUN(_DEALOC)(COL_TIPO* const X);
-#    ifdef COL_WRITE
-int COL_FUN(_write)(const COL_NOME* const v, FILE* f);
-#    endif
-#    ifdef COL_READ
 int COL_FUN(_read)(COL_NOME* const v, FILE* f);
 #    endif
 #endif

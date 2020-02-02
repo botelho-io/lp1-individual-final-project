@@ -18,6 +18,9 @@
 #include "colecao.h"
 
 // https://www.infarmed.pt/documents/15786/17838/Normas_Prescri%C3%A7%C3%A3o/bcd0b378-3b00-4ee0-9104-28d0db0b7872
+/**
+ * @brief Uma compra representa um conjunto do mesmo artigo a ser vendido.
+ */
 typedef struct {
     colSize_t IDartigo;    //< ID do artigo
     int64_t   qtd;         //< Quantidade de artigos encomendados

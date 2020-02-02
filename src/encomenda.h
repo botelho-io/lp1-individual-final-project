@@ -38,6 +38,10 @@
 #    include "colecao.h"
 #endif
 
+/**
+ * @brief   Uma encomenda é uma coleção de compras, compradas por um cliene numa
+ *          certa data.
+ */
 typedef struct {
     compracol compras;    ///< Compras que fazem parte da encomenda.
     colSize_t ID_cliente; ///< ID do cliente que formalizou a encomenda.

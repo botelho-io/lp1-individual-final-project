@@ -440,25 +440,25 @@ void listagem_utiMaisGasto() {
     int64_t mes = menu_readInt64_tMinMax(1, 12) - 1;
 
     uint64_t* gastoUti = calloc(clientes.size, sizeof(uint64_t));
-    for(colSize_t i = 0; i < encomendas.size; i++) {
-        encomenda const * const enc = &encomendas.data[i];
-        struct tm * time = localtime(&enc->tempo);
-        if(time->tm_mon == mes || time->tm_year == ano)
+    for (colSize_t i = 0; i < encomendas.size; i++) {
+        encomenda const* const enc  = &encomendas.data[i];
+        struct tm*             time = localtime(&enc->tempo);
+        if (time->tm_mon == mes || time->tm_year == ano)
             gastoUti[enc->ID_cliente] += encomenda_CalcPreco(enc, &artigos);
     }
 
-    uint64_t max = 1;
+    uint64_t  max = 1;
     colSize_t maxid;
     menu_printHeader("Utilizadores Ordenados");
     while (max != 0) {
         max = 0;
         for (colSize_t i = 0; i < clientes.size; i++) {
-            if(gastoUti[i] > max) {
+            if (gastoUti[i] > max) {
                 maxid = i;
-                max = gastoUti[i];
+                max   = gastoUti[i];
             }
         }
-        if(max > 0) {
+        if (max > 0) {
             menu_printUtilizador(clientes.data[maxid]);
             printf("   TOTAL GASTO: %luc\n", max);
             gastoUti[maxid] = 0;

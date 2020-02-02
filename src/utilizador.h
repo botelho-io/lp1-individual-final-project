@@ -16,7 +16,7 @@
 #include <stdlib.h>
 
 /**
- * Capaz de gravar todas as informações sobre um utilizador.
+ * @brief   Capaz de gravar todas as informações sobre um utilizador.
  */
 typedef struct {
     char* nome;   ///< Nome do cliente.
