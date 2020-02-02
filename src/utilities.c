@@ -31,7 +31,7 @@ char* strdup(const char* const s) {
  *                 strings impressas.
  * @returns        0
  */
-int printItemVP(char** const item, int64_t* const userdata) {
+int pred_printItem(char** const item, int64_t* const userdata) {
     printf("   %8lu   |   %s\n", (*userdata)++, protectStr(*item));
     return 0;
 }

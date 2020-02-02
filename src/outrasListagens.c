@@ -21,7 +21,7 @@
 
 // De listagem_imprimir_recibo
 // *********************************************************************************************************************
-int printUtiVP(utilizador const* const u, int64_t* const i);
+int pred_printUti(utilizador const* const u, int64_t* const i);
 
 /**
  * @brief      Pode ser utilizado como um iterador, imprime encomenda num recibo.
@@ -30,7 +30,7 @@ int printUtiVP(utilizador const* const u, int64_t* const i);
  *             do preço do recibo e artigos compras e encomendas vendidas.
  * @returns    0
  */
-int listagens_printencRecVP(encomenda const* const e, struct {
+int listagens_pred_printencRec(encomenda const* const e, struct {
     int       ano;
     int       mes;
     colSize_t ID_cliente;
@@ -121,7 +121,7 @@ void listagem_imprimir_recibo() {
         printf("         -2   |   Reimprimir\n");
         printf("         -1   |   Sair\n");
         max = 0;
-        utilizadorcol_iterateFW(&clientes, (utilizadorcol_pred_t) &printUtiVP, &max);
+        utilizadorcol_iterateFW(&clientes, (utilizadorcol_pred_t) &pred_printUti, &max);
         menu_printInfo("Insira o ID do Cliente para editar");
         id = menu_readInt64_tMinMax(-2, max - 1);
     }
@@ -181,7 +181,7 @@ PRINT_BEGUIN:
     data.art        = 0;
     data.compras    = 0;
     data.encomendas = 0;
-    encomendacol_iterateFW(&encomendas, (encomendacol_pred_t) &listagens_printencRecVP, &data);
+    encomendacol_iterateFW(&encomendas, (encomendacol_pred_t) &listagens_pred_printencRec, &data);
     printf("*** Artigos vendidos neste mês: %ld\n", data.art);
     printf("*** Compras vendidas neste mês: %ld\n", data.compras);
     printf("*** Encomendas vendidas neste mês: %ld\n", data.encomendas);

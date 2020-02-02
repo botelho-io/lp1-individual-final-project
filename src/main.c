@@ -77,7 +77,7 @@ utilizadorcol clientes;   ///< Utilizadores existentes no registo
  *             do preço do recibo e artigos compras e encomendas vendidas.
  * @returns    0
  */
-int printencRecVP(encomenda const* const e, struct {
+int pred_printencRec(encomenda const* const e, struct {
     int      ano;
     int      mes;
     uint64_t total;
@@ -157,7 +157,7 @@ int printencRecVP(encomenda const* const e, struct {
  *          clientes impressos.
  * @returns 0
  */
-int printUtiVP(utilizador const* const u, int64_t* const i) {
+int pred_printUti(utilizador const* const u, int64_t* const i) {
     printf("   %8lu   |   ", (*i)++);
     menu_printUtilizador(*u);
     printf("\n");
@@ -234,7 +234,7 @@ int form_editar_cliente(utilizador* const u, int isNew) {
  *          artigos impressos.
  * @returns 0
  */
-int printArtVP(artigo const* const a, int64_t* const i) {
+int pred_printArt(artigo const* const a, int64_t* const i) {
     printf("ID:    %8lu   |   ", (*i)++);
     menu_printArtigoStock(a);
     printf("\n");
@@ -344,7 +344,7 @@ int form_editar_artigo(artigo* const a, int isNew) {
  *          compras impressas.
  * @returns 0
  */
-int printComVP(compra const* const c, int64_t* const i) {
+int pred_printCom(compra const* const c, int64_t* const i) {
     printf("   %8lu   |   ", (*i)++);
     menu_printCompra(c, &artigos);
     printf("\n");
@@ -392,7 +392,7 @@ int form_editar_compra(compra* const c, int isNew) {
             printf("         -2   |   Reimprimir\n");
             printf("         -1   |   Sair\n");
             max = 0;
-            artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtVP, &max);
+            artigocol_iterateFW(&artigos, (artigocol_pred_t) &pred_printArt, &max);
             menu_printInfo("Insira o ID do artigo que será vendido na compra");
             id = menu_readInt64_tMinMax(-2, max - 1);
         }
@@ -504,7 +504,7 @@ int form_editar_compra(compra* const c, int isNew) {
  *          encomendas impressas.
  * @returns 0
  */
-int printEncVP(encomenda const* const e, int64_t* const i) {
+int pred_printEnc(encomenda const* const e, int64_t* const i) {
     printf("   %8lu   |   ", (*i)++);
     menu_printEncomendaBrief(e, &clientes, &artigos);
     printf("\n");
@@ -522,7 +522,7 @@ int printEncVP(encomenda const* const e, int64_t* const i) {
  *              terá que ser eleminada pois é inválida.
  */
 int form_editar_encomenda(encomenda* const e, int isNew) {
-    GENERIC_EDIT("Compra", compracol, e->compras, printComVP, form_editar_compra, new_compra);
+    GENERIC_EDIT("Compra", compracol, e->compras, pred_printCom, form_editar_compra, new_compra);
     if (!isNew) printf("Deseja alterar o id do cliente? (S / N)");
     if (isNew || menu_YN('S', 'N')) {
         menu_printHeader("Selecione Cliente");
@@ -532,7 +532,7 @@ int form_editar_encomenda(encomenda* const e, int isNew) {
             printf("         -2   |   Reimprimir\n");
             printf("         -1   |   Sair\n");
             max = 0;
-            utilizadorcol_iterateFW(&clientes, (utilizadorcol_pred_t) &printUtiVP, &max);
+            utilizadorcol_iterateFW(&clientes, (utilizadorcol_pred_t) &pred_printUti, &max);
             menu_printInfo("Insira o ID do Cliente");
             id = menu_readInt64_tMinMax(-2, max - 1);
         }
@@ -555,21 +555,21 @@ int form_editar_encomenda(encomenda* const e, int isNew) {
  * @brief Premite editar clientes.
  */
 void interface_editar_cliente() {
-    GENERIC_EDIT("Cliente", utilizadorcol, clientes, printUtiVP, form_editar_cliente, newUtilizador);
+    GENERIC_EDIT("Cliente", utilizadorcol, clientes, pred_printUti, form_editar_cliente, newUtilizador);
 }
 
 /**
  * @brief Premite editar artigos.
  */
 void interface_editar_artigo() {
-    GENERIC_EDIT("Artigo", artigocol, artigos, printArtVP, form_editar_artigo, newArtigo);
+    GENERIC_EDIT("Artigo", artigocol, artigos, pred_printArt, form_editar_artigo, newArtigo);
 }
 
 /**
  * @brief Premite editar encomendas.
  */
 void interface_editar_encomenda() {
-    GENERIC_EDIT("Encomenda", encomendacol, encomendas, printEncVP, form_editar_encomenda, newEncomenda);
+    GENERIC_EDIT("Encomenda", encomendacol, encomendas, pred_printEnc, form_editar_encomenda, newEncomenda);
 }
 
 /**
@@ -626,7 +626,7 @@ PRINT_BEGUIN:
     data.art        = 0;
     data.compras    = 0;
     data.encomendas = 0;
-    encomendacol_iterateFW(&encomendas, (encomendacol_pred_t) &printencRecVP, &data);
+    encomendacol_iterateFW(&encomendas, (encomendacol_pred_t) &pred_printencRec, &data);
     printf("*** Artigos vendidos neste mês: %ld\n", data.art);
     printf("*** Compras vendidas neste mês: %ld\n", data.compras);
     printf("*** Encomendas vendidas neste mês: %ld\n", data.encomendas);
@@ -707,7 +707,7 @@ void interface_diretor() {
             case 2: interface_editar_encomenda(); break;
             case 3:
                 i = 0;
-                artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtVP, &i);
+                artigocol_iterateFW(&artigos, (artigocol_pred_t) &pred_printArt, &i);
                 break;
             case 4: interface_imprimir_recibo(); break;
             case 5: interface_outras_listagens(); break;
@@ -736,7 +736,7 @@ void interface_funcionario() {
             case 2: interface_imprimir_recibo(); break;
             case 3:
                 i = 0;
-                artigocol_iterateFW(&artigos, (artigocol_pred_t) &printArtVP, &i);
+                artigocol_iterateFW(&artigos, (artigocol_pred_t) &pred_printArt, &i);
                 break;
         }
     }

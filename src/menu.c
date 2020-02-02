@@ -203,7 +203,7 @@ int64_t menu_selection(const strcol* const itens) {
         printf("         -2   |   Reimprimir\n");
         printf("         -1   |   Sair\n");
         max = 0;
-        strcol_iterateFW((strcol*) itens, (strcol_pred_t) &printItemVP, &max);
+        strcol_iterateFW((strcol*) itens, (strcol_pred_t) &pred_printItem, &max);
         op = menu_readInt64_tMinMax(-2, max - 1);
     }
     return op;
