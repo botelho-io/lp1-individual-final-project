@@ -121,7 +121,7 @@ void listagem_imprimir_recibo() {
         printf("         -2   |   Reimprimir\n");
         printf("         -1   |   Sair\n");
         max = 0;
-        utilizadorcol_iterateFW(&utilizadores, (utilizadorcol_pred_t) &printUtiVP, &max);
+        utilizadorcol_iterateFW(&clientes, (utilizadorcol_pred_t) &printUtiVP, &max);
         menu_printInfo("Insira o ID do Cliente para editar");
         id = menu_readInt64_tMinMax(-2, max - 1);
     }
@@ -129,7 +129,7 @@ void listagem_imprimir_recibo() {
         return;
     else
         ID_cliente = id;
-    utilizador const* const cliente = &utilizadores.data[ID_cliente];
+    utilizador const* const cliente = &clientes.data[ID_cliente];
 
     // Imprimir recibo
     int bak = dup(1);

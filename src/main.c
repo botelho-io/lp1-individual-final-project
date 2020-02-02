@@ -59,9 +59,9 @@
 #    include "./colecao.h"
 #endif
 
-artigocol     artigos;      ///< Artigos da seção atual
-encomendacol  encomendas;   ///< Encomendas
-utilizadorcol utilizadores; ///< Utilizadores existentes no registo
+artigocol     artigos;    ///< Artigos da seção atual
+encomendacol  encomendas; ///< Encomendas
+utilizadorcol clientes;   ///< Utilizadores existentes no registo
 
 #include "outrasListagens.h"
 
@@ -88,9 +88,9 @@ int printencRecVP(encomenda const* const e, struct {
     struct tm const* const t = localtime(&e->tempo);
     if (t->tm_mon == data->mes && t->tm_year == data->ano) {
         printf("* Dia %d/%d/%d\n", 1900 + t->tm_year, t->tm_mon + 1, t->tm_mday);
-        printf("    * NOME %s\n", protectStr(utilizadores.data[e->ID_cliente].nome));
-        printf("    * NIF  %9.9s\n", utilizadores.data[e->ID_cliente].NIF);
-        printf("    * CC   %12.12s\n", utilizadores.data[e->ID_cliente].CC);
+        printf("    * NOME %s\n", protectStr(clientes.data[e->ID_cliente].nome));
+        printf("    * NIF  %9.9s\n", clientes.data[e->ID_cliente].NIF);
+        printf("    * CC   %12.12s\n", clientes.data[e->ID_cliente].CC);
         printf("    * ARTIGOS COMPRADOS:\n");
         int64_t   preco_art;
         colSize_t i;
@@ -154,7 +154,7 @@ int printencRecVP(encomenda const* const e, struct {
  * @brief   Pode ser utilizado como um iterador, imprime um utilizador.
  * @param u Utilizador a ser impresso.
  * @param i Deve ser inicializado como 0, no final irá conter o número de
- *          utilizadores impressos.
+ *          clientes impressos.
  * @returns 0
  */
 int printUtiVP(utilizador const* const u, int64_t* const i) {
@@ -506,7 +506,7 @@ int form_editar_compra(compra* const c, int isNew) {
  */
 int printEncVP(encomenda const* const e, int64_t* const i) {
     printf("   %8lu   |   ", (*i)++);
-    menu_printEncomendaBrief(e, &utilizadores, &artigos);
+    menu_printEncomendaBrief(e, &clientes, &artigos);
     printf("\n");
     return 0;
 }
@@ -532,7 +532,7 @@ int form_editar_encomenda(encomenda* const e, int isNew) {
             printf("         -2   |   Reimprimir\n");
             printf("         -1   |   Sair\n");
             max = 0;
-            utilizadorcol_iterateFW(&utilizadores, (utilizadorcol_pred_t) &printUtiVP, &max);
+            utilizadorcol_iterateFW(&clientes, (utilizadorcol_pred_t) &printUtiVP, &max);
             menu_printInfo("Insira o ID do Cliente");
             id = menu_readInt64_tMinMax(-2, max - 1);
         }
@@ -555,7 +555,7 @@ int form_editar_encomenda(encomenda* const e, int isNew) {
  * @brief Premite editar clientes.
  */
 void interface_editar_cliente() {
-    GENERIC_EDIT("Cliente", utilizadorcol, utilizadores, printUtiVP, form_editar_cliente, newUtilizador);
+    GENERIC_EDIT("Cliente", utilizadorcol, clientes, printUtiVP, form_editar_cliente, newUtilizador);
 }
 
 /**
@@ -759,8 +759,8 @@ void funcional_save() {
     // Escrever encomendas
     protectFcnCall(encomendacol_write(&encomendas, dataFile), "impossível escrever encomendas no ficheiro");
 
-    // Escrever utilizadores
-    protectFcnCall(utilizadorcol_write(&utilizadores, dataFile), "impossível escrever utilizadores no ficheiro");
+    // Escrever clientes
+    protectFcnCall(utilizadorcol_write(&clientes, dataFile), "impossível escrever clientes no ficheiro");
 
     fclose(dataFile);
     menu_printInfo("ficheiro gravado");
@@ -776,7 +776,7 @@ void funcional_load() {
     // Eliminar dados
     artigocol_free(&artigos);
     encomendacol_free(&encomendas);
-    utilizadorcol_free(&utilizadores);
+    utilizadorcol_free(&clientes);
 
     // Abrir ficheiro
     FILE* dataFile;
@@ -788,8 +788,8 @@ void funcional_load() {
     // Carregar encomendas
     protectFcnCall(encomendacol_read(&encomendas, dataFile), "impossível carregar encomendas de ficheiro");
 
-    // Carregar utilizadores
-    protectFcnCall(utilizadorcol_read(&utilizadores, dataFile), "impossível carregar utilizadores de ficheiro");
+    // Carregar clientes
+    protectFcnCall(utilizadorcol_read(&clientes, dataFile), "impossível carregar clientes de ficheiro");
 
     fclose(dataFile);
     menu_printInfo("dados carregados");
@@ -869,16 +869,16 @@ int main() {
 
     menu_printDiv();
     menu_printHeader("A Iniciar");
-    artigos      = artigocol_new();
-    encomendas   = encomendacol_new();
-    utilizadores = utilizadorcol_new();
+    artigos    = artigocol_new();
+    encomendas = encomendacol_new();
+    clientes   = utilizadorcol_new();
 
     interface_inicio();
     menu_printHeader("A Terminar");
 
     artigocol_free(&artigos);
     encomendacol_free(&encomendas);
-    utilizadorcol_free(&utilizadores);
+    utilizadorcol_free(&clientes);
     menu_printDiv();
 
     return 0;

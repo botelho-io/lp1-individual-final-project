@@ -284,7 +284,7 @@ void menu_printHeader(const char* header) {
 /**
  * @brief    Imprime informação breve sobre a encomenda.
  * @param e  Encomenda a ser impressa.
- * @param uv Coleção de utilizadores ao qual o ID de utilizador da encomenda faz
+ * @param uv Coleção de clientes ao qual o ID de utilizador da encomenda faz
  *           referência.
  * @param av Coleção de artigos ao qual o ID dos artigos na encomenda faz
  *           referência.
@@ -369,7 +369,7 @@ void menu_printArtigoStock(const artigo* const a) {
 /**
  * @brief    Imprime informação detalhada sobre a encomenda.
  * @param e  Encomenda a ser impressa.
- * @param uv Coleção de utilizadores ao qual o ID de utilizador da encomenda faz
+ * @param uv Coleção de clientes ao qual o ID de utilizador da encomenda faz
  *           referência.
  * @param av Coleção de artigos ao qual o ID dos artigos na encomenda faz
  *           referência.

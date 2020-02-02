@@ -49,10 +49,14 @@
 #    include "./colecao.h"
 #endif
 
+// Estado do programa
+// *****************************************************************************
 artigocol     artigos;
 encomendacol  encomendas;
-utilizadorcol utilizadores;
-void          funcional_consultar_estados_encomendas();
-void          listagem_imprimir_recibo();
+utilizadorcol clientes;
+
+// Listagens
+// *****************************************************************************
+void listagem_imprimir_recibo();
 
 #endif
