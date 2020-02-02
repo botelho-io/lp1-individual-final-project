@@ -654,14 +654,14 @@ void interface_outras_listagens() {
         menu_printHeader("Listagens Extra");
         switch (menu_selection(&(strcol) {.size = 3,
                                           .data = (char*[]) {
-                                              "Recibo individual", // 0
-                                              "Pesquisa",          // 1
-                                              "POR IMPLEMENTAR"    // 2
+                                              "Recibo individual",         // 0
+                                              "Pesquisa",                  // 1
+                                              "Clientes que mais gastaram" // 2
                                           }})) {
             case -1: return;
             case 0: listagem_imprimir_recibo(); break;
             case 1: listagem_procura(); break;
-            case 2: break;
+            case 2: listagem_utiMaisGasto(); break;
         }
     }
 }

@@ -36,11 +36,8 @@ void freeEncomenda(encomenda* const e) { compracol_free(&e->compras); }
  * @brief           Calcula o preço de uma encomenda, em cêntimos.
  * @param e         Encomenda cujo preço será calculado.
  * @returns         O preço da encomenda em cêntimos.
- * @returns         0 se a encomenda tiver um código postal inválido.
- * @warning         O tipoEstado da encomenda tem que estar correto antes de
- *                  chamar esta função.
  */
-int64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av) {
+uint64_t encomenda_CalcPreco(const encomenda* const e, const artigocol* const av) {
     int64_t precoFinal = 0;
     int64_t precoPreTax;
     artigo* artAtual;

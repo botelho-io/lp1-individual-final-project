@@ -69,5 +69,6 @@ utilizadorcol clientes;
 // *****************************************************************************
 void listagem_imprimir_recibo();
 void listagem_procura();
+void listagem_utiMaisGasto();
 
 #endif

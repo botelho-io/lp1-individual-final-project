@@ -302,6 +302,8 @@ int listagens_pred_printencRec(encomenda const* const e, struct {
  * @brief Premite imprimir um recibo para um certo utilizador.
  */
 void listagem_imprimir_recibo() {
+    menu_printDiv();
+    menu_printHeader("Recibo de Cliente");
     printf("Inserir ano");
     int64_t ano = menu_readInt64_t();
     menu_printInfo("Inserir mês");
@@ -424,4 +426,43 @@ void listagem_procura() {
                 break;
         }
     }
+}
+
+/**
+ * @brief Imprime os utilizadores que mais gastaram num certo mês.
+ */
+void listagem_utiMaisGasto() {
+    menu_printDiv();
+    menu_printHeader("Clientes Que Mais Gastaram");
+    printf("Inserir ano");
+    int64_t ano = menu_readInt64_t() - 1900;
+    menu_printInfo("Inserir mês");
+    int64_t mes = menu_readInt64_tMinMax(1, 12) - 1;
+
+    uint64_t* gastoUti = calloc(clientes.size, sizeof(uint64_t));
+    for(colSize_t i = 0; i < encomendas.size; i++) {
+        encomenda const * const enc = &encomendas.data[i];
+        struct tm * time = localtime(&enc->tempo);
+        if(time->tm_mon == mes || time->tm_year == ano)
+            gastoUti[enc->ID_cliente] += encomenda_CalcPreco(enc, &artigos);
+    }
+
+    uint64_t max = 1;
+    colSize_t maxid;
+    menu_printHeader("Utilizadores Ordenados");
+    while (max != 0) {
+        max = 0;
+        for (colSize_t i = 0; i < clientes.size; i++) {
+            if(gastoUti[i] > max) {
+                maxid = i;
+                max = gastoUti[i];
+            }
+        }
+        if(max > 0) {
+            menu_printUtilizador(clientes.data[maxid]);
+            printf("   TOTAL GASTO: %luc\n", max);
+            gastoUti[maxid] = 0;
+        }
+    }
+    free(gastoUti);
 }
