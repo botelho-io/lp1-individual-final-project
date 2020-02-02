@@ -236,7 +236,7 @@ int form_editar_cliente(utilizador* const u, int isNew) {
  * @returns 0
  */
 int pred_printArt(artigo const* const a, int64_t* const i) {
-    printf("ID:    %8lu   |   ", (*i)++);
+    printf("   %8lu   |   ", (*i)++);
     menu_printArtigoStock(a);
     printf("\n");
     return 0;
@@ -295,7 +295,7 @@ int form_editar_artigo(artigo* const a, int isNew) {
         }
     }
 
-    printf("Qual a taxa de IVA do artigo?");
+    printf("Qual a taxa de IVA do artigo?\n");
     if (!isNew) {
         switch (a->meta & ARTIGO_IVA) {
             case ARTIGO_IVA_NORMAL: printf(" ( Normal )\n"); break;
@@ -711,6 +711,8 @@ void interface_diretor() {
             case 1: interface_editar_artigo(); break;
             case 2: interface_editar_encomenda(); break;
             case 3:
+                menu_printDiv();
+                menu_printHeader("Stock");
                 i = 0;
                 artigocol_iterateFW(&artigos, (artigocol_pred_t) &pred_printArt, &i);
                 break;
@@ -740,6 +742,8 @@ void interface_funcionario() {
             case 1: interface_criar_encomenda(); break;
             case 2: interface_imprimir_recibo(); break;
             case 3:
+                menu_printDiv();
+                menu_printHeader("Stock");
                 i = 0;
                 artigocol_iterateFW(&artigos, (artigocol_pred_t) &pred_printArt, &i);
                 break;
