@@ -100,16 +100,16 @@ size_t listagens_levenshtein(wchar_t const* const a, wchar_t const* const b, con
  */
 wstrcol listagens_partirEspacos(wchar_t const* frase) {
     wstrcol        col = wstrcol_new();
-    wchar_t const* beg = frase;
-    wchar_t const* end = frase;
+    wchar_t const* beg;
+    wchar_t const* end;
     // Posicionar beg no inicio da proxima palavra
-    for (beg; *beg && iswspace(*beg); beg++)
+    for (beg = frase; *beg && iswspace(*beg); beg++)
         ;
     if (!(*beg)) return col; // Ultima palavra
     // Posicionar end no mesmo local que beg
     end = beg;
     // Ciclo principal
-    for (end; *end; end++) {
+    for (; *end; end++) {
         // Espaço encontrado
         if (iswspace(*end)) {
             // Criar novo elemnto na colção
@@ -123,7 +123,7 @@ wstrcol listagens_partirEspacos(wchar_t const* frase) {
             *cur = 0;
 
             // Posicionar beg no inicio da proxima palavra
-            for (beg; *beg && iswspace(*beg); beg++)
+            for (; *beg && iswspace(*beg); beg++)
                 ;
             if (!(*beg)) return col; // Ultima palavra
             // Posicionar end no mesmo local que beg

@@ -253,22 +253,6 @@ COL_TIPO COL_FUN(_pop)(COL_NOME* const v) {
 }
 
 /**
- * @brief           Retorna e remove um objeto da coleção.
- * @details         Retorna o objeto com o index 'position' da coleção,
- *                  removendo-o, mas sem o dealocar.
- * @param v         coleção sob o qual operar.
- * @param position  Index do objeto que será removido da coleção.
- * @returns         O objeto com o index 'position'
- * @warning         O objeto com o index 'position' é removido da coleção e não
- *                  é dealocado, terá que ser dealocado posteriormente.
- */
-COL_TIPO COL_FUN(_popAt)(COL_NOME* const v, const colSize_t position) {
-    COL_TIPO toReturn = v->data[position];
-    COL_FUN(_moveBelow)(v, position);
-    return toReturn;
-}
-
-/**
  * @brief           Apaga e dealoca a coleção.
  * @details         Dealoca todos os elementos da coleção utilizando o macto
  *                  'COL_DEALOC', e dealoca a coleção em si, apagando-o.
@@ -283,20 +267,6 @@ void COL_FUN(_free)(COL_NOME* const v) {
     v->data     = NULL;
     v->size     = 0;
     v->alocated = 0;
-}
-
-/**
- * @brief           Remove um objeto da coleção.
- * @details         Remove, e dealoca o objeto na posição 'position' da coleção,
- *                  diminuindo o seu tamanho por uma unidade.
- * @param v         Pointeiro para a coleção sob o qual operar.
- * @param position  Index do elemento a remover.
- */
-void COL_FUN(_removeAt)(COL_NOME* const v, colSize_t position) {
-#    ifdef COL_DEALOC
-    COL_DEALOC(&(v->data[position]));
-#    endif
-    COL_FUN(_moveBelow)(v, position);
 }
 
 /**
@@ -338,31 +308,6 @@ int COL_FUN(_adjust)(COL_NOME* const v) {
  */
 colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData) {
     for (colSize_t i = 0; i < v->size; i++) {
-        if (predicate(&(v->data[i]), userData)) return i;
-    }
-    return COL_INVAL_INDEX;
-}
-
-/**
- * @brief           Aplica a função 'predicate' a todos os elementos da coleção
- *                  'v', do maior ao menor index.
- * @details         A coleção 'v' é iterado, do último ao primeiro elemeto,
- *                  aplicando 'predicate' a todos os elementos até que a coleção
- *                  acabe ou até que 'predicate' retorne verdadeiro.
- * @param v         Pointeiro para a coleção sob o qual operar.
- * @param predicate Função que é chamada por cada elemento da coleção, se esta
- *                  função retornar verdadeiro a iteração pára. Os argumentos
- *                  desta função são: (1) o elemento que está a ser iterado;
- *                  (2) um ponteiro do tipo 'void*' que é passado ao chamar
- *                  _iterateBW.
- * @param userData  Dados passados pelo utilizador à função 'predicate'.
- * @returns         O index do objeto cuja função predicate primeiro returnou
- *                  verdade.
- * @returns         COL_INVAL_INDEX caso a todos os elementos foram iterados sem
- *                  que 'predicate' tenha retornado 0.
- */
-colSize_t COL_FUN(_iterateBW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData) {
-    for (colSize_t i = v->size - 1; i != COL_INVAL_INDEX; i--) {
         if (predicate(&(v->data[i]), userData)) return i;
     }
     return COL_INVAL_INDEX;
@@ -461,11 +406,8 @@ int       COL_FUN(_addCell)(COL_NOME* const v);
 int       COL_FUN(_reserve)(COL_NOME* const v, colSize_t space);
 int       COL_FUN(_push)(COL_NOME* const v, COL_TIPO const newObj);
 void      COL_FUN(_moveBelow)(COL_NOME* const v, const colSize_t i);
-void      COL_FUN(_removeAt)(COL_NOME* const v, colSize_t position);
 int       COL_FUN(_moveAbove)(COL_NOME* const v, const colSize_t i);
-COL_TIPO  COL_FUN(_popAt)(COL_NOME* const v, const colSize_t position);
 colSize_t COL_FUN(_iterateFW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
-colSize_t COL_FUN(_iterateBW)(COL_NOME* const v, COL_FUN(_pred_t) predicate, void* userData);
 void      COL_FUN(_DEALOC)(COL_TIPO* const X);
 #    ifdef COL_WRITE
 int COL_FUN(_write)(const COL_NOME* const v, FILE* f);

@@ -92,42 +92,6 @@ char* menu_readNotNulStr() {
 }
 
 /**
- * @brief   Lê uma float do standard input.
- * @returns Valor lido.
- */
-float menu_readFloat() {
-    static float value;
-    while (1) {
-        printf(" $ ");
-        if (scanf("%f", &value) != 1) {
-            menu_printError("Não foi inserido um número válido");
-            cleanInputBuffer();
-            continue;
-        }
-        cleanInputBuffer();
-        return value;
-    }
-}
-
-/**
- * @brief   Lê uma int do standard input.
- * @returns Valor lido.
- */
-int menu_readInt() {
-    static int value = 1;
-    while (1) {
-        printf(" $ ");
-        if (scanf("%d", &value) != 1) {
-            menu_printError("Não foi inserido um número válido");
-            cleanInputBuffer();
-            continue;
-        }
-        cleanInputBuffer();
-        return value;
-    }
-}
-
-/**
  * @brief   Lê uma int64_t do standard input.
  * @returns Valor lido.
  */
@@ -142,27 +106,6 @@ int64_t menu_readInt64_t() {
         }
         cleanInputBuffer();
         return value;
-    }
-}
-
-/**
- * @brief     Lê uma int do standard input entre [min, max]
- * @param min Valor minimo da int para ser lida.
- * @param max Valor maximo da int para ser lida.
- * @returns   Valor lido
- */
-int menu_readIntMinMax(const int min, const int max) {
-    static int value;
-    printf("Insira um numero entre [%d e %d]", min, max);
-    while (1) {
-        value = menu_readInt();
-        if (value >= min) {
-            if (value <= max) {
-                return value;
-            } else
-                menu_printError("[%d] é maior que [%d]", value, max);
-        } else
-            menu_printError("[%d] é menor que [%d]", value, min);
     }
 }
 
@@ -364,53 +307,4 @@ void menu_printArtigoStock(const artigo* const a) {
            (a->meta & ARTIGO_NECESSITA_RECEITA) ? "venda livre" : "receita necessária", //
            (a->meta & ARTIGO_DESATIVADO) ? "DESATIVADO" : ""                            //
     );
-}
-
-/**
- * @brief    Imprime informação detalhada sobre a encomenda.
- * @param e  Encomenda a ser impressa.
- * @param uv Coleção de clientes ao qual o ID de utilizador da encomenda faz
- *           referência.
- * @param av Coleção de artigos ao qual o ID dos artigos na encomenda faz
- *           referência.
- */
-void menu_printEncomendaDetail(const encomenda* const e, const utilizadorcol* const uv, const artigocol* const av) {
-    menu_printDiv();
-    menu_printDiv();
-    menu_printHeader("Recibo de Encomenda");
-    printf("*** NIF do Cliente: %.9s\n", uv->data[e->ID_cliente].NIF);
-    printf("*** Número de CC: %.12s\n", uv->data[e->ID_cliente].CC);
-
-    struct tm* lt = localtime(&e->tempo);
-    printf("Data: %d/%d/%d %d:%d\n\n", 1900 + lt->tm_year, 1 + lt->tm_mon, lt->tm_mday, lt->tm_hour, lt->tm_min);
-
-    menu_printHeader("Artigos");
-    printf("*       ID | NOME                                | Preço    | + IVA    | Receita\n");
-    int64_t precoSemIva = 0;
-    int64_t precoComIva = 0;
-    for (size_t i = 0; i < e->compras.size; ++i) {
-        const artigo* const a = &av->data[e->compras.data[i].IDartigo];
-        double              iva;
-        switch (a->meta & ARTIGO_IVA) {
-            case ARTIGO_IVA_NORMAL: iva = ARTIGO_IVA_NORMAL_VAL; break;
-            case ARTIGO_IVA_REDUZIDO: iva = ARTIGO_IVA_REDUZIDO_VAL; break;
-            default: iva = ARTIGO_IVA_INTERMEDIO_VAL; break;
-        }
-        precoSemIva += a->preco_cent * e->compras.data[i].qtd;
-        precoComIva += precoSemIva * iva;
-
-        printf("* %8lu | QTD: %lu | %30.30s | %8lu | %8lu | ",
-               i,                             //
-               e->compras.data[i].qtd,        //
-               protectStr(a->nome),           //
-               a->preco_cent,                 //
-               (int64_t)(a->preco_cent * iva) //
-        );
-
-        if (a->meta & ARTIGO_NECESSITA_RECEITA) { printf("Receita: %19.19s\n", e->compras.data[i].receita); }
-    }
-
-    printf("\n*** Preço líquido: %ldc\n", precoSemIva);
-    printf("\n*** Preço com IVA: %ldc\n", precoComIva);
-    menu_printDiv();
 }
