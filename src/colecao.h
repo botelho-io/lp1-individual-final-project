@@ -23,8 +23,8 @@
  * #define  strcol_H
  * #define  COL_TIPO             char*
  * #define  COL_NOME             strcol
- * #define  COL_DEALOC(X)        free(X)
- * #include "./colecao.h"
+ * #define  COL_DEALOC(X)        free(*X)
+ * #include "colecao.h"
  * #endif
  *
  * #ifndef  intcol_H
@@ -33,7 +33,7 @@
  * #define  COL_NOME             intcol
  * #define  COL_WRITE(X, F)      fwrite(X, sizeof(int), 1, F)
  * #define  COL_READ(X, F)       fread (X, sizeof(int), 1, F)
- * #include "./colecao.h"
+ * #include "colecao.h"
  * #endif
  * @endcode
  */

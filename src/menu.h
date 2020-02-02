@@ -29,17 +29,17 @@
 #    define COL_DEALOC(X) freeEncomenda(X)
 #    define COL_WRITE(X, F) save_encomenda(F, X)
 #    define COL_READ(X, F) load_encomenda(F, X)
-#    include "./colecao.h"
+#    include "colecao.h"
 #endif
 
 #ifndef strcol_H
 #    define strcol_H
 #    define COL_TIPO char*
 #    define COL_NOME strcol
-#    define COL_DEALOC(X) free(X)
+#    define COL_DEALOC(X) free(*X)
 #    define COL_WRITE(X, F) save_str(F, *X)
 #    define COL_READ(X, F) load_str(F, X)
-#    include "./colecao.h"
+#    include "colecao.h"
 #endif
 
 #ifndef utilizadorcol_H
@@ -49,7 +49,7 @@
 #    define COL_DEALOC(X) freeUtilizador(X)
 #    define COL_WRITE(X, F) save_utilizador(F, X)
 #    define COL_READ(X, F) load_utilizador(F, X)
-#    include "./colecao.h"
+#    include "colecao.h"
 #endif
 
 int     menu_readIntMinMax(const int min, const int max);

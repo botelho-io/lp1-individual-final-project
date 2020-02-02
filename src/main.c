@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <strings.h>
+#include <locale.h>
 
 
 
@@ -36,7 +37,7 @@
 #    define COL_DEALOC(X) freeArtigo(X)
 #    define COL_WRITE(X, F) save_artigo(F, X)
 #    define COL_READ(X, F) load_artigo(F, X)
-#    include "./colecao.h"
+#    include "colecao.h"
 #endif
 
 #ifndef encomendacol_H
@@ -46,7 +47,7 @@
 #    define COL_DEALOC(X) freeEncomenda(X)
 #    define COL_WRITE(X, F) save_encomenda(F, X)
 #    define COL_READ(X, F) load_encomenda(F, X)
-#    include "./colecao.h"
+#    include "colecao.h"
 #endif
 
 #ifndef utilizadorcol_H
@@ -56,7 +57,7 @@
 #    define COL_DEALOC(X) freeUtilizador(X)
 #    define COL_WRITE(X, F) save_utilizador(F, X)
 #    define COL_READ(X, F) load_utilizador(F, X)
-#    include "./colecao.h"
+#    include "colecao.h"
 #endif
 
 artigocol     artigos;    ///< Artigos da seção atual
@@ -217,7 +218,7 @@ int form_editar_cliente(utilizador* const u, int isNew) {
             menu_printError("CC tem 12 caracteres [9] digitos seguidos de [2] letras e [1] digito final");
         }
     }
-    freeN(tmp);
+    free(tmp);
 
     return 1;
 }
@@ -400,8 +401,8 @@ int form_editar_compra(compra* const c, int isNew) {
         art         = &artigos.data[id];
 
         // Ler receita
+        char* tmp = NULL;
         if (art->meta & ARTIGO_NECESSITA_RECEITA) {
-            char* tmp = NULL;
             menu_printInfo("artigo necessita de receita para ser vendido");
             while (1) {
                 printf("Insira os 19 characteres da receita do artigo");
@@ -419,12 +420,12 @@ int form_editar_compra(compra* const c, int isNew) {
                     }
                     if (i == 19) {
                         memcpy(&c->receita, tmp, 19);
-                        freeN(tmp);
                         break;
                     }
                 }
             }
         }
+        freeN(tmp);
     }
 
     // Ler quantidade
@@ -651,12 +652,16 @@ void interface_outras_listagens() {
     while (1) {
         menu_printDiv();
         menu_printHeader("Listagens Extra");
-        switch (menu_selection(&(strcol) {.size = 1,
+        switch (menu_selection(&(strcol) {.size = 3,
                                           .data = (char*[]) {
                                               "Recibo individual", // 0
+                                              "Pesquisa",          // 1
+                                              "POR IMPLEMENTAR"    // 2
                                           }})) {
             case -1: return;
             case 0: listagem_imprimir_recibo(); break;
+            case 1: listagem_procura(); break;
+            case 2: break;
         }
     }
 }
@@ -817,15 +822,17 @@ void interface_inicio() {
                 printf("(F / DC)");
                 login = menu_readNotNulStr();
                 if (strcasecmp(login, "F") == 0) {
+                    free(login);
                     interface_funcionario();
                 } else if (strcasecmp(login, "DC") == 0) {
+                    free(login);
                     interface_diretor();
                 } else {
+                    free(login);
                     menu_printError("Log in %s é inválido", login);
                     printf("Inserir \"F\"  para permissões de funcionário\n"
                            "Inserir \"DC\" para permissões de diretor clínico\n");
                 }
-                freeN(login);
                 break;
             case 1: funcional_save(); break;
             case 2: funcional_load(); break;
@@ -869,13 +876,14 @@ int main() {
 
     menu_printDiv();
     menu_printHeader("A Iniciar");
+    setlocale(LC_ALL, "en_US.UTF-8");
     artigos    = artigocol_new();
     encomendas = encomendacol_new();
     clientes   = utilizadorcol_new();
 
     interface_inicio();
-    menu_printHeader("A Terminar");
 
+    menu_printHeader("A Terminar");
     artigocol_free(&artigos);
     encomendacol_free(&encomendas);
     utilizadorcol_free(&clientes);

@@ -26,7 +26,7 @@
 #    define COL_DEALOC(X) freeArtigo(X)
 #    define COL_WRITE(X, F) save_artigo(F, X)
 #    define COL_READ(X, F) load_artigo(F, X)
-#    include "./colecao.h"
+#    include "colecao.h"
 #endif
 
 #ifndef compracol_H
@@ -35,7 +35,7 @@
 #    define COL_NOME compracol
 #    define COL_WRITE(X, F) save_compra(F, X)
 #    define COL_READ(X, F) load_compra(F, X)
-#    include "./colecao.h"
+#    include "colecao.h"
 #endif
 
 typedef struct {
